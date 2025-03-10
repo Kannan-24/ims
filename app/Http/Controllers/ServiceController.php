@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class ServiceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        // Retrieve all products from the database and return them.
-        $products = Product::all();
-        return view('products.index', compact('products')); // Update this to your desired view.
+        // Retrieve all services from the database and return them.
+        $services = Service::all();
+        return view('services.index', compact('services')); // Update this to your desired view.
     }
 
     /**
@@ -22,7 +22,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+        return view('services.create');
     }
 
     /**
@@ -38,8 +38,8 @@ class ProductController extends Controller
             'gst_percentage' => 'required|numeric',
         ]);
 
-        // Create a new product
-        Product::create([
+        // Create a new service
+        Service::create([
             'name' => $request->name,
             'description' => $request->description,
             'hsn_code' => $request->hsn_code,
@@ -47,60 +47,60 @@ class ProductController extends Controller
         ]);
 
         // Redirect back with a success message
-        return redirect()->route('products.index')->with('success', 'Product created successfully.');
+        return redirect()->route('services.index')->with('success', 'Service created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(Service $service)
     {
-        // Return the view with the specific product data.
-        return view('products.show', compact('product'));
+        // Return the view with the specific service data.
+        return view('services.show', compact('service'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product)
+    public function edit(Service $service)
     {
-        return view('products.edit', compact('product'));
+        return view('services.edit', compact('service'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Service $service)
     {
         // Validate the incoming request.
         $request->validate([
             'name' => 'required|max:100',
             'description' => 'required',
             'hsn_code' => 'required|max:20',
-            'gst' => 'required|numeric',
+            'gst_percentage' => 'required|numeric',
         ]);
 
-        // Update the product with the new data.
-        $product->update([
+        // Update the service with the new data.
+        $service->update([
             'name' => $request->name,
             'description' => $request->description,
             'hsn_code' => $request->hsn_code,
-            'gst' => $request->gst,
+            'gst_percentage' => $request->gst_percentage,
         ]);
 
         // Redirect back with a success message.
-        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
+        return redirect()->route('services.index')->with('success', 'Service updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(Service $service)
     {
-        // Delete the product.
-        $product->delete();
+        // Delete the service.
+        $service->delete();
 
         // Redirect back with a success message.
-        return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
+        return redirect()->route('services.index')->with('success', 'Service deleted successfully.');
     }
 }

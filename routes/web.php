@@ -7,18 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\InvoiceItemController;
-use App\Http\Controllers\QuotationController;
-use App\Http\Controllers\QuotationItemController;
-use App\Http\Controllers\GatePassController;
-use App\Http\Controllers\GatePassItemController;
-use App\Http\Controllers\DeliveryChallanController;
-use App\Http\Controllers\DeliveryChallanItemController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\StockController;
-use App\Http\Controllers\BatchStockController;
-use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -49,19 +38,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('customers', CustomerController::class);
     Route::resource('suppliers', SupplierController::class);
-    Route::resource('stocks', StockController::class);
-    Route::resource('batch-stocks', BatchStockController::class);
     Route::resource('products', ProductController::class);
-    Route::resource('invoices', InvoiceController::class);
-    Route::resource('invoice-items', InvoiceItemController::class);
-    Route::resource('quotations', QuotationController::class);
-    Route::resource('quotation-items', QuotationItemController::class);
-    Route::resource('gate-passes', GatePassController::class);
-    Route::resource('gate-pass-items', GatePassItemController::class);
-    Route::resource('delivery-challans', DeliveryChallanController::class);
-    Route::resource('delivery-challan-items', DeliveryChallanItemController::class);
-    Route::resource('payments', PaymentController::class);
-    Route::resource('purchases', PurchaseController::class);
+    Route::resource('services', ServiceController::class);
+   
 });
 
 

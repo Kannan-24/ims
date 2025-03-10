@@ -12,8 +12,8 @@
                 <div class="mb-8 ">
                     <h3 class="text-3xl font-bold text-gray-800">Welcome Back</h3>
                     <p class="mt-2 text-sm text-gray-500">
-    Sign in to manage invoices, quotations, and customer details effortlessly.
-</p>
+                        Sign in to manage invoices, quotations, and customer details effortlessly.
+                    </p>
 
                 </div>
 
@@ -28,8 +28,8 @@
                                 class="w-full py-3 pl-4 pr-10 text-sm text-gray-800 border border-gray-300 rounded-lg outline-blue-600"
                                 placeholder="Enter your email" value="{{ old('email') }}" autofocus
                                 autocomplete="username" />
-                            </div>
-                            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                        </div>
+                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 
                     <!-- Password -->

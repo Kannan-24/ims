@@ -1,5 +1,4 @@
 <x-app-layout>
-
     <x-slot name="title">
         {{ __('Customer List') }} - {{ config('app.name', 'ATMS') }}
     </x-slot>
@@ -15,9 +14,10 @@
                     <table class="min-w-full text-left border-collapse table-auto">
                         <thead>
                             <tr class="text-sm text-gray-600 bg-indigo-100">
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(0)">#</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(1)">Customer ID</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(2)">Name</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(0)">#
+                                </th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(2)">
+                                    Name</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Contact Person</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Phone</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">City</th>
@@ -26,24 +26,32 @@
                         </thead>
                         <tbody class="text-sm text-gray-700" id="customerTable">
                             @foreach ($customers as $customer)
+                        <tbody class="text-sm text-gray-700" id="customerTable">
+                            @foreach ($customers as $customer)
                                 <tr class="border-b hover:bg-indigo-50">
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $loop->iteration }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $customer->cid }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $customer->name }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $customer->contact_person }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $customer->phone }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $customer->company_name }}</td>
+
+                                    <!-- Display First Contact Person Name -->
+                                    <td class="px-6 py-4 border-b border-gray-200">
+                                        {{ $customer->contactPersons->first()->name }}
+                                    </td>
+
+                                    <!-- Display First Contact Person Phone -->
+                                    <td class="px-6 py-4 border-b border-gray-200">
+                                        {{ $customer->contactPersons->first()->phone_no }}
+                                    </td>
+
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $customer->city }}</td>
-                                    < x-action-buttons :id="$customer->id" :model="'customers'" />
+                                    <x-action-buttons :id="$customer->id" :model="'customers'" />
                                 </tr>
                             @endforeach
                         </tbody>
+                        @endforeach
+                        </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
     </div>
-
-  
-
 </x-app-layout>

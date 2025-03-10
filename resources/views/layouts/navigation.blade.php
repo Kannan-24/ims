@@ -40,8 +40,7 @@
                         class="flex items-center px-4 py-2 space-x-3 text-white bg-gray-800 rounded-full shadow-md focus:ring-4 focus:ring-gray-500">
                         @if (Auth::user()->profile_photo)
                             <img class="w-10 h-10 rounded-full"
-                                src="{{ asset('storage/' . Auth::user()->profile_photo) }}"
-                                alt="User photo" />
+                                src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="User photo" />
                         @else
                             <div
                                 class="flex items-center justify-center w-10 h-10 text-lg font-bold text-white uppercase bg-gray-600 rounded-full">
@@ -140,117 +139,64 @@
         </div>
     </nav>
     <aside id="logo-sidebar" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-    class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-gray-900 border-r border-gray-800 shadow-xl sm:translate-x-0">
-    <div class="h-full px-4 py-4 overflow-y-auto">
-        <ul class="space-y-2 font-medium">
-            <!-- Dashboard Link -->
-            <li>
-                <a href="{{ route('dashboard') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out 
+        class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-gray-900 border-r border-gray-800 shadow-xl sm:translate-x-0">
+        <div class="h-full px-4 py-4 overflow-y-auto">
+            <ul class="space-y-2 font-medium">
+                <!-- Dashboard Link -->
+                <li>
+                    <a href="{{ route('dashboard') }}"
+                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out 
                     {{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Dashboard</span>
-                </a>
-            </li>
+                        <span class="ml-3">Dashboard</span>
+                    </a>
+                </li>
 
-            <!-- Users Link -->
-            <li>
-                <a href="{{ route('users.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
+                <!-- Users Link -->
+                <li>
+                    <a href="{{ route('users.index') }}"
+                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
                     {{ request()->routeIs('users.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Users</span>
-                </a>
+                        <span class="ml-3">Users</span>
+                    </a>
 
-            <!-- Customers Link -->
-            <li>
-                <a href="{{ route('customers.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
+                    <!-- Customers Link -->
+                <li>
+                    <a href="{{ route('customers.index') }}"
+                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
                     {{ request()->routeIs('customers.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Customers</span>
-                </a>
-            </li>
+                        <span class="ml-3">Customers</span>
+                    </a>
+                </li>
 
-            <!-- Suppliers Link -->
-            <li>
-                <a href="{{ route('suppliers.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
+                <!-- Suppliers Link -->
+                <li>
+                    <a href="{{ route('suppliers.index') }}"
+                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
                     {{ request()->routeIs('suppliers.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Suppliers</span>
-                </a>
+                        <span class="ml-3">Suppliers</span>
+                    </a>
+                </li>
 
-            <!-- Products Link -->
-            <li>
-                <a href="{{ route('products.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
+                <!-- Products Link -->
+                <li>
+                    <a href="{{ route('products.index') }}"
+                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
                     {{ request()->routeIs('products.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Products</span>
-                </a>
-            </li>
+                        <span class="ml-3">Products</span>
+                    </a>
+                </li>
 
-            <!-- Invoices Link -->
-            <li>
-                <a href="{{ route('invoices.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('invoices.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Invoices</span>
-                </a>
-            </li>
-
-            <!-- Quotations Link -->
-            <li>
-                <a href="{{ route('quotations.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('quotations.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Quotations</span>
-                </a>
-            </li>
-
-            <!-- Gate Passes Link -->
-            <li>
-                <a href="{{ route('gate-passes.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('gate-passes.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Gate Passes</span>
-                </a>
-            </li>
-
-            <!-- Delivery Challans Link -->
-            <li>
-                <a href="{{ route('delivery-challans.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('delivery-challans.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Delivery Challans</span>
-                </a>
-            </li>
-
-            <!-- Payments Link -->
-            <li>
-                <a href="{{ route('payments.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('payments.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Payments</span>
-                </a>
-            </li>
-
-            <!-- Stocks Link -->
-            <li>
-                <a href="{{ route('stocks.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('stocks.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Stocks</span>
-                </a>
-            </li>
-
-            <!-- Batch Stocks Link -->
-            <li>
-                <a href="{{ route('batch-stocks.index') }}"
-                    class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('batch-stocks.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                    <span class="ml-3">Batch Stocks</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</aside>
+                <!-- Sales Link -->
+                <li>
+                    <a href="{{ route('services.index') }}"
+                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
+                    {{ request()->routeIs('services.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
+                        <span class="ml-3">Services</span>
+                    </a>
+                </li>
 
 
+            </ul>
+        </div>
+    </aside>
 </div>

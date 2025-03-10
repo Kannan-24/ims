@@ -3,26 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\ContactPerson;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
-    /**
+    /** 
      * Display a listing of the resource.
      */
     public function index()
     {
-        // Retrieve all customers from the database and return them.
-        $customers = Customer::all();
-        return view('customers.index', compact('customers')); // Update this to your desired view.
+        $customers = Customer::with('contactPersons')->get(); // Eager load contacts
+        return view('customers.index', compact('customers'));
     }
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        // Return the view to create a new customer.
         return view('customers.create');
     }
 
@@ -31,57 +32,61 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the incoming request.
+        // Validate the input
         $request->validate([
-            'name' => 'required|max:100',
-            'contact_person' => 'required|max:100',
-            'email' => 'required|email|unique:customers|max:100',
-            'phone' => 'required|max:20',
+            'company_name' => 'required|max:100',
             'address' => 'required',
             'city' => 'required|max:100',
             'state' => 'required|max:100',
-            'zip' => 'required|max:20',
+            'zip_code' => 'required|max:20',
             'country' => 'required|max:100',
-            'gstno' => 'required|max:50',
+            'gst_number' => 'required|unique:customers,gst_number|max:50',
+            'contact_persons' => 'required|array|min:1', // At least one contact person is required
+            'contact_persons.*.name' => 'required|max:100',
+            'contact_persons.*.phone_no' => 'required|max:20',
+            'contact_persons.*.email' => 'required|email|unique:contact_persons,email|max:100',
         ]);
 
-        // Generate the CID (Customer ID)
-        $lastCustomer = Customer::latest('id')->first();
-        $lastCid = $lastCustomer ? $lastCustomer->cid : 'SKMC00'; // Default if no customers are found
+        DB::transaction(function () use ($request) {
+            // Generate unique Customer ID (CID)
+            $lastCustomer = Customer::latest('id')->first();
+            $lastCid = $lastCustomer ? $lastCustomer->cid : 'SKMC00';
+            preg_match('/\d+/', $lastCid, $matches);
+            $lastNumber = $matches ? (int) $matches[0] : 0;
+            $newCid = 'SKMC' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT);
 
-        // Extract the numeric part and increment it
-        preg_match('/\d+/', $lastCid, $matches);
-        $lastNumber = $matches ? (int) $matches[0] : 0; // Extract number from the CID and cast it to an integer
+            // Create new customer
+            $customer = Customer::create([
+                'cid' => $newCid,
+                'company_name' => $request->company_name,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'zip_code' => $request->zip_code,
+                'country' => $request->country,
+                'gst_number' => $request->gst_number,
+            ]);
 
-        // Create the new CID
-        $newCid = 'SKMC' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT); // Increment and pad the number
+            // Store multiple contact persons
+            foreach ($request->contact_persons as $person) {
+                ContactPerson::create([
+                    'customer_id' => $customer->id,
+                    'name' => $person['name'],
+                    'phone_no' => $person['phone_no'],
+                    'email' => $person['email'],
+                ]);
+            }
+        });
 
-        // Create a new customer
-        Customer::create([
-            'cid' => $newCid,
-            'name' => $request->name,
-            'contact_person' => $request->contact_person,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'city' => $request->city,
-            'state' => $request->state,
-            'zip' => $request->zip,
-            'country' => $request->country,
-            'gstno' => $request->gstno,
-        ]);
-
-        // Redirect back with a success message
-        return redirect()->route('customers.index')->with('success', 'Customer created successfully.');
+        return redirect()->route('customers.index')->with('success', 'Customer and contacts created successfully.');
     }
-
 
     /**
      * Display the specified resource.
      */
     public function show(Customer $customer)
     {
-        // Return the view with the specific customer data.
+        $customer->load('contactPersons');
         return view('customers.show', compact('customer'));
     }
 
@@ -90,7 +95,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        // Return the edit form for the selected customer.
+        $customer->load('contactPersons');
         return view('customers.edit', compact('customer'));
     }
 
@@ -99,38 +104,46 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        // Validate the incoming request.
+        // Validate the input
         $request->validate([
-            'cid' => 'required|max:50|unique:customers,cid,' . $customer->id,
-            'name' => 'required|max:100',
-            'contact_person' => 'required|max:100',
-            'email' => 'required|email|max:100|unique:customers,email,' . $customer->id,
-            'phone' => 'required|max:20',
+            'company_name' => 'required|max:100',
             'address' => 'required',
             'city' => 'required|max:100',
             'state' => 'required|max:100',
-            'zip' => 'required|max:20',
+            'zip_code' => 'required|max:20',
             'country' => 'required|max:100',
-            'gstno' => 'required|max:50',
+            'gst_number' => 'required|max:50|unique:customers,gst_number,' . $customer->id,
+            'contact_persons' => 'required|array|min:1',
+            'contact_persons.*.name' => 'required|max:100',
+            'contact_persons.*.phone_no' => 'required|max:20',
+            'contact_persons.*.email' => 'required|email|max:100|unique:contact_persons,email,' . $customer->id,
         ]);
 
-        // Update the customer with the new data.
-        $customer->update([
-            'cid' => $request->cid,
-            'name' => $request->name,
-            'contact_person' => $request->contact_person,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'city' => $request->city,
-            'state' => $request->state,
-            'zip' => $request->zip,
-            'country' => $request->country,
-            'gstno' => $request->gstno,
-        ]);
+        DB::transaction(function () use ($request, $customer) {
+            // Update customer details
+            $customer->update([
+                'company_name' => $request->company_name,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'zip_code' => $request->zip_code,
+                'country' => $request->country,
+                'gst_number' => $request->gst_number,
+            ]);
 
-        // Redirect back with a success message.
-        return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');
+            // Delete existing contact persons and insert new ones
+            $customer->contactPersons()->delete();
+            foreach ($request->contact_persons as $person) {
+                ContactPerson::create([
+                    'customer_id' => $customer->id,
+                    'name' => $person['name'],
+                    'phone_no' => $person['phone_no'],
+                    'email' => $person['email'],
+                ]);
+            }
+        });
+
+        return redirect()->route('customers.index')->with('success', 'Customer and contacts updated successfully.');
     }
 
     /**
@@ -138,10 +151,7 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        // Delete the customer.
         $customer->delete();
-
-        // Redirect back with a success message.
         return redirect()->route('customers.index')->with('success', 'Customer deleted successfully.');
     }
 }

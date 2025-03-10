@@ -1,0 +1,227 @@
+<header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+    <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+
+        <div class="flex items-center gap-2 sm:gap-4 lg:hidden">
+            <!-- Hamburger Toggle BTN -->
+            <button
+                class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
+                @click.stop="sidebarToggle = !sidebarToggle">
+                <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                    <span class="du-block absolute right-0 h-full w-full">
+                        <span
+                            class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white"
+                            :class="{ '!w-full delay-300': !sidebarToggle }"></span>
+                        <span
+                            class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white"
+                            :class="{ '!w-full delay-400': !sidebarToggle }"></span>
+                        <span
+                            class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white"
+                            :class="{ '!w-full delay-500': !sidebarToggle }"></span>
+                    </span>
+                    <span class="du-block absolute right-0 h-full w-full rotate-45">
+                        <span
+                            class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white"
+                            :class="{ '!h-0 delay-[0]': !sidebarToggle }"></span>
+                        <span
+                            class="delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white"
+                            :class="{ '!h-0 dealy-200': !sidebarToggle }"></span>
+                    </span>
+                </span>
+            </button>
+            <!-- Hamburger Toggle BTN -->
+            <a class="block flex-shrink-0 lg:hidden" href="index.html">
+                <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+            </a>
+        </div>
+
+        <div class="flex items-center gap-3 2xsm:gap-7 lg:ml-auto">
+            <ul class="flex items-center gap-2 2xsm:gap-4">
+                <li>
+                    <!-- Dark Mode Toggler -->
+                    <label :class="darkMode ? 'bg-primary' : 'bg-stroke'"
+                        class="relative m-0 block h-7.5 w-14 rounded-full">
+                        <input type="checkbox" :value="darkMode" @change="darkMode = !darkMode"
+                            class="absolute top-0 z-50 m-0 h-full w-full cursor-pointer opacity-0" />
+                        <span :class="darkMode && '!right-1 !translate-x-full'"
+                            class="absolute left-1 top-1/2 flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full bg-white shadow-switcher duration-75 ease-linear">
+                            <span class="dark:hidden">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M7.99992 12.6666C10.5772 12.6666 12.6666 10.5772 12.6666 7.99992C12.6666 5.42259 10.5772 3.33325 7.99992 3.33325C5.42259 3.33325 3.33325 5.42259 3.33325 7.99992C3.33325 10.5772 5.42259 12.6666 7.99992 12.6666Z"
+                                        fill="#969AA1" />
+                                    <path
+                                        d="M8.00008 15.3067C7.63341 15.3067 7.33342 15.0334 7.33342 14.6667V14.6134C7.33342 14.2467 7.63341 13.9467 8.00008 13.9467C8.36675 13.9467 8.66675 14.2467 8.66675 14.6134C8.66675 14.9801 8.36675 15.3067 8.00008 15.3067ZM12.7601 13.4267C12.5867 13.4267 12.4201 13.3601 12.2867 13.2334L12.2001 13.1467C11.9401 12.8867 11.9401 12.4667 12.2001 12.2067C12.4601 11.9467 12.8801 11.9467 13.1401 12.2067L13.2267 12.2934C13.4867 12.5534 13.4867 12.9734 13.2267 13.2334C13.1001 13.3601 12.9334 13.4267 12.7601 13.4267ZM3.24008 13.4267C3.06675 13.4267 2.90008 13.3601 2.76675 13.2334C2.50675 12.9734 2.50675 12.5534 2.76675 12.2934L2.85342 12.2067C3.11342 11.9467 3.53341 11.9467 3.79341 12.2067C4.05341 12.4667 4.05341 12.8867 3.79341 13.1467L3.70675 13.2334C3.58008 13.3601 3.40675 13.4267 3.24008 13.4267ZM14.6667 8.66675H14.6134C14.2467 8.66675 13.9467 8.36675 13.9467 8.00008C13.9467 7.63341 14.2467 7.33342 14.6134 7.33342C14.9801 7.33342 15.3067 7.63341 15.3067 8.00008C15.3067 8.36675 15.0334 8.66675 14.6667 8.66675ZM1.38675 8.66675H1.33341C0.966748 8.66675 0.666748 8.36675 0.666748 8.00008C0.666748 7.63341 0.966748 7.33342 1.33341 7.33342C1.70008 7.33342 2.02675 7.63341 2.02675 8.00008C2.02675 8.36675 1.75341 8.66675 1.38675 8.66675ZM12.6734 3.99341C12.5001 3.99341 12.3334 3.92675 12.2001 3.80008C11.9401 3.54008 11.9401 3.12008 12.2001 2.86008L12.2867 2.77341C12.5467 2.51341 12.9667 2.51341 13.2267 2.77341C13.4867 3.03341 13.4867 3.45341 13.2267 3.71341L13.1401 3.80008C13.0134 3.92675 12.8467 3.99341 12.6734 3.99341ZM3.32675 3.99341C3.15341 3.99341 2.98675 3.92675 2.85342 3.80008L2.76675 3.70675C2.50675 3.44675 2.50675 3.02675 2.76675 2.76675C3.02675 2.50675 3.44675 2.50675 3.70675 2.76675L3.79341 2.85342C4.05341 3.11342 4.05341 3.53341 3.79341 3.79341C3.66675 3.92675 3.49341 3.99341 3.32675 3.99341ZM8.00008 2.02675C7.63341 2.02675 7.33342 1.75341 7.33342 1.38675V1.33341C7.33342 0.966748 7.63341 0.666748 8.00008 0.666748C8.36675 0.666748 8.66675 0.966748 8.66675 1.33341C8.66675 1.70008 8.36675 2.02675 8.00008 2.02675Z"
+                                        fill="#969AA1" />
+                                </svg>
+                            </span>
+                            <span class="hidden dark:inline-block">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M14.3533 10.62C14.2466 10.44 13.9466 10.16 13.1999 10.2933C12.7866 10.3667 12.3666 10.4 11.9466 10.38C10.3933 10.3133 8.98659 9.6 8.00659 8.5C7.13993 7.53333 6.60659 6.27333 6.59993 4.91333C6.59993 4.15333 6.74659 3.42 7.04659 2.72666C7.33993 2.05333 7.13326 1.7 6.98659 1.55333C6.83326 1.4 6.47326 1.18666 5.76659 1.48C3.03993 2.62666 1.35326 5.36 1.55326 8.28666C1.75326 11.04 3.68659 13.3933 6.24659 14.28C6.85993 14.4933 7.50659 14.62 8.17326 14.6467C8.27993 14.6533 8.38659 14.66 8.49326 14.66C10.7266 14.66 12.8199 13.6067 14.1399 11.8133C14.5866 11.1933 14.4666 10.8 14.3533 10.62Z"
+                                        fill="#969AA1" />
+                                </svg>
+                            </span>
+                        </span>
+                    </label>
+                    <!-- Dark Mode Toggler -->
+                </li>
+
+                <!-- Notification Menu Area -->
+                <li class="relative" x-data="{ dropdownOpen: false, notifying: true }" @click.outside="dropdownOpen = false">
+                    <a class="relative flex h-8.5 items-center justify-center gap-1 px-2 rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
+                        href="#" @click.prevent="dropdownOpen = ! dropdownOpen; notifying = false">
+                        @php
+                            $unreadNotifications = Auth::user()->unreadNotifications->count();
+                        @endphp
+                        @if ($unreadNotifications > 0)
+                            <span :class="!notifying && 'hidden'"
+                                class="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1">
+                                <span
+                                    class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75">
+                                </span>
+                            </span>
+                            <span class="text-md font-medium">{{ $unreadNotifications }}</span>
+                        @endif
+
+                        <svg class="fill-current duration-300 ease-in-out" width="18" height="18"
+                            viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M16.1999 14.9343L15.6374 14.0624C15.5249 13.8937 15.4687 13.7249 15.4687 13.528V7.67803C15.4687 6.01865 14.7655 4.47178 13.4718 3.31865C12.4312 2.39053 11.0812 1.7999 9.64678 1.6874V1.1249C9.64678 0.787402 9.36553 0.478027 8.9999 0.478027C8.6624 0.478027 8.35303 0.759277 8.35303 1.1249V1.65928C8.29678 1.65928 8.24053 1.65928 8.18428 1.6874C4.92178 2.05303 2.4749 4.66865 2.4749 7.79053V13.528C2.44678 13.8093 2.39053 13.9499 2.33428 14.0343L1.7999 14.9343C1.63115 15.2155 1.63115 15.553 1.7999 15.8343C1.96865 16.0874 2.2499 16.2562 2.55928 16.2562H8.38115V16.8749C8.38115 17.2124 8.6624 17.5218 9.02803 17.5218C9.36553 17.5218 9.6749 17.2405 9.6749 16.8749V16.2562H15.4687C15.778 16.2562 16.0593 16.0874 16.228 15.8343C16.3968 15.553 16.3968 15.2155 16.1999 14.9343ZM3.23428 14.9905L3.43115 14.653C3.5999 14.3718 3.68428 14.0343 3.74053 13.6405V7.79053C3.74053 5.31553 5.70928 3.23428 8.3249 2.95303C9.92803 2.78428 11.503 3.2624 12.6562 4.2749C13.6687 5.1749 14.2312 6.38428 14.2312 7.67803V13.528C14.2312 13.9499 14.3437 14.3437 14.5968 14.7374L14.7655 14.9905H3.23428Z"
+                                fill="" />
+                        </svg>
+                    </a>
+
+                    <!-- Dropdown Start -->
+                    <div x-show="dropdownOpen"
+                        class="absolute -right-27 mt-2.5 flex h-90 w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80">
+                        <div class="px-4.5 py-3 flex justify-between items-center">
+                            <h5 class="text-sm font-medium text-bodydark2">Notification</h5>
+                            @if ($unreadNotifications > 0)
+                                <a href="{{ route('notifications.markAllAsRead') }}"
+                                    class="text-xs text-primary hover:underline dark:text-primary w-8 h-8 bg-green-200 p-0.5 rounded"
+                                    title="Mark all as read">
+                                    <svg viewBox="0 -0.5 25 25" fill="none" class="w-7 h-7"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M5.03033 11.4697C4.73744 11.1768 4.26256 11.1768 3.96967 11.4697C3.67678 11.7626 3.67678 12.2374 3.96967 12.5303L5.03033 11.4697ZM8.5 16L7.96967 16.5303C8.26256 16.8232 8.73744 16.8232 9.03033 16.5303L8.5 16ZM17.0303 8.53033C17.3232 8.23744 17.3232 7.76256 17.0303 7.46967C16.7374 7.17678 16.2626 7.17678 15.9697 7.46967L17.0303 8.53033ZM9.03033 11.4697C8.73744 11.1768 8.26256 11.1768 7.96967 11.4697C7.67678 11.7626 7.67678 12.2374 7.96967 12.5303L9.03033 11.4697ZM12.5 16L11.9697 16.5303C12.2626 16.8232 12.7374 16.8232 13.0303 16.5303L12.5 16ZM21.0303 8.53033C21.3232 8.23744 21.3232 7.76256 21.0303 7.46967C20.7374 7.17678 20.2626 7.17678 19.9697 7.46967L21.0303 8.53033ZM3.96967 12.5303L7.96967 16.5303L9.03033 15.4697L5.03033 11.4697L3.96967 12.5303ZM9.03033 16.5303L17.0303 8.53033L15.9697 7.46967L7.96967 15.4697L9.03033 16.5303ZM7.96967 12.5303L11.9697 16.5303L13.0303 15.4697L9.03033 11.4697L7.96967 12.5303ZM13.0303 16.5303L21.0303 8.53033L19.9697 7.46967L11.9697 15.4697L13.0303 16.5303Z"
+                                            fill="#222" />
+                                    </svg>
+                                </a>
+                            @endif
+                        </div>
+
+                        <ul class="flex h-auto flex-col overflow-y-auto">
+                            @forelse (Auth::user()->notifications as $notification)
+                                <li>
+                                    <div
+                                        class="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+                                        <p class="text-sm">
+                                            <span
+                                                class="text-black dark:text-white">{{ $notification->data['title'] }}</span>
+                                            {{ $notification->data['message'] }}
+                                        </p>
+                                        <p class="text-xs">{{ $notification->created_at->diffForHumans() }}</p>
+                                        <div class="flex">
+                                            @if ($notification->data['link'])
+                                                <a href="{{ $notification->data['link'] }}"
+                                                    class="text-xs text-primary hover:underline dark:text-primary">
+                                                    {{ $notification->data['link_text'] ?? 'View' }}
+                                                </a>
+                                            @endif
+
+                                            <a href="{{ route('notifications.markAsRead', $notification->id) }}"
+                                                class="text-xs text-primary hover:underline dark:text-primary">Mark as
+                                                read</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            @empty
+                                <li>
+                                    <a class="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3" @click.prevent>
+                                        <p class="text-sm text-center text-black dark:text-white">No notifications</p>
+                                    </a>
+                                </li>
+                            @endforelse
+                        </ul>
+                    </div>
+                    <!-- Dropdown End -->
+                </li>
+                <!-- Notification Menu Area -->
+            </ul>
+
+            <!-- User Area -->
+            <div class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
+                <a class="flex items-center gap-4" href="#" @click.prevent="dropdownOpen = ! dropdownOpen">
+                    <span class="hidden text-right lg:block">
+                        <span class="block text-sm font-medium text-black dark:text-white">
+                            {{ Auth::user()->name }}
+                        </span>
+                        <span class="block text-xs font-medium">
+                            {{ Auth::user()->email }}
+                        </span>
+                    </span>
+
+                    <span class="h-12 w-12 rounded-full">
+                        @if (Auth::user()->profile_photo_path)
+                            <img class="rounded-full" src="{{ Auth::user()->profile_photo_url }}" alt="User" />
+                        @else
+                            <span
+                                class="rounded-full bg-gray-200 text-gray-600 flex items-center justify-center w-12 h-12">
+                                {{ Str::limit(Auth::user()->name, 1, '') }}
+                            </span>
+                        @endif
+                    </span>
+
+                    <svg :class="dropdownOpen && 'rotate-180'" class="hidden fill-current sm:block" width="12"
+                        height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M0.410765 0.910734C0.736202 0.585297 1.26384 0.585297 1.58928 0.910734L6.00002 5.32148L10.4108 0.910734C10.7362 0.585297 11.2638 0.585297 11.5893 0.910734C11.9147 1.23617 11.9147 1.76381 11.5893 2.08924L6.58928 7.08924C6.26384 7.41468 5.7362 7.41468 5.41077 7.08924L0.410765 2.08924C0.0853277 1.76381 0.0853277 1.23617 0.410765 0.910734Z"
+                            fill="" />
+                    </svg>
+                </a>
+
+                <!-- Dropdown Start -->
+                <div x-show="dropdownOpen"
+                    class="absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <ul class="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
+                        <li>
+                            <a href="{{ route('profile.edit') }}"
+                                class="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+                                <svg class="fill-current" width="22" height="22" viewBox="0 0 22 22"
+                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M11 9.62499C8.42188 9.62499 6.35938 7.59687 6.35938 5.12187C6.35938 2.64687 8.42188 0.618744 11 0.618744C13.5781 0.618744 15.6406 2.64687 15.6406 5.12187C15.6406 7.59687 13.5781 9.62499 11 9.62499ZM11 2.16562C9.28125 2.16562 7.90625 3.50624 7.90625 5.12187C7.90625 6.73749 9.28125 8.07812 11 8.07812C12.7188 8.07812 14.0938 6.73749 14.0938 5.12187C14.0938 3.50624 12.7188 2.16562 11 2.16562Z"
+                                        fill="" />
+                                    <path
+                                        d="M17.7719 21.4156H4.2281C3.5406 21.4156 2.9906 20.8656 2.9906 20.1781V17.0844C2.9906 13.7156 5.7406 10.9656 9.10935 10.9656H12.925C16.2937 10.9656 19.0437 13.7156 19.0437 17.0844V20.1781C19.0094 20.8312 18.4594 21.4156 17.7719 21.4156ZM4.53748 19.8687H17.4969V17.0844C17.4969 14.575 15.4344 12.5125 12.925 12.5125H9.07498C6.5656 12.5125 4.5031 14.575 4.5031 17.0844V19.8687H4.53748Z"
+                                        fill="" />
+                                </svg>
+                                My Profile
+                            </a>
+                        </li>
+                    </ul>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button
+                            class="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+                            <svg class="fill-current" width="22" height="22" viewBox="0 0 22 22"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M15.5375 0.618744H11.6531C10.7594 0.618744 10.0031 1.37499 10.0031 2.26874V4.64062C10.0031 5.05312 10.3469 5.39687 10.7594 5.39687C11.1719 5.39687 11.55 5.05312 11.55 4.64062V2.23437C11.55 2.16562 11.5844 2.13124 11.6531 2.13124H15.5375C16.3625 2.13124 17.0156 2.78437 17.0156 3.60937V18.3562C17.0156 19.1812 16.3625 19.8344 15.5375 19.8344H11.6531C11.5844 19.8344 11.55 19.8 11.55 19.7312V17.3594C11.55 16.9469 11.2062 16.6031 10.7594 16.6031C10.3125 16.6031 10.0031 16.9469 10.0031 17.3594V19.7312C10.0031 20.625 10.7594 21.3812 11.6531 21.3812H15.5375C17.2219 21.3812 18.5625 20.0062 18.5625 18.3562V3.64374C18.5625 1.95937 17.1875 0.618744 15.5375 0.618744Z"
+                                    fill="" />
+                                <path
+                                    d="M6.05001 11.7563H12.2031C12.6156 11.7563 12.9594 11.4125 12.9594 11C12.9594 10.5875 12.6156 10.2438 12.2031 10.2438H6.08439L8.21564 8.07813C8.52501 7.76875 8.52501 7.2875 8.21564 6.97812C7.90626 6.66875 7.42501 6.66875 7.11564 6.97812L3.67814 10.4844C3.36876 10.7938 3.36876 11.275 3.67814 11.5844L7.11564 15.0906C7.25314 15.2281 7.45939 15.3312 7.66564 15.3312C7.87189 15.3312 8.04376 15.2625 8.21564 15.125C8.52501 14.8156 8.52501 14.3344 8.21564 14.025L6.05001 11.7563Z"
+                                    fill="" />
+                            </svg>
+                            Log Out
+                        </button>
+                    </form>
+                </div>
+                <!-- Dropdown End -->
+            </div>
+            <!-- User Area -->
+        </div>
+    </div>
+</header>

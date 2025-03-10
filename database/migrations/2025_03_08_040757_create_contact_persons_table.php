@@ -7,18 +7,18 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('contact_persons', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade'); // Foreign key
             $table->string('name');
-            $table->text('description');
-            $table->string('hsn_code');
-            $table->decimal('gst_percentage', 5, 2);
+            $table->string('phone_no');
+            $table->string('email')->unique();
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('contact_persons');
     }
 };
