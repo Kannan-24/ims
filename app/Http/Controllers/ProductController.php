@@ -3,104 +3,102 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // Retrieve all products from the database and return them.
         $products = Product::all();
-        return view('products.index', compact('products')); // Update this to your desired view.
+        return view('products.index', compact('products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('products.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // Validate the incoming request.
         $request->validate([
             'name' => 'required|max:100',
             'description' => 'required',
             'hsn_code' => 'required|max:20',
             'gst_percentage' => 'required|numeric',
+            'is_igst' => 'sometimes|boolean',
         ]);
 
-        // Create a new product
         Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'hsn_code' => $request->hsn_code,
             'gst_percentage' => $request->gst_percentage,
+            'is_igst' => $request->has('is_igst'), // If checkbox checked, it's IGST
         ]);
 
-        // Redirect back with a success message
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Product $product)
     {
-        // Return the view with the specific product data.
-        return view('products.show', compact('product'));
+        $suppliers = $product->suppliers;
+        return view('products.show', compact('product', 'suppliers'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Product $product)
     {
         return view('products.edit', compact('product'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Product $product)
     {
-        // Validate the incoming request.
         $request->validate([
             'name' => 'required|max:100',
             'description' => 'required',
             'hsn_code' => 'required|max:20',
-            'gst' => 'required|numeric',
+            'gst_percentage' => 'required|numeric',
+            'is_igst' => 'sometimes|boolean',
         ]);
 
-        // Update the product with the new data.
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
             'hsn_code' => $request->hsn_code,
-            'gst' => $request->gst,
+            'gst_percentage' => $request->gst_percentage,
+            'is_igst' => $request->has('is_igst'),
         ]);
 
-        // Redirect back with a success message.
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Product $product)
     {
-        // Delete the product.
         $product->delete();
-
-        // Redirect back with a success message.
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
+    }
+
+    public function assignSuppliersForm(Product $product)
+    {
+        $assignedSupplierIds = $product->suppliers->pluck('id')->toArray();
+        $suppliers = Supplier::whereNotIn('id', $assignedSupplierIds)->get();
+
+        return view('products.assignsuppliers', compact('product', 'suppliers'));
+    }
+
+    public function assignSupplier(Request $request, Product $product)
+    {
+        $request->validate([
+            'suppliers' => 'required|exists:suppliers,id',
+        ]);
+
+        $product->suppliers()->attach($request->suppliers);
+        return redirect()->route('products.show', $product)->with('success', 'Supplier(s) assigned successfully.');
+    }
+
+    public function removeSupplier(Product $product, Supplier $supplier)
+    {
+        $product->suppliers()->detach($supplier->id);
+        return redirect()->back()->with('success', 'Supplier removed successfully.');
     }
 }

@@ -15,13 +15,15 @@
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold text-gray-700">Supplier Details</h2>
                     <div class="flex gap-2">
-                        <a href="{{ route('suppliers.edit', $supplier->id) }}" class="flex items-center px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition">
+                        <a href="{{ route('suppliers.edit', $supplier->id) }}"
+                            class="flex items-center px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition">
                             Edit
                         </a>
                         <form action="{{ route('suppliers.destroy', $supplier->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="flex items-center px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition">
+                            <button type="submit"
+                                class="flex items-center px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition">
                                 Delete
                             </button>
                         </form>
@@ -43,6 +45,27 @@
                     <p><strong>Country:</strong> {{ $supplier->country }}</p>
                     <p><strong>GST Number:</strong> {{ $supplier->gst }}</p>
                 </div>
+
+                <!-- Assigned Products Section -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-bold text-gray-700 mb-4">Assigned Products</h3>
+
+                    @if ($supplier->products->isEmpty())
+                        <p class="text-gray-600">No products assigned to this supplier.</p>
+                    @else
+                        <ol class="list-decimal pl-5 text-gray-600">
+                            @foreach ($supplier->products as $product)
+                                <li>
+                                    <a href="{{ route('products.show', $product->id) }}"
+                                        class="text-blue-500 hover:underline">
+                                        {{ $product->name }} - {{ $product->hsn_code }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ol>
+                    @endif
+                </div>
+
             </div>
         </div>
     </div>

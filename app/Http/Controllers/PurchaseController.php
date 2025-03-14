@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Purchase;
+use App\Models\Product;
+use App\Models\Supplier;
+use App\Models\PurchaseItem;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
@@ -12,7 +16,8 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-        //
+        $purchases = Purchase::all();
+        return view('purchases.index', compact('purchases'));
     }
 
     /**
@@ -20,7 +25,9 @@ class PurchaseController extends Controller
      */
     public function create()
     {
-        //
+        $suppliers = Supplier::all();
+        $products = Product::all();
+        return view('purchases.create', compact('suppliers', 'products'));
     }
 
     /**
@@ -28,7 +35,65 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        dd($request->all());
+
+        $request->validate([
+            'supplier_id' => 'required|exists:suppliers,id',
+            'purchase_date' => 'required|date',
+            'invoice_no' => 'required|string',
+            'subtotal' => 'required|numeric',
+            'total_cgst' => 'required|numeric',
+            'total_sgst' => 'required|numeric',
+            'total_igst' => 'required|numeric',
+            'grand_total' => 'required|numeric',
+            'products' => 'required|array',
+            'products.*.product_id' => 'required|exists:products,id',
+            'products.*.quantity' => 'required|numeric',
+            'products.*.unit_price' => 'required|numeric',
+            'products.*.cgst' => 'required|numeric',
+            'products.*.sgst' => 'required|numeric',
+            'products.*.igst' => 'required|numeric',
+            'products.*.total' => 'required|numeric',
+        ]);
+
+        $purchase = Purchase::create([
+            'supplier_id' => $request->supplier_id,
+            'purchase_date' => $request->purchase_date,
+            'invoice_no' => $request->invoice_no,
+            'subtotal' => $request->subtotal,
+            'total_cgst' => $request->total_cgst,
+            'total_sgst' => $request->total_sgst,
+            'total_igst' => $request->total_igst,
+            'grand_total' => $request->grand_total,
+        ]);
+
+        foreach ($request->products as $product) {
+            PurchaseItem::create([
+                'purchase_id' => $purchase->id,
+                'product_id' => $product['product_id'],
+                'quantity' => $product['quantity'],
+                'unit_type' => Product::find($product['product_id'])->unit_type,
+                'unit_price' => $product['unit_price'],
+                'cgst' => $product['cgst'],
+                'sgst' => $product['sgst'],
+                'igst' => $product['igst'],
+                'total' => $product['total'],
+            ]);
+
+            Stock::create([
+                'product_id' => $product['product_id'],
+                'supplier_id' => $request->supplier_id,
+                'unit_type' => Product::find($product['product_id'])->unit_type,
+                'quantity' => $product['quantity'],
+                'batch_code' => $request->invoice_no,
+            ]);
+        }
+
+        return redirect()->route('purchases.index')->with('response', [
+            'status' => 'success',
+            'message' => 'Purchase added successfully!',
+        ]);
     }
 
     /**

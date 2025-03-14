@@ -10,28 +10,8 @@
                     @method('PUT')
 
                     <div class="mb-4">
-                        <label class="block mb-2 font-bold">Customer ID:</label>
-                        <input type="text" name="cid" id="cid" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->cid }}" required>
-                    </div>
-
-                    <div class="mb-4">
                         <label class="block mb-2 font-bold">Customer Name:</label>
-                        <input type="text" name="name" id="name" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->name }}" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block mb-2 font-bold">Contact Person:</label>
-                        <input type="text" name="contact_person" id="contact_person" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->contact_person }}" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block mb-2 font-bold">Email:</label>
-                        <input type="email" name="email" id="email" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->email }}" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block mb-2 font-bold">Phone Number:</label>
-                        <input type="text" name="phone" id="phone" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->phone }}" required>
+                        <input type="text" name="company_name" id="company_name" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->company_name }}" required>
                     </div>
 
                     <div class="mb-4">
@@ -51,7 +31,7 @@
 
                     <div class="mb-4">
                         <label class="block mb-2 font-bold">ZIP Code:</label>
-                        <input type="text" name="zip" id="zip" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->zip }}" required>
+                        <input type="text" name="zip_code" id="zip_code" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->zip_code }}" required>
                     </div>
 
                     <div class="mb-4">
@@ -61,10 +41,29 @@
 
                     <div class="mb-4">
                         <label class="block mb-2 font-bold">GST Number:</label>
-                        <input type="text" name="gstno" id="gstno" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->gstno }}" required>
+                        <input type="text" name="gst_number" id="gst_number" class="w-full px-4 py-2 border rounded-lg" value="{{ $customer->gst_number }}" required>
                     </div>
 
-                    <div class="flex justify-end">
+                    <div id="contact-persons-container">
+                        @foreach ($customer->contactPersons as $index => $contactPerson)
+                            <div class="mb-4 contact-person">
+                                <label class="block mb-2 font-bold">Contact Person Name:</label>
+                                <input type="text" name="contact_persons[{{ $index }}][name]" class="w-full px-4 py-2 border rounded-lg" value="{{ $contactPerson->name }}" required>
+
+                                <label class="block mb-2 font-bold">Contact Person Phone:</label>
+                                <input type="text" name="contact_persons[{{ $index }}][phone_no]" class="w-full px-4 py-2 border rounded-lg" value="{{ $contactPerson->phone_no }}" required>
+
+                                <label class="block mb-2 font-bold">Contact Person Email:</label>
+                                <input type="email" name="contact_persons[{{ $index }}][email]" class="w-full px-4 py-2 border rounded-lg" value="{{ $contactPerson->email }}" required>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <button type="button" id="add-contact-person" class="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600">
+                        Add Contact Person
+                    </button>
+
+                    <div class="flex justify-end mt-4">
                         <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
                             Update Customer
                         </button>
@@ -73,4 +72,26 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('add-contact-person').addEventListener('click', function () {
+            const container = document.getElementById('contact-persons-container');
+            const index = container.children.length;
+            const contactPersonDiv = document.createElement('div');
+            contactPersonDiv.classList.add('mb-4', 'contact-person');
+
+            contactPersonDiv.innerHTML = `
+                <label class="block mb-2 font-bold">Contact Person Name:</label>
+                <input type="text" name="contact_persons[${index}][name]" class="w-full px-4 py-2 border rounded-lg" required>
+
+                <label class="block mb-2 font-bold">Contact Person Phone:</label>
+                <input type="text" name="contact_persons[${index}][phone_no]" class="w-full px-4 py-2 border rounded-lg" required>
+
+                <label class="block mb-2 font-bold">Contact Person Email:</label>
+                <input type="email" name="contact_persons[${index}][email]" class="w-full px-4 py-2 border rounded-lg" required>
+            `;
+
+            container.appendChild(contactPersonDiv);
+        });
+    </script>
 </x-app-layout>

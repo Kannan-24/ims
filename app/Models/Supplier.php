@@ -23,8 +23,25 @@ class Supplier extends Model
         'gst',
     ];
 
+    public function productSuppliers()
+    {
+        return $this->hasMany(ProductSupplier::class);
+    }
+
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsToMany(Product::class, 'product_suppliers');
     }
+
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class);
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    
 }

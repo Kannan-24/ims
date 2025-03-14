@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProductSupplier;
+use App\Models\Sale;
 use Illuminate\Http\Request;
 
-class ProductSupplierController extends Controller
+class SaleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class ProductSupplierController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ProductSupplier $productSupplier)
+    public function show(Sale $sale)
     {
         //
     }
@@ -42,7 +42,7 @@ class ProductSupplierController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ProductSupplier $productSupplier)
+    public function edit(Sale $sale)
     {
         //
     }
@@ -50,7 +50,7 @@ class ProductSupplierController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ProductSupplier $productSupplier)
+    public function update(Request $request, Sale $sale)
     {
         //
     }
@@ -58,7 +58,7 @@ class ProductSupplierController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ProductSupplier $productSupplier)
+    public function destroy(Sale $sale)
     {
         //
     }

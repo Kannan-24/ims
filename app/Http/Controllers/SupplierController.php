@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Laravel\Prompts\Prompt;
 
 class SupplierController extends Controller
 {
@@ -80,9 +82,12 @@ class SupplierController extends Controller
      */
     public function show(Supplier $supplier)
     {
-        // Return the view with the specific supplier data.
+        // Load assigned products
+        $supplier->load('products');
+
         return view('suppliers.show', compact('supplier'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -142,5 +147,29 @@ class SupplierController extends Controller
 
         // Redirect back with a success message.
         return redirect()->route('suppliers.index')->with('success', 'Supplier deleted successfully.');
+    }
+
+    /**
+     * Show the form for assigning products to a supplier.
+     */
+    public function supplierAssign(Supplier $supplier)
+    {
+        return response()->json([
+            'supplier' => [
+                'supplier_id' => $supplier->id,
+                'name' => $supplier->supplier_name,
+                'contact_person' => $supplier->contact_person,
+                'email' => $supplier->email,
+                'phone' => $supplier->phone_number,
+            ],
+            'address' => [
+                'address' => $supplier->address,
+                'city' => $supplier->city,
+                'state' => $supplier->state,
+                'postal_code' => $supplier->postal_code,
+                'country' => $supplier->country,
+            ],
+            'gst' => $supplier->gst,
+        ]);
     }
 }

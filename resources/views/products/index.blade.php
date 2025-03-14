@@ -17,12 +17,9 @@
                             <tr class="text-sm text-gray-600 bg-indigo-100">
                                 <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(0)">#
                                 </th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(1)">
-                                    Product ID</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(2)">
                                     Name</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">HSN Code</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Supplier</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Actions</th>
                             </tr>
                         </thead>
@@ -30,11 +27,8 @@
                             @foreach ($products as $product)
                                 <tr class="border-b hover:bg-indigo-50">
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $loop->iteration }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $product->product_id }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $product->name }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $product->hsn_code }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">
-                                        {{ optional($product->supplier)->supplier_name }} -  {{ optional($product->supplier)->state }}</td>
                                     <x-action-buttons :id="$product->id" :model="'products'" />
                                     
                                 </tr>

@@ -9,5 +9,26 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'hsn_code', 'gst_percentage'];
+    protected $fillable = [
+        'name',
+        'description',
+        'hsn_code',
+        'gst_percentage',
+        'is_igst', // New field to determine GST/IGST
+    ];
+
+    public function productSuppliers()
+    {
+        return $this->hasMany(ProductSupplier::class);
+    }
+
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'product_suppliers');
+    }
+
+    public function purchaseItems()
+    {
+        return $this->hasMany(PurchaseItem::class);
+    }
 }

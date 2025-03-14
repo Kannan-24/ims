@@ -3,47 +3,35 @@
         <div class="w-full max-w-4xl px-6 mx-auto">
             <x-bread-crumb-navigation />
 
-            <!-- Product Edit Form -->
+            <!-- Service Edit Form -->
             <div class="p-8 bg-white border border-gray-200 rounded-lg shadow-lg">
-                <form action="{{ route('products.update', $product->id) }}" method="POST">
+                <form action="{{ route('services.update', $service->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
                     <div class="mb-4">
-                        <label class="block mb-2 font-bold">Product Name:</label>
-                        <input type="text" name="name" id="name" class="w-full px-4 py-2 border rounded-lg" value="{{ $product->name }}" required>
+                        <label class="block mb-2 font-bold">Service Name:</label>
+                        <input type="text" name="name" id="name" class="w-full px-4 py-2 border rounded-lg" value="{{ $service->name }}" required>
                     </div>
 
                     <div class="mb-4">
                         <label class="block mb-2 font-bold">Description:</label>
-                        <textarea name="description" id="description" class="w-full px-4 py-2 border rounded-lg" required>{{ $product->description }}</textarea>
+                        <textarea name="description" id="description" class="w-full px-4 py-2 border rounded-lg" required>{{ $service->description }}</textarea>
                     </div>
 
                     <div class="mb-4">
                         <label class="block mb-2 font-bold">HSN Code:</label>
-                        <input type="text" name="hsn_code" id="hsn_code" class="w-full px-4 py-2 border rounded-lg" value="{{ $product->hsn_code }}" required>
+                        <input type="text" name="hsn_code" id="hsn_code" class="w-full px-4 py-2 border rounded-lg" value="{{ $service->hsn_code }}" required>
                     </div>
 
                     <div class="mb-4">
                         <label class="block mb-2 font-bold">GST (%):</label>
-                        <input type="number" step="0.01" name="gst" id="gst" class="w-full px-4 py-2 border rounded-lg" value="{{ $product->gst }}" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block mb-2 font-bold">Supplier:</label>
-                        <select name="supplier_id" id="supplier_id" class="w-full px-4 py-2 border rounded-lg" required>
-                            <!-- Loop through suppliers to populate dropdown -->
-                            @foreach($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}" {{ $supplier->id == $product->supplier_id ? 'selected' : '' }}>
-                                    {{ $supplier->supplier_name }} - {{ $supplier->state }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <input type="number" step="0.01" name="gst_percentage" id="gst_percentage" class="w-full px-4 py-2 border rounded-lg" value="{{ $service->gst_percentage }}" required>
                     </div>
 
                     <div class="flex justify-end">
                         <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                            Update Product
+                            Update Service
                         </button>
                     </div>
                 </form>

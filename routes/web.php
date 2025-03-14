@@ -8,6 +8,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\PurchaseController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -40,8 +41,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('suppliers', SupplierController::class);
     Route::resource('products', ProductController::class);
     Route::resource('services', ServiceController::class);
-   
+    Route::resource('purchases', PurchaseController::class);
+
+    // purchases.index
+    // purchases.create
+    // purchases.store
+    // purchases.show
+    // purchases.edit
+    // purchases.update
+    // purchases.delete
+
+    Route::get('/products/{product}/assign-suppliers', [ProductController::class, 'assignSuppliersForm'])->name('products.assignSuppliersForm');
+    Route::post('/products/{product}/assign-suppliers', [ProductController::class, 'assignSupplier'])->name('products.assignSupplier');
+    Route::get('/suppliers/assign/{supplier}', [SupplierController::class, 'supplierAssign'])->name('suppliers.assignSupplier');
+    Route::delete('/products/{product}/suppliers/{supplier}', [ProductController::class, 'removeSupplier'])
+        ->name('suppliers.remove');
+    Route::get('/purchases/get-products/{supplier}', [PurchaseController::class, 'getProductsBySupplier']);
 });
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

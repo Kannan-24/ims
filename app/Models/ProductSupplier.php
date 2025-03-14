@@ -10,4 +10,14 @@ class ProductSupplier extends Model
     use HasFactory;
 
     protected $fillable = ['product_id', 'supplier_id'];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
 }

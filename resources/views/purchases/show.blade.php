@@ -19,8 +19,7 @@
                             class="flex items-center px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition">
                             Edit
                         </a>
-                        <form action="{{ route('products.destroy', $product->id) }}" method="POST"
-                            onsubmit="return confirm('Are you sure you want to delete this product?');">
+                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
@@ -40,23 +39,10 @@
                     <p><strong>Product Name:</strong> {{ $product->name }}</p>
                     <p><strong>Description:</strong> {{ $product->description }}</p>
                     <p><strong>HSN Code:</strong> {{ $product->hsn_code }}</p>
-                    
-                    <!-- GST / IGST Toggle -->
-                    <p><strong>Tax Type:</strong> 
-                        @if($product->is_igst)
-                            <span class="text-red-600 font-semibold">IGST</span>
-                        @else
-                            <span class="text-green-600 font-semibold">GST</span>
-                        @endif
-                    </p>
-
-                    <p><strong>{{ $product->is_igst ? 'IGST' : 'GST' }} Percentage:</strong> 
-                        {{ $product->gst_percentage }}%
-                    </p>
+                    <p><strong>GST Percentage:</strong> {{ $product->gst_percentage }}%</p>
                 </div>
             </div>
         </div>
-
         <!-- Assigned Suppliers Section -->
         <div class="w-full max-w-4xl px-6 mx-auto mt-8">
             <div class="p-8 bg-white border border-gray-200 rounded-lg shadow-lg">
@@ -69,14 +55,12 @@
                             <div class="relative overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg transition-transform transform hover:scale-105 cursor-pointer"
                                 onclick="window.location='{{ route('suppliers.show', $supplier->id) }}'">
                                 <div class="p-6">
-                                    <h2 class="text-lg font-semibold text-white">{{ $supplier->supplier_id }}</h2>
-                                    <p class="text-sm text-gray-200">{{ $supplier->supplier_name }}</h2>
+                                    <h2 class="text-lg font-semibold text-white">{{ $supplier->supplier_name }}</h2>
                                     <p class="text-sm text-gray-200">{{ $supplier->state }}</p>
                                     <div class="mt-4">
                                         <form
                                             action="{{ route('suppliers.remove', ['product' => $product->id, 'supplier' => $supplier->id]) }}"
-                                            method="POST" 
-                                            onsubmit="return confirm('Are you sure you want to remove this supplier?');">
+                                            method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -84,6 +68,7 @@
                                                 Remove
                                             </button>
                                         </form>
+
                                     </div>
                                 </div>
                                 <div class="absolute top-0 right-0 p-3">
