@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stock;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class StockController extends Controller
@@ -12,7 +13,9 @@ class StockController extends Controller
      */
     public function index()
     {
-        //
+        $stocks = Stock::latest()->get();
+        $products = Product::all();
+        return view('stocks.index', compact('stocks', 'products')); 
     }
 
     /**
@@ -34,9 +37,10 @@ class StockController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Stock $stock)
+    public function show($id)
     {
-        //
+        $stocks = Stock::findOrFail($id);
+        return view('stocks.show', compact('stocks'));
     }
 
     /**

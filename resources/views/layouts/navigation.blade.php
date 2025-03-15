@@ -202,7 +202,16 @@
                     {{ request()->routeIs('purchases.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
                         <span class="ml-3">Purchases</span>
                     </a>
+                </li>
 
+                <!-- Stocks Link -->
+                <li>
+                    <a href="{{ route('stocks.index') }}"
+                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
+                    {{ request()->routeIs('stocks.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
+                        <span class="ml-3">Stocks</span>
+                    </a>
+                </li>
 
             </ul>
         </div>

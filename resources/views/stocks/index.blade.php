@@ -1,7 +1,7 @@
 <x-app-layout>
 
     <x-slot name="title">
-        {{ __('Product List') }} - {{ config('app.name', 'ATMS') }}
+        {{ __('Stock List') }} - {{ config('app.name', 'ATMS') }}
     </x-slot>
 
     <!-- Main Content Section -->
@@ -17,9 +17,9 @@
                             <tr class="text-sm text-gray-600 bg-indigo-100">
                                 <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(0)">#
                                 </th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(2)">
-                                    Name</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">HSN Code</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(1)">
+                                    Product Name</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Supplier</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Unit Type</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Quantity</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Sold</th>
@@ -27,20 +27,18 @@
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="text-sm text-gray-700" id="productTable">
-                            @foreach ($products as $product)
-                                @foreach ($product->stocks as $stock)
-                                    <tr class="border-b hover:bg-indigo-50">
-                                        <td class="px-6 py-4 border-b border-gray-200">{{ $loop->parent->iteration }}</td>
-                                        <td class="px-6 py-4 border-b border-gray-200">{{ $product->name }}</td>
-                                        <td class="px-6 py-4 border-b border-gray-200">{{ $product->hsn_code }}</td>
-                                        <td class="px-6 py-4 border-b border-gray-200">{{ $stock->unit_type }}</td>
-                                        <td class="px-6 py-4 border-b border-gray-200">{{ $stock->quantity }}</td>
-                                        <td class="px-6 py-4 border-b border-gray-200">{{ $stock->sold }}</td>
-                                        <td class="px-6 py-4 border-b border-gray-200">{{ $stock->batch_code }}</td>
-                                        <x-action-buttons :id="$product->id" :model="'products'" />
-                                    </tr>
-                                @endforeach
+                        <tbody class="text-sm text-gray-700" id="stockTable">
+                            @foreach ($stocks as $stock)
+                                <tr class="border-b hover:bg-indigo-50">
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $loop->iteration }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->product->name ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->supplier->name ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->unit_type }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->quantity }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->sold }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->batch_code }}</td>
+                                    <x-action-buttons :id="$stock->id" :model="'stocks'" />
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
