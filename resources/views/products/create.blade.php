@@ -29,7 +29,7 @@
 
                     <div class="mb-4 flex items-center">
                         <label class="font-bold mr-2">Apply IGST?</label>
-                        <input type="checkbox" name="is_igst" id="is_igst" class="toggle-checkbox">
+                        <input type="checkbox" name="is_igst" id="is_igst" class="toggle-checkbox" value="1">
                     </div>
 
                     <div class="flex justify-end">
