@@ -9,6 +9,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -42,15 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('products', ProductController::class);
     Route::resource('services', ServiceController::class);
     Route::resource('purchases', PurchaseController::class);
-
-    // purchases.index
-    // purchases.create
-    // purchases.store
-    // purchases.show
-    // purchases.edit
-    // purchases.update
-    // purchases.delete
-
+    Route::resource('stocks', StockController::class);
     Route::get('/products/{product}/assign-suppliers', [ProductController::class, 'assignSuppliersForm'])->name('products.assignSuppliersForm');
     Route::post('/products/{product}/assign-suppliers', [ProductController::class, 'assignSupplier'])->name('products.assignSupplier');
     Route::get('/suppliers/assign/{supplier}', [SupplierController::class, 'supplierAssign'])->name('suppliers.assignSupplier');
