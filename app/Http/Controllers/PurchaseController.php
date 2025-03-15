@@ -35,9 +35,6 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
-
-        dd($request->all());
-
         $request->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'purchase_date' => 'required|date',
@@ -57,15 +54,18 @@ class PurchaseController extends Controller
             'products.*.total' => 'required|numeric',
         ]);
 
-        $purchase = Purchase::create([
+        $purchase = Purchase::updateOrCreate([
             'supplier_id' => $request->supplier_id,
-            'purchase_date' => $request->purchase_date,
+            'invoice_date' => $request->purchase_date,
             'invoice_no' => $request->invoice_no,
-            'subtotal' => $request->subtotal,
-            'total_cgst' => $request->total_cgst,
-            'total_sgst' => $request->total_sgst,
-            'total_igst' => $request->total_igst,
-            'grand_total' => $request->grand_total,
+        ],
+        [
+            'sub_total' => $request->subtotal,
+            'cgst' => $request->total_cgst,
+            'sgst' => $request->total_sgst,
+            'igst' => $request->total_igst,
+            'gst' => $request->total_cgst + $request->total_sgst + $request->total_igst,
+            'total' => $request->grand_total,
         ]);
 
         foreach ($request->products as $product) {
@@ -73,7 +73,7 @@ class PurchaseController extends Controller
                 'purchase_id' => $purchase->id,
                 'product_id' => $product['product_id'],
                 'quantity' => $product['quantity'],
-                'unit_type' => Product::find($product['product_id'])->unit_type,
+                'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
                 'unit_price' => $product['unit_price'],
                 'cgst' => $product['cgst'],
                 'sgst' => $product['sgst'],
@@ -84,7 +84,7 @@ class PurchaseController extends Controller
             Stock::create([
                 'product_id' => $product['product_id'],
                 'supplier_id' => $request->supplier_id,
-                'unit_type' => Product::find($product['product_id'])->unit_type,
+                'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
                 'quantity' => $product['quantity'],
                 'batch_code' => $request->invoice_no,
             ]);

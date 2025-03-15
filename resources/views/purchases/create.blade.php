@@ -18,7 +18,9 @@
                         <select name="supplier_id" id="supplier_id" class="w-full border rounded px-3 py-2">
                             <option value="">Select Supplier</option>
                             @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                <option value="{{ $supplier->id }}"
+                                    {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                    {{ $supplier->supplier_name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -27,12 +29,12 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label for="purchase_date" class="block text-gray-700 font-bold mb-2">Purchase Date:</label>
-                            <input type="date" name="purchase_date" id="purchase_date"
-                                class="w-full border rounded px-3 py-2">
+                            <input type="date" name="purchase_date" id="purchase_date" value="{{ old('purchase_date') }}" 
+                                class="w-full border rounded px-3 py-2" required>
                         </div>
                         <div>
                             <label for="invoice_no" class="block text-gray-700 font-bold mb-2">Invoice No:</label>
-                            <input type="text" name="invoice_no" id="invoice_no"
+                            <input type="text" name="invoice_no" id="invoice_no" value="{{ old('invoice_no') }}"
                                 class="w-full border rounded px-3 py-2" required>
                         </div>
                     </div>
@@ -54,7 +56,44 @@
                                 </tr>
                             </thead>
                             <tbody id="productTable">
-                                <!-- Dynamic Rows Will Be Added Here -->
+                                @if(old('products'))
+                                    @foreach(old('products') as $index => $product)
+                                        <tr>
+                                            <td>
+                                                <select name="products[{{ $index }}][product_id]"
+                                                    class="product-select w-full border rounded px-2 py-1">
+                                                    <option value="">Select Product</option>
+                                                    @foreach ($products as $product)
+                                                        <option value="{{ $product->id }}"
+                                                            data-gst="{{ $product->gst_percentage }}"
+                                                            data-isigst="{{ $product->is_igst }}">
+                                                            {{ $product->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <input type="hidden" name="products[{{ $index }}][gst_percentage]"
+                                                    class="gst-percentage" value="0">
+                                            </td>
+                                            <td><input type="number" name="products[{{ $index }}][quantity]"
+                                                    class="quantity w-full border rounded px-2 py-1"
+                                                    value="{{ $product['quantity'] }}" min="1"></td>
+                                            <td><input type="number" name="products[{{ $index }}][unit_price]"
+                                                    class="unit-price w-full border rounded px-2 py-1"
+                                                    value="{{ $product['unit_price'] }}" min="0"></td>
+                                            <td><input type="text" name="products[{{ $index }}][cgst]"
+                                                    class="cgst w-full border rounded px-2 py-1" readonly></td>
+                                            <td><input type="text" name="products[{{ $index }}][sgst]"
+                                                    class="sgst w-full border rounded px-2 py-1" readonly></td>
+                                            <td><input type="text" name="products[{{ $index }}][igst]"
+                                                    class="igst w-full border rounded px-2 py-1" readonly></td>
+                                            <td><input type="text" name="products[{{ $index }}][total]"
+                                                    class="total w-full border rounded px-2 py-1" readonly></td>
+                                            <td><button type="button"
+                                                    class="remove-row bg-red-500 text-white px-2 py-1 rounded">X</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                         <button type="button" id="addRow" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">+
@@ -67,27 +106,27 @@
                         <div class="grid grid-cols-3 gap-4">
                             <div>
                                 <label class="block font-bold">Subtotal:</label>
-                                <input type="text" id="subtotal" name="subtotal"
+                                <input type="text" id="subtotal" name="subtotal" value="{{ old('subtotal') }}"
                                     class="w-full border rounded px-2 py-1" readonly>
                             </div>
                             <div>
                                 <label class="block font-bold">CGST Total:</label>
-                                <input type="text" id="totalCgst" name="total_cgst"
+                                <input type="text" id="totalCgst" name="total_cgst" value="{{ old('total_cgst') }}"
                                     class="w-full border rounded px-2 py-1" readonly>
                             </div>
                             <div>
                                 <label class="block font-bold">SGST Total:</label>
-                                <input type="text" id="totalSgst" name="total_sgst"
+                                <input type="text" id="totalSgst" name="total_sgst" value="{{ old('total_sgst') }}"
                                     class="w-full border rounded px-2 py-1" readonly>
                             </div>
                             <div>
                                 <label class="block font-bold">IGST Total:</label>
-                                <input type="text" id="totalIgst" name="total_igst"
+                                <input type="text" id="totalIgst" name="total_igst" value="{{ old('total_igst') }}"
                                     class="w-full border rounded px-2 py-1" readonly>
                             </div>
                             <div>
                                 <label class="block font-bold">Grand Total:</label>
-                                <input type="text" id="grandTotal" name="grand_total"
+                                <input type="text" id="grandTotal" name="grand_total" value="{{ old('grand_total') }}"
                                     class="w-full border rounded px-2 py-1 font-bold" readonly>
                             </div>
                         </div>
@@ -114,7 +153,7 @@
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>
-                        <select name="products[${newIndex}]['product_id']" class="product-select w-full border rounded px-2 py-1">
+                        <select name="products[${newIndex}][product_id]" class="product-select w-full border rounded px-2 py-1">
                             <option value="">Select Product</option>
                             @foreach ($products as $product)
                                 <option value="{{ $product->id }}" data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
@@ -178,11 +217,14 @@
             function calculateRowTotal(row) {
                 let quantity = parseFloat(row.querySelector(".quantity").value) || 0;
                 let unitPrice = parseFloat(row.querySelector(".unit-price").value) || 0;
-                let gstPercentage = parseFloat(row.querySelector(".gst-percentage").value) || 0;
 
-                let baseTotal = quantity * unitPrice;
-                let gstAmount = (baseTotal * gstPercentage) / 100;
-                let grandTotal = baseTotal + gstAmount;
+                let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
+                let sgst = parseFloat(row.querySelector(".sgst").value) || 0;
+                let igst = parseFloat(row.querySelector(".igst").value) || 0;
+
+                let subTotal = (quantity * unitPrice).toFixed(2) || 0;
+                let totalGst = ((cgst + sgst + igst) / 100) * subTotal;
+                let grandTotal = parseFloat(subTotal) + totalGst;
 
                 row.querySelector(".total").value = grandTotal.toFixed(2);
 
@@ -207,8 +249,9 @@
                     totalCgst += (baseAmount * cgst) / 100;
                     totalSgst += (baseAmount * sgst) / 100;
                     totalIgst += (baseAmount * igst) / 100;
-                    grandTotal += rowTotal;
                 });
+
+                grandTotal = subtotal + totalCgst + totalSgst + totalIgst;
 
                 document.getElementById("subtotal").value = subtotal.toFixed(2);
                 document.getElementById("totalCgst").value = totalCgst.toFixed(2);
