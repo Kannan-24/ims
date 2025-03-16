@@ -15,15 +15,12 @@
                     <table class="min-w-full text-left border-collapse table-auto">
                         <thead>
                             <tr class="text-sm text-gray-600 bg-indigo-100">
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(0)">#
-                                </th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(1)">
-                                    Product Name</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">#</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Product Name</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Supplier</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Unit Type</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Quantity</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Sold</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Batch Code</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Total Quantity</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Total Sold</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-200">Actions</th>
                             </tr>
                         </thead>
@@ -34,10 +31,14 @@
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $stock->product->name ?? 'N/A' }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $stock->supplier->name ?? 'N/A' }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $stock->unit_type }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->quantity }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->sold }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->batch_code }}</td>
-                                    <x-action-buttons :id="$stock->id" :model="'stocks'" />
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->total_quantity }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->total_sold }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">
+                                        <a href="{{ route('stocks.show', $stock->product_id) }}" 
+                                           class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700">
+                                           Show
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -1,64 +1,58 @@
 <x-app-layout>
+
     <x-slot name="title">
         {{ __('Stock Details') }} - {{ config('app.name', 'ATMS') }}
     </x-slot>
 
-    <!-- Main Content Section -->
-    <div class="py-6 mt-20 ml-4 sm:ml-64">
-        <div class="w-full max-w-4xl px-6 mx-auto">
-            <!-- Breadcrumb Navigation -->
+    <div class="py-6 ml-4 sm:ml-64">
+        <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
+
             <x-bread-crumb-navigation />
 
-            <!-- Stock Details Container -->
-            <div class="p-8 bg-white border border-gray-200 rounded-lg shadow-lg relative">
-                <!-- Header Section -->
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-700">Stock Details</h2>
-                    <div class="flex gap-2">
-                        <a href="{{ route('stocks.edit', $stocks->id) }}"
-                            class="flex items-center px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition">
-                            Edit
-                        </a>
-                        <form action="{{ route('stocks.destroy', $stocks->id) }}" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="flex items-center px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition">
-                                Delete
-                            </button>
-                        </form>
-                    </div>
-                </div>
+            <div class="overflow-hidden bg-white rounded-lg shadow-xl">
+                <div class="p-6 overflow-x-auto">
 
-                <hr class="my-6 border-gray-300">
+                    <h1 class="mb-4 text-2xl font-bold">Product Details</h1>
+                    <p><strong>Product Name : </strong> {{ $stocks->first()->product->name ?? 'Stock Details' }}</p>
+                    <p><strong>HSN Code : </strong> {{ $stocks->first()->product->hsn_code ?? 'N/A' }}</p>
+                    <p><strong>Description : </strong> {{ $stocks->first()->product->description ?? 'N/A' }}</p>
+                    
 
-                <!-- Stock Info -->
-                <div class="space-y-2 text-gray-600">
-                    <p><strong>Product Name:</strong>
-                        <a href="{{ route('products.show', $stocks->product->id) }}"
-                            class="text-blue-500 hover:underline">
-                            {{ $stocks->product->name ?? 'N/A' }}
-                        </a>
-                    </p>
-                    <p><strong>Product HSN Code:</strong> {{ $stocks->product->hsn_code ?? 'N/A' }}</p>
-                    <p><strong>Unit Type:</strong> {{ $stocks->unit_type }}</p>
-                    <p><strong>Quantity:</strong> {{ $stocks->quantity }}</p>
-                    <p><strong>Sold:</strong> {{ $stocks->sold }}</p>
-                    <p><strong>Batch Code:</strong> {{ $stocks->batch_code }}</p>
+                    
+                    <table class="min-w-full text-left border-collapse table-auto mt-5">
+                        <thead>
+                            <tr class="text-sm text-gray-600 bg-indigo-100">
+                                <th class="px-6 py-4 border-b-2 border-gray-200">#</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Supplier</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Unit Type</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Quantity</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Sold</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Batch Code</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-200">Date Added</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm text-gray-700">
+                            @foreach ($stocks as $stock)
+                                <tr class="border-b hover:bg-indigo-50">
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $loop->iteration }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">
+                                        <a href="{{ route('suppliers.show', $stock->supplier->id) }}" class="text-indigo-600 hover:text-indigo-900">
+                                            {{ $stock->supplier->name ?? 'N/A' }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->unit_type }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->quantity }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->sold }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->batch_code }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $stock->created_at->format('d-m-Y') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
-                    <!-- Supplier Details Card -->
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Supplier Details</h3>
-                    <a href="{{ route('suppliers.show', $stocks->supplier->id) }}">
-                        <div class="p-4 bg-gray-100 border border-gray-200 rounded-lg shadow-md">
-                            <p><strong>Supplier Name:</strong>
-                                {{ $stocks->supplier->name ?? 'N/A' }}
-
-                            </p>
-                            <p><strong>State:</strong> {{ $stocks->supplier->state ?? 'N/A' }}</p>
-                        </div>
-                    </a>
                 </div>
             </div>
         </div>
     </div>
+
 </x-app-layout>

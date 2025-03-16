@@ -9,7 +9,7 @@ class Stock extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id', 'supplier_id', 'unit_type', 'quantity', 'batch_code'];
+    protected $fillable = ['product_id', 'supplier_id', 'unit_type', 'quantity', 'batch_code', 'purchase_id', 'sold'];
 
     public function product()
     {
@@ -20,6 +20,4 @@ class Stock extends Model
     {
         return $this->belongsTo(Supplier::class);
     }
-
 }
- 

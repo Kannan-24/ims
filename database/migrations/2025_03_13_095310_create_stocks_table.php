@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->string('unit_type');
             $table->integer('quantity');
             $table->integer('sold')->default(0);
-            $table->string('batch_code')->unique();
+            $table->string('batch_code');
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');

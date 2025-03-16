@@ -13,9 +13,14 @@ class StockController extends Controller
      */
     public function index()
     {
-        $stocks = Stock::latest()->get();
         $products = Product::all();
-        return view('stocks.index', compact('stocks', 'products')); 
+        // Fetch stocks grouped by product_id and sum quantity and sold
+        $stocks = Stock::selectRaw('product_id, supplier_id, unit_type, SUM(quantity) as total_quantity, SUM(sold) as total_sold')
+            ->groupBy('product_id', 'supplier_id', 'unit_type')
+            ->with(['product', 'supplier'])
+            ->get();
+
+        return view('stocks.index', compact('stocks', 'products'));
     }
 
     /**
@@ -37,11 +42,15 @@ class StockController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($product_id)
     {
-        $stocks = Stock::findOrFail($id);
+        // Fetch all stock entries for the given product ID
+        $stocks = Stock::where('product_id', $product_id)->with(['product', 'supplier'])->get();
+
+        // Return the view with stock details
         return view('stocks.show', compact('stocks'));
     }
+
 
     /**
      * Show the form for editing the specified resource.

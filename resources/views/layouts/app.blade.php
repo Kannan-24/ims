@@ -19,7 +19,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-blue-200">
+    <div class="min-h-[calc(100vh-80px)] mt-20 bg-blue-200">
         @include('layouts.navigation')
 
         <div id="message-alert"

@@ -20,7 +20,8 @@
                             @foreach ($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}"
                                     {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
-                                    {{ $supplier->supplier_name }}</option>
+                                    {{ $supplier->supplier_id }} - {{ $supplier->name }} - {{ $supplier->state }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -28,72 +29,35 @@
                     <!-- Purchase Date & Invoice No -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="purchase_date" class="block text-gray-700 font-bold mb-2">Purchase Date:</label>
-                            <input type="date" name="purchase_date" id="purchase_date" value="{{ old('purchase_date') }}" 
-                                class="w-full border rounded px-3 py-2" required>
-                        </div>
-                        <div>
                             <label for="invoice_no" class="block text-gray-700 font-bold mb-2">Invoice No:</label>
                             <input type="text" name="invoice_no" id="invoice_no" value="{{ old('invoice_no') }}"
                                 class="w-full border rounded px-3 py-2" required>
+                        </div>
+                        <div>
+                            <label for="purchase_date" class="block text-gray-700 font-bold mb-2">Purchase Date:</label>
+                            <input type="date" name="purchase_date" id="purchase_date"
+                                value="{{ old('purchase_date') }}" class="w-full border rounded px-3 py-2" required>
                         </div>
                     </div>
 
                     <!-- Product Table -->
                     <div class="mt-6">
                         <h3 class="text-xl font-bold mb-2">Purchase Items</h3>
-                        <table class="w-full border border-gray-300">
-                            <thead class="bg-gray-200">
-                                <tr>
-                                    <th class="p-2">Product</th>
-                                    <th class="p-2">Quantity</th>
-                                    <th class="p-2">Unit Price</th>
-                                    <th class="p-2">CGST</th>
-                                    <th class="p-2">SGST</th>
-                                    <th class="p-2">IGST</th>
-                                    <th class="p-2">Total</th>
-                                    <th class="p-2">Action</th>
+                        <table class="min-w-full text-left border-collapse table-auto">
+                            <thead>
+                                <tr class="text-sm text-gray-600 bg-indigo-100">
+                                    <th class="px-3 py-3 w-52 border-b-2 border-gray-200">Product</th>
+                                    <th class="px-3 py-3 w-24 border-b-2 border-gray-200">Quantity</th>
+                                    <th class="px-3 py-3 w-28 border-b-2 border-gray-200">Unit Price</th>
+                                    <th class="px-3 py-3 w-40 border-b-2 border-gray-200">CGST</th>
+                                    <th class="px-3 py-3 w-36 border-b-2 border-gray-200">SGST</th>
+                                    <th class="px-3 py-3 w-40 border-b-2 border-gray-200">IGST</th>
+                                    <th class="px-3 py-3 w-40 border-b-2 border-gray-200">Total</th>
+                                    <th class="px-3 py-3 w-10 border-b-2 border-gray-200">Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="productTable">
-                                @if(old('products'))
-                                    @foreach(old('products') as $index => $product)
-                                        <tr>
-                                            <td>
-                                                <select name="products[{{ $index }}][product_id]"
-                                                    class="product-select w-full border rounded px-2 py-1">
-                                                    <option value="">Select Product</option>
-                                                    @foreach ($products as $product)
-                                                        <option value="{{ $product->id }}"
-                                                            data-gst="{{ $product->gst_percentage }}"
-                                                            data-isigst="{{ $product->is_igst }}">
-                                                            {{ $product->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                <input type="hidden" name="products[{{ $index }}][gst_percentage]"
-                                                    class="gst-percentage" value="0">
-                                            </td>
-                                            <td><input type="number" name="products[{{ $index }}][quantity]"
-                                                    class="quantity w-full border rounded px-2 py-1"
-                                                    value="{{ $product['quantity'] }}" min="1"></td>
-                                            <td><input type="number" name="products[{{ $index }}][unit_price]"
-                                                    class="unit-price w-full border rounded px-2 py-1"
-                                                    value="{{ $product['unit_price'] }}" min="0"></td>
-                                            <td><input type="text" name="products[{{ $index }}][cgst]"
-                                                    class="cgst w-full border rounded px-2 py-1" readonly></td>
-                                            <td><input type="text" name="products[{{ $index }}][sgst]"
-                                                    class="sgst w-full border rounded px-2 py-1" readonly></td>
-                                            <td><input type="text" name="products[{{ $index }}][igst]"
-                                                    class="igst w-full border rounded px-2 py-1" readonly></td>
-                                            <td><input type="text" name="products[{{ $index }}][total]"
-                                                    class="total w-full border rounded px-2 py-1" readonly></td>
-                                            <td><button type="button"
-                                                    class="remove-row bg-red-500 text-white px-2 py-1 rounded">X</button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @endif
+                            <tbody class="text-sm text-gray-700" id="productTable">
+
                             </tbody>
                         </table>
                         <button type="button" id="addRow" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">+
@@ -126,8 +90,9 @@
                             </div>
                             <div>
                                 <label class="block font-bold">Grand Total:</label>
-                                <input type="text" id="grandTotal" name="grand_total" value="{{ old('grand_total') }}"
-                                    class="w-full border rounded px-2 py-1 font-bold" readonly>
+                                <input type="text" id="grandTotal" name="grand_total"
+                                    value="{{ old('grand_total') }}" class="w-full border rounded px-2 py-1 font-bold"
+                                    readonly>
                             </div>
                         </div>
                     </div>
@@ -142,51 +107,119 @@
         </div>
     </div>
 
+    <!-- Product Selection Modal -->
+    <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-lg w-1/2">
+            <h2 class="text-2xl font-bold mb-4">Select Product</h2>
+
+            <!-- Search Bar -->
+            <input type="text" id="productSearch" placeholder="Search Product..."
+                class="w-full mb-4 px-3 py-2 border rounded">
+
+            <table class="min-w-full text-left border-collapse table-auto">
+                <thead>
+                    <tr class="text-sm text-gray-600 bg-indigo-100">
+                        <th class="px-6 py-4 border-b-2 border-gray-200">Product Name</th>
+                        <th class="px-6 py-4 border-b-2 border-gray-200">GST Percentage</th>
+                        <th class="px-6 py-4 border-b-2 border-gray-200">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody" class="text-sm text-gray-700">
+                    @foreach ($products as $product)
+                        <tr data-id="{{ $product->id }}" class="product-row">
+                            <td class="px-6 py-4 border-b border-gray-200">{{ $product->name }}</td>
+                            <td class="px-6 py-4 border-b border-gray-200">{{ $product->gst_percentage }}%</td>
+                            <td class="px-6 py-4 border-b border-gray-200">
+                                <button type="button" class="select-product bg-blue-500 text-white px-4 py-2 rounded"
+                                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                                    data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
+                                    Select
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <button type="button" id="closeModal"
+                class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Close</button>
+        </div>
+    </div>
+
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const productTable = document.getElementById("productTable");
             const addRowBtn = document.getElementById("addRow");
+            const productModal = document.getElementById("productModal");
+            const closeModalBtn = document.getElementById("closeModal");
+            let currentRow = null;
+
+            function filterProducts() {
+                let searchValue = document.getElementById("productSearch").value.toUpperCase();
+                let productRows = document.querySelectorAll(".product-row");
+
+                productRows.forEach(row => {
+                    let productName = row.querySelector("td").textContent.toUpperCase();
+                    if (productName.indexOf(searchValue) > -1) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            }
+
+            document.getElementById("productSearch").addEventListener("input", filterProducts);
 
             function addProductRow() {
                 var newIndex = productTable.rows.length;
 
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>
-                        <select name="products[${newIndex}][product_id]" class="product-select w-full border rounded px-2 py-1">
-                            <option value="">Select Product</option>
-                            @foreach ($products as $product)
-                                <option value="{{ $product->id }}" data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
-                                    {{ $product->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <input type="hidden" name="products[${newIndex}][gst_percentage]" class="gst-percentage" value="0">
-                    </td>
-                    <td><input type="number" name="products[${newIndex}][quantity]" class="quantity w-full border rounded px-2 py-1" value="1" min="1"></td>
-                    <td><input type="number" name="products[${newIndex}][unit_price]" class="unit-price w-full border rounded px-2 py-1" value="0" min="0"></td>
-                    <td><input type="text" name="products[${newIndex}][cgst]" class="cgst w-full border rounded px-2 py-1" readonly></td>
-                    <td><input type="text" name="products[${newIndex}][sgst]" class="sgst w-full border rounded px-2 py-1" readonly></td>
-                    <td><input type="text" name="products[${newIndex}][igst]" class="igst w-full border rounded px-2 py-1" readonly></td>
-                    <td><input type="text" name="products[${newIndex}][total]" class="total w-full border rounded px-2 py-1" readonly></td>
-                    <td><button type="button" class="remove-row bg-red-500 text-white px-2 py-1 rounded">X</button></td>
-                `;
+                <td class="">
+                    <button type="button" class="open-modal bg-blue-500 text-white px-4 py-2 rounded hidden">Select Product</button>
+                    <input type="hidden" name="products[${newIndex}][product_id]" class="product-id">
+                    <input type="hidden" name="products[${newIndex}][gst_percentage]" class="gst-percentage" value="0">
+                    <span class="product-name"></span>
+                </td>
+                <td class="p-1"><input type="number" name="products[${newIndex}][quantity]" class="quantity w-24 border rounded px-3 py-2 text-center" value="1" min="1"></td>
+                <td class="p-1"><input type="number" name="products[${newIndex}][unit_price]" class="unit-price w-28 border rounded px-3 py-2 text-center" value="0" min="0"></td>
+                <td class="p-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="products[${newIndex}][cgst]" class="cgst w-12 border rounded px-3 py-2 bg-gray-200 text-center" readonly>
+                        <input type="text" name="products[${newIndex}][cgst_value]" class="cgst-value w-24 border rounded px-3 py-2 bg-gray-200 text-center" readonly>
+                    </div>
+                </td>
+                <td class="p-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="products[${newIndex}][sgst]" class="sgst w-12 border rounded px-3 py-2 bg-gray-200 text-center" readonly>
+                        <input type="text" name="products[${newIndex}][sgst_value]" class="sgst-value w-24 border rounded px-3 py-2 bg-gray-200 text-center" readonly>
+                    </div>
+                </td>
+                <td class="p-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="products[${newIndex}][igst]" class="igst w-16 border rounded px-3 py-2 bg-gray-200 text-center" readonly>
+                        <input type="text" name="products[${newIndex}][igst_value]" class="igst-value w-24 border rounded px-3 py-2 bg-gray-200 text-center" readonly>
+                    </div>
+                </td>
+                <td class="p-2"><input type="text" name="products[${newIndex}][total]" class="total w-40 border rounded px-3 py-2 bg-gray-200 text-center" readonly></td>
+                <td class="p-2">
+                    <button type="button" class="remove-row bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">X</button>
+                </td>`;
 
                 productTable.appendChild(row);
                 addEventListenersToRow(row);
+                currentRow = row;
+                productModal.classList.remove("hidden");
             }
 
-
-
-
             function addEventListenersToRow(row) {
-                let productSelect = row.querySelector(".product-select");
                 let quantityInput = row.querySelector(".quantity");
                 let unitPriceInput = row.querySelector(".unit-price");
 
-                productSelect.addEventListener("change", function() {
-                    updateGSTValues(row);
-                    calculateRowTotal(row);
+                row.querySelector(".open-modal").addEventListener("click", function() {
+                    currentRow = row;
+                    productModal.classList.remove("hidden");
                 });
 
                 quantityInput.addEventListener("input", function() {
@@ -204,10 +237,8 @@
             }
 
             function updateGSTValues(row) {
-                let selectedOption = row.querySelector(".product-select").options[row.querySelector(
-                    ".product-select").selectedIndex];
-                let gstPercentage = parseFloat(selectedOption.getAttribute("data-gst") || 0);
-                let isIgst = selectedOption.getAttribute("data-isigst") === "1";
+                let gstPercentage = parseFloat(row.querySelector(".gst-percentage").value) || 0;
+                let isIgst = row.querySelector(".product-id").getAttribute("data-isigst") === "1";
 
                 row.querySelector(".cgst").value = isIgst ? "0" : (gstPercentage / 2).toFixed(2);
                 row.querySelector(".sgst").value = isIgst ? "0" : (gstPercentage / 2).toFixed(2);
@@ -219,8 +250,14 @@
                 let unitPrice = parseFloat(row.querySelector(".unit-price").value) || 0;
 
                 let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
+                let cgst_value = (quantity * unitPrice * cgst) / 100;
+                row.querySelector(".cgst-value").value = cgst_value.toFixed(2);
                 let sgst = parseFloat(row.querySelector(".sgst").value) || 0;
+                let sgst_value = (quantity * unitPrice * sgst) / 100;
+                row.querySelector(".sgst-value").value = sgst_value.toFixed(2);
                 let igst = parseFloat(row.querySelector(".igst").value) || 0;
+                let igst_value = (quantity * unitPrice * igst) / 100;
+                row.querySelector(".igst-value").value = igst_value.toFixed(2);
 
                 let subTotal = (quantity * unitPrice).toFixed(2) || 0;
                 let totalGst = ((cgst + sgst + igst) / 100) * subTotal;
@@ -259,6 +296,29 @@
                 document.getElementById("totalIgst").value = totalIgst.toFixed(2);
                 document.getElementById("grandTotal").value = grandTotal.toFixed(2);
             }
+
+            document.querySelectorAll(".select-product").forEach(button => {
+                button.addEventListener("click", function() {
+                    let productId = this.getAttribute("data-id");
+                    let productName = this.getAttribute("data-name");
+                    let gstPercentage = this.getAttribute("data-gst");
+                    let isIgst = this.getAttribute("data-isigst");
+
+                    currentRow.querySelector(".product-id").value = productId;
+                    currentRow.querySelector(".product-id").setAttribute("data-isigst", isIgst);
+                    currentRow.querySelector(".product-name").textContent = productName;
+                    currentRow.querySelector(".gst-percentage").value = gstPercentage;
+
+                    updateGSTValues(currentRow);
+                    calculateRowTotal(currentRow);
+
+                    productModal.classList.add("hidden");
+                });
+            });
+
+            closeModalBtn.addEventListener("click", function() {
+                productModal.classList.add("hidden");
+            });
 
             addRowBtn.addEventListener("click", addProductRow);
         });

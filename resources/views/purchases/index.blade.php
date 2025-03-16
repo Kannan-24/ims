@@ -32,7 +32,7 @@
                                 <tr class="border-b hover:bg-indigo-50">
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $purchase->invoice_no }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $purchase->supplier->supplier_name }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $purchase->supplier->name }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ number_format($purchase->sub_total, 2) }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ number_format($purchase->gst, 2) }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ number_format($purchase->total, 2) }}</td>
