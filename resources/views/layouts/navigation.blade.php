@@ -79,7 +79,8 @@
                     </div>
                 </div>
                 <!-- Notification Bell -->
-                <div class="relative ">
+                <div class="relative">
+                    <!-- Bell Icon -->
                     <button @click="showNotifications = !showNotifications"
                         class="relative p-2 text-gray-300 rounded-full hover:bg-gray-700 hover:text-white focus:outline-none">
                         <span class="sr-only">View notifications</span>
@@ -94,39 +95,42 @@
                         </span>
                     </button>
 
-                    <!-- Notification Dropdown -->
+                    <!-- Right-Side Notification Panel -->
                     <div x-show="showNotifications" @click.away="showNotifications = false"
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
-                        class="absolute right-0 w-64 mt-5 bg-gray-800 border border-gray-700 shadow-lg">
+                        x-transition:enter="transition ease-in-out duration-300 transform"
+                        x-transition:enter-start="translate-x-full opacity-0"
+                        x-transition:enter-end="translate-x-0 opacity-100"
+                        x-transition:leave="transition ease-in-out duration-300 transform"
+                        x-transition:leave-start="translate-x-0 opacity-100"
+                        x-transition:leave-end="translate-x-full opacity-0"
+                        class="fixed top-0 right-0 z-50 w-80 h-full bg-gray-900 border-l border-gray-800 shadow-xl">
 
-                        <div class="flex justify-between px-4 py-3 text-white bg-gray-900 rounded-t-lg">
+                        <!-- Header -->
+                        <div class="flex justify-between px-4 py-3 text-white bg-gray-900 border-b border-gray-700">
                             <h3 class="text-lg font-semibold">Notifications</h3>
-                            <button @click="showNotifications = false" class="text-gray-400 hover:text-white">
-                                ✖
-                            </button>
+                            <button @click="showNotifications = false"
+                                class="text-gray-400 hover:text-white text-lg">✖</button>
                         </div>
 
-                        <div class="p-2 overflow-y-auto max-h-60">
+                        <!-- Notification List -->
+                        <div class="p-2 overflow-y-auto h-[calc(100%-100px)]">
                             <template x-for="(notification, index) in notifications" :key="notification.id">
                                 <div :class="{ 'bg-gray-700': !notification.read, 'bg-gray-800': notification.read }"
-                                    class="flex items-center justify-between px-4 py-2 border-b border-gray-700">
+                                    class="flex items-center justify-between px-4 py-3 border-b border-gray-700 transition-all hover:bg-gray-600 cursor-pointer"
+                                    @click="notifications[index].read = true">
                                     <span x-text="notification.message" class="text-sm text-gray-300"></span>
-                                    <button @click="notifications[index].read = true"
-                                        class="text-xs text-blue-400 hover:underline">
-                                        <svg @click="notifications[index].read = true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            class="w-5 h-5 text-green-500 transition-transform transform cursor-pointer hover:text-green-700 hover:scale-125">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    </button>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        class="w-5 h-5 text-green-500 transition-transform transform hover:text-green-700 hover:scale-125">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
                                 </div>
                             </template>
                         </div>
 
-                        <div class="flex justify-between px-4 py-2 bg-gray-900 rounded-b-lg">
+                        <!-- Footer Actions -->
+                        <div class="flex justify-between px-4 py-3 bg-gray-900 border-t border-gray-700">
                             <button @click="notifications.forEach(n => n.read = true)"
                                 class="text-sm text-gray-400 hover:text-white">
                                 Mark all as read
@@ -134,7 +138,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </nav>
@@ -212,6 +215,14 @@
                         <span class="ml-3">Stocks</span>
                     </a>
                 </li>
+
+                <!-- Quotations Link -->
+                <li>
+                    <a href="{{ route('quotations.index') }}"
+                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
+                    {{ request()->routeIs('quotations.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
+                        <span class="ml-3">Quotations</span>
+                    </a>
 
             </ul>
         </div>

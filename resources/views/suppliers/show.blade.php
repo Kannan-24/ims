@@ -34,7 +34,7 @@
 
                 <!-- Supplier Info -->
                 <div class="space-y-2 text-gray-600">
-                    <p><strong>Supplier Name:</strong> {{ $supplier->supplier_name }}</p>
+                    <p><strong>Supplier Name:</strong> {{ $supplier->name }}</p>
                     <p><strong>Contact Person:</strong> {{ $supplier->contact_person }}</p>
                     <p><strong>Email:</strong> {{ $supplier->email }}</p>
                     <p><strong>Phone:</strong> {{ $supplier->phone_number }}</p>

@@ -29,7 +29,7 @@
                                 <tr class="border-b hover:bg-indigo-50">
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $supplier->supplier_id }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $supplier->supplier_name }}</td>
+                                    <td class="px-6 py-4 border-b border-gray-200">{{ $supplier->name }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $supplier->contact_person }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $supplier->phone_number }}</td>
                                     <td class="px-6 py-4 border-b border-gray-200">{{ $supplier->city }}</td>

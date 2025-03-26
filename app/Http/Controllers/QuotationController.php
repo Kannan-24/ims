@@ -12,7 +12,9 @@ class QuotationController extends Controller
      */
     public function index()
     {
-        //
+        return view('quotations.index', [
+            'quotations' => Quotation::all()
+        ]);
     }
 
     /**

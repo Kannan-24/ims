@@ -75,7 +75,6 @@ class PurchaseController extends Controller
             ]
         );
 
-        // 🔥 **Generate batch code ONCE for the entire transaction** 🔥
         $latestBatch = \App\Models\Stock::latest()->first();
         $nextLetter = 'A';
         $nextNumber = 1;
@@ -128,10 +127,13 @@ class PurchaseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Purchase $purchase)
+    public function show($id)
     {
+        $purchase = Purchase::with(['supplier', 'items.product'])->findOrFail($id);
+
         return view('purchases.show', compact('purchase'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
