@@ -3,83 +3,57 @@
         {{ __('Purchase Details') }} - {{ config('app.name', 'ATMS') }}
     </x-slot>
 
-    <div class="py-6 mt-20 sm:ml-64 px-6">
-        <div class="max-w-5xl mx-auto">
+    <div class="py-6 mt-20 ml-4 sm:ml-64">
+        <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
             <x-bread-crumb-navigation />
 
-            <div class="p-8 bg-white border border-gray-200 rounded-lg shadow-md">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-3xl font-bold text-gray-900">Purchase Details</h2>
-                    <div class="flex gap-3">
+            <div class="p-8 bg-gray-800 border border-gray-700 rounded-lg shadow-lg relative">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-200">Purchase Details</h2>
+                    <div class="flex gap-2">
                         <a href="{{ route('purchases.edit', $purchase->id) }}"
-                            class="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 transition">
+                            class="flex items-center px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition">
                             Edit
                         </a>
                         <form action="{{ route('purchases.destroy', $purchase->id) }}" method="POST"
-                            onsubmit="return confirm('Are you sure you want to delete this purchase?');">
+                            onsubmit="return confirm('Are you sure you want to delete this purchase?');" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 transition">
+                                class="flex items-center px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition">
                                 Delete
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <hr class="my-2 border-gray-200">
+                <hr class="my-6 border-gray-600">
 
-                <div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Purchase Details</h3>
-
-                    <div class="text-lg text-gray-700 space-y-1">
-                        <p><span class="font-semibold">Invoice No:</span> {{ $purchase->invoice_no }}</p>
-                        <p><span class="font-semibold">Purchase Date:</span> {{ $purchase->invoice_date }}</p>
-                    </div>
-
-                    <h3 class="text-xl font-semibold text-gray-800 mt-2">Supplier Details</h3>
-
-                    <table class="w-1/2 text-gray-700 text-lg">
-                        <tbody>
-                            <tr>
-                                <td class="font-semibold">Name:</td>
-                                <td>{{ $purchase->supplier->name }}</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold">Email:</td>
-                                <td>{{ $purchase->supplier->email }}</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold">Phone:</td>
-                                <td>{{ $purchase->supplier->phone_number }}</td>
-                            </tr>
-                            <tr>
-                                <td class="font-semibold align-top">Address:</td>
-                                <td>
-                                    <div>
-                                        {{ $purchase->supplier->address }},
-                                        {{ $purchase->supplier->city }} -
-                                        {{ $purchase->supplier->postal_code }},
-                                        <br>
-                                        {{ $purchase->supplier->state }},
-                                        {{ $purchase->supplier->country }}
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="space-y-4 text-gray-300">
+                    <p><strong>Invoice No:</strong> {{ $purchase->invoice_no }}</p>
+                    <p><strong>Purchase Date:</strong> {{ $purchase->invoice_date }}</p>
                 </div>
 
+                <div class="mt-8">
+                    <h3 class="text-2xl font-bold text-gray-200 mb-4">Supplier Details</h3>
+                    <div class="space-y-4 text-gray-300">
+                        <p><strong>Name:</strong> {{ $purchase->supplier->name }}</p>
+                        <p><strong>Email:</strong> {{ $purchase->supplier->email }}</p>
+                        <p><strong>Phone:</strong> {{ $purchase->supplier->phone_number }}</p>
+                        <p><strong>Address:</strong> {{ $purchase->supplier->address }},
+                            {{ $purchase->supplier->city }} - {{ $purchase->supplier->postal_code }},
+                            {{ $purchase->supplier->state }}, {{ $purchase->supplier->country }}</p>
+                    </div>
+                </div>
 
-                <hr class="my-4 border-gray-200">
-
+                <hr class="my-6 border-gray-600">
 
                 @if ($purchase->items->isEmpty())
-                    <p class="text-gray-600">No products found for this purchase.</p>
+                    <p class="text-gray-400">No products found for this purchase.</p>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-                            <thead class="bg-indigo-500 text-white text-lg">
+                    <div class="overflow-x-auto mt-8">
+                        <table class="min-w-full bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+                            <thead class="bg-gray-700 text-gray-300">
                                 <tr>
                                     <th class="px-6 py-4 text-left">#</th>
                                     <th class="px-6 py-4 text-left">Product Name</th>
@@ -93,7 +67,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($purchase->items as $item)
-                                    <tr class="border-t hover:bg-gray-50 text-lg">
+                                    <tr class="border-t border-gray-700 hover:bg-gray-700 text-gray-300">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                         <td class="px-6 py-4">{{ $item->product->name }}</td>
                                         <td class="px-6 py-4">{{ $item->quantity }}</td>
@@ -108,29 +82,30 @@
                         </table>
                     </div>
                 @endif
-                <div class="mt-8 flex justify-start">
-                    <table class="w-1/2 bg-white border border-gray-200 rounded-lg shadow-sm text-lg">
+
+                <div class="mt-8">
+                    <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
+                    <table class="w-full bg-gray-800 border border-gray-700 rounded-lg shadow-sm text-gray-300">
                         <tbody>
-                            <tr class="border-t">
-                                <td class="px-4 py-2 font-semibold text-gray-700">Subtotal:</td>
-                                <td class="px-4 py-2 text-gray-700">₹{{ number_format($purchase->sub_total, 2) }}</td>
+                            <tr class="border-t border-gray-700">
+                                <td class="px-4 py-2 font-semibold">Subtotal:</td>
+                                <td class="px-4 py-2">₹{{ number_format($purchase->sub_total, 2) }}</td>
                             </tr>
-                            <tr class="border-t">
-                                <td class="px-4 py-2 font-semibold text-gray-700">CGST:</td>
-                                <td class="px-4 py-2 text-gray-700">₹{{ number_format($purchase->cgst, 2) }}</td>
+                            <tr class="border-t border-gray-700">
+                                <td class="px-4 py-2 font-semibold">CGST:</td>
+                                <td class="px-4 py-2">₹{{ number_format($purchase->cgst, 2) }}</td>
                             </tr>
-                            <tr class="border-t">
-                                <td class="px-4 py-2 font-semibold text-gray-700">SGST:</td>
-                                <td class="px-4 py-2 text-gray-700">₹{{ number_format($purchase->sgst, 2) }}</td>
+                            <tr class="border-t border-gray-700">
+                                <td class="px-4 py-2 font-semibold">SGST:</td>
+                                <td class="px-4 py-2">₹{{ number_format($purchase->sgst, 2) }}</td>
                             </tr>
-                            <tr class="border-t">
-                                <td class="px-4 py-2 font-semibold text-gray-700">IGST:</td>
-                                <td class="px-4 py-2 text-gray-700">₹{{ number_format($purchase->igst, 2) }}</td>
+                            <tr class="border-t border-gray-700">
+                                <td class="px-4 py-2 font-semibold">IGST:</td>
+                                <td class="px-4 py-2">₹{{ number_format($purchase->igst, 2) }}</td>
                             </tr>
-                            <tr class="border-t">
-                                <td class="px-4 py-2 font-bold text-xl text-gray-700">Grand Total:</td>
-                                <td class="px-4 py-2 font-bold text-xl text-gray-700">
-                                    ₹{{ number_format($purchase->total, 2) }}</td>
+                            <tr class="border-t border-gray-700">
+                                <td class="px-4 py-2 font-bold text-xl">Grand Total:</td>
+                                <td class="px-4 py-2 font-bold text-xl">₹{{ number_format($purchase->total, 2) }}</td>
                             </tr>
                         </tbody>
                     </table>

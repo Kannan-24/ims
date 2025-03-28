@@ -10,33 +10,37 @@
 
             <x-bread-crumb-navigation />
 
-            <div class="overflow-hidden bg-white rounded-lg shadow-xl">
+            <div class="overflow-hidden bg-gray-800 rounded-lg shadow-xl">
                 <div class="p-6 overflow-x-auto">
                     <table class="min-w-full text-left border-collapse table-auto">
                         <thead>
-                            <tr class="text-sm text-gray-600 bg-indigo-100">
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(0)">#
-                                </th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(1)">
-                                    Quotation No</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(2)">
-                                    Client</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Sub Total</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Discount (%)</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Final Amount</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Actions</th>
+                            <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
+                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">Quotation No</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(2)">Client</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600">Sub Total</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600">Discount (%)</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600">Final Amount</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="text-sm text-gray-700" id="quotationTable">
+                        <tbody class="text-sm text-gray-300 divide-y divide-gray-700" id="quotationTable">
                             @foreach ($quotations as $quotation)
-                                <tr class="border-b hover:bg-indigo-50">
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $loop->iteration }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $quotation->quotation_no }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $quotation->client->name }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ number_format($quotation->sub_total, 2) }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ number_format($quotation->discount, 2) }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ number_format($quotation->final_total, 2) }}</td>
-                                    <x-action-buttons :id="$quotation->id" :model="'quotations'" />
+                                <tr class="hover:bg-gray-700 transition duration-200">
+                                    <td class="px-6 py-4">{{ $loop->iteration }}</td>
+                                    <td class="px-6 py-4">{{ $quotation->quotation_no }}</td>
+                                    <td class="px-6 py-4">{{ $quotation->client->name }}</td>
+                                    <td class="px-6 py-4">{{ number_format($quotation->sub_total, 2) }}</td>
+                                    <td class="px-6 py-4">{{ number_format($quotation->discount, 2) }}</td>
+                                    <td class="px-6 py-4">{{ number_format($quotation->final_total, 2) }}</td>
+                                    <td class="px-6 py-4 flex justify-center gap-3">
+                                        <a href="{{ route('quotations.show', $quotation) }}" class="px-3 py-1 text-blue-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">View</a>
+                                        <a href="{{ route('quotations.edit', $quotation) }}" class="px-3 py-1 text-yellow-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">Edit</a>
+                                        <form action="{{ route('quotations.destroy', $quotation) }}" method="POST" class="inline">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="px-3 py-1 text-red-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300" onclick="return confirm('Are you sure you want to delete this quotation?')">Delete</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

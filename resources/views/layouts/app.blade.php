@@ -18,8 +18,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased">
-    <div class="min-h-[calc(100vh-80px)] mt-20 bg-blue-200">
+<body class="font-sans antialiased bg-gray-900 text-white">
+    <div class="min-h-[calc(100vh-80px)] mt-20">
         @include('layouts.navigation')
 
         <div id="message-alert"

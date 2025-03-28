@@ -7,47 +7,50 @@
     <div class="py-6 mt-20 ml-4 sm:ml-64">
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
 
+            <!-- Breadcrumb Navigation -->
             <x-bread-crumb-navigation />
 
-            <div class="overflow-hidden bg-white rounded-lg shadow-xl">
+            <!-- Table Section -->
+            <div class="overflow-hidden bg-gray-800 rounded-lg shadow-xl">
                 <div class="p-6 overflow-x-auto">
                     <table class="min-w-full text-left border-collapse table-auto">
                         <thead>
-                            <tr class="text-sm text-gray-600 bg-indigo-100">
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(0)">#
-                                </th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200 cursor-pointer" onclick="sortTable(2)">
-                                    Name</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Contact Person</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Phone</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">City</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-200">Actions</th>
+                            <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
+                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">Name</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600">Contact Person</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600">Phone</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600">City</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="text-sm text-gray-700" id="customerTable">
+                        <tbody class="text-sm text-gray-300 divide-y divide-gray-700" id="customerTable">
                             @foreach ($customers as $customer)
-                        <tbody class="text-sm text-gray-700" id="customerTable">
-                            @foreach ($customers as $customer)
-                                <tr class="border-b hover:bg-indigo-50">
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $loop->iteration }}</td>
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $customer->company_name }}</td>
+                                <tr class="hover:bg-gray-700 transition duration-200">
+                                    <td class="px-6 py-4">{{ $loop->iteration }}</td>
+                                    <td class="px-6 py-4">{{ $customer->company_name }}</td>
 
                                     <!-- Display First Contact Person Name -->
-                                    <td class="px-6 py-4 border-b border-gray-200">
+                                    <td class="px-6 py-4">
                                         {{ $customer->contactPersons->first()->name }}
                                     </td>
 
                                     <!-- Display First Contact Person Phone -->
-                                    <td class="px-6 py-4 border-b border-gray-200">
+                                    <td class="px-6 py-4">
                                         {{ $customer->contactPersons->first()->phone_no }}
                                     </td>
 
-                                    <td class="px-6 py-4 border-b border-gray-200">{{ $customer->city }}</td>
-                                    <x-action-buttons :id="$customer->id" :model="'customers'" />
+                                    <td class="px-6 py-4">{{ $customer->city }}</td>
+                                    <td class="px-6 py-4 flex justify-center gap-3">
+                                        <a href="{{ route('customers.show', $customer) }}" class="px-3 py-1 text-blue-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">View</a>
+                                        <a href="{{ route('customers.edit', $customer) }}" class="px-3 py-1 text-yellow-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">Edit</a>
+                                        <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="inline">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="px-3 py-1 text-red-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300" onclick="return confirm('Are you sure you want to delete this customer?')">Delete</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
-                        </tbody>
-                        @endforeach
                         </tbody>
                     </table>
                 </div>

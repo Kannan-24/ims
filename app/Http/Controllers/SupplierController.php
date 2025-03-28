@@ -61,7 +61,7 @@ class SupplierController extends Controller
         // Create a new supplier
         Supplier::create([
             'supplier_id' => $newSupplierId,
-            'supplier_name' => $request->supplier_name,
+            'name' => $request->supplier_name,
             'contact_person' => $request->contact_person,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
@@ -121,7 +121,7 @@ class SupplierController extends Controller
         // Update the supplier with the new data.
         $supplier->update([
             'supplier_id' => $request->supplier_id,
-            'supplier_name' => $request->supplier_name,
+            'name' => $request->supplier_name,
             'contact_person' => $request->contact_person,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
