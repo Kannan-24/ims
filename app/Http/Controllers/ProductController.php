@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -98,7 +99,7 @@ class ProductController extends Controller
 
     public function removeSupplier(Product $product, Supplier $supplier)
     {
-        $product->suppliers()->detach($supplier->id);
+        DB::table('product_suppliers')->where('product_id', $product->id)->where('supplier_id', $supplier->id)->delete();
         return redirect()->back()->with('success', 'Supplier removed successfully.');
     }
 }
