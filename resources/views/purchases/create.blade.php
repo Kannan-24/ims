@@ -6,6 +6,8 @@
     <div class="mt-20 ml-4 py-9 sm:ml-64 sm:me-4 lg:me-0">
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
 
+            <x-bread-crumb-navigation />
+            
             <div class="bg-gray-800 p-6 rounded-lg shadow-md">
                 <h2 class="text-3xl font-bold text-gray-200 mb-6">Create Purchase</h2>
 
