@@ -1,88 +1,53 @@
 <x-app-layout>
     <x-slot name="title">
-        {{ __('Profile') }} - {{ config('app.name', 'ATMS') }}
+        {{ __('Profile Details') }} - {{ config('app.name', 'ATMS') }}
     </x-slot>
 
     <div class="py-6 mt-20 ml-4 sm:ml-64">
-        <div class="w-full max-w-4xl px-6 mx-auto">
-
-            <!-- Breadcrumb Navigation -->
+        <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
             <x-bread-crumb-navigation />
 
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                <!-- User Details Card -->
-                <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-lg sm:col-span-2">
-                    <h2 class="mb-4 text-xl font-bold text-gray-800">Profile Details</h2>
-                    <div class="space-y-4">
-                        <div class="flex">
-                            <span class="text-gray-600">👤 Name:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->name }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">🆔 Employee ID:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->employee_id }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">🏢 Role:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->role }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">💼 Designation:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->designation }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">📞 Phone:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->phone }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">📧 Email:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->email }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">🗓️ Date of Joining:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->doj }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">🌍 State:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->state }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">🏠 Address:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->address }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">🎂 Date of Birth:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->dob }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">🩸 Blood Group:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->blood_group }}</span>
-                        </div>
-                        <div class="flex">
-                            <span class="text-gray-600">🚻 Gender:</span>
-                            <span class="font-semibold text-gray-800">{{ $user->gender }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Buttons Inside the Card -->
-                    <div class="flex justify-center mt-6 space-x-4">
+            <div class="p-8 bg-gray-800 border border-gray-700 rounded-lg shadow-lg relative">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-200">Profile Details</h2>
+                    <div class="flex gap-2">
                         <a href="{{ route('profile.edit') }}"
-                            class="px-6 py-2 text-white transition bg-blue-600 rounded-lg shadow-md hover:bg-blue-700">
+                            class="flex items-center px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition">
                             ✏️ Edit Profile
                         </a>
                         <a href="{{ route('account.settings') }}"
-                            class="px-6 py-2 text-blue-600 transition bg-gray-100 rounded-lg shadow-md hover:bg-gray-200">
+                            class="flex items-center px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition">
                             ⚙️ Settings
                         </a>
                     </div>
                 </div>
-                <div
-                    class="relative flex flex-col items-center p-5 text-center bg-white border border-gray-200 rounded-lg shadow-lg sm:col-span-1">
 
-                    <h2 class="text-xl font-bold">Profile Picture</h2>
-                    <div class="flex flex-col items-center mt-10 space-y-4">
+                <hr class="my-6 border-gray-600">
+
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Left Container: Profile Details -->
+                    <div class="p-6 bg-gray-900 border border-gray-700 rounded-lg flex-1">
+                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Details</h3>
+                        <div class="space-y-4 text-gray-300">
+                            <p><strong>👤 Name:</strong> {{ $user->name }}</p>
+                            <p><strong>🆔 Employee ID:</strong> {{ $user->employee_id }}</p>
+                            <p><strong>🏢 Role:</strong> {{ $user->role }}</p>
+                            <p><strong>💼 Designation:</strong> {{ $user->designation }}</p>
+                            <p><strong>📞 Phone:</strong> {{ $user->phone }}</p>
+                            <p><strong>📧 Email:</strong> {{ $user->email }}</p>
+                            <p><strong>🗓️ Date of Joining:</strong> {{ $user->doj }}</p>
+                            <p><strong>🌍 State:</strong> {{ $user->state }}</p>
+                            <p><strong>🏠 Address:</strong> {{ $user->address }}</p>
+                            <p><strong>🎂 Date of Birth:</strong> {{ $user->dob }}</p>
+                            <p><strong>🩸 Blood Group:</strong> {{ $user->blood_group }}</p>
+                            <p><strong>🚻 Gender:</strong> {{ $user->gender }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Container: Profile Picture -->
+                    <div class="p-6 bg-gray-900 border border-gray-700 rounded-lg flex flex-col items-center">
+                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Profile Picture</h3>
                         <div class="relative w-44 h-44">
-                            <!-- Profile Image -->
                             @if ($user->profile_photo)
                                 <img id="profileImagePreview" src="{{ asset('storage/' . $user->profile_photo) }}"
                                     class="object-cover transition duration-300 border-4 border-blue-500 rounded-full shadow-lg w-44 h-44 hover:scale-105"
@@ -94,7 +59,6 @@
                                 </div>
                             @endif
 
-                            <!-- Overlay with Upload Icon -->
                             <div
                                 class="absolute inset-0 flex items-center justify-center transition duration-300 rounded-full opacity-0 bg-black/50 hover:opacity-100">
                                 <label for="profile_photo"
@@ -108,24 +72,21 @@
                                 </label>
                             </div>
 
-                            <!-- Hidden Upload Form -->
                             <form method="POST" action="{{ route('profile.update.photo') }}"
                                 enctype="multipart/form-data" class="hidden">
                                 @csrf
                                 <input type="file" id="profile_photo" name="profile_photo" accept="image/*"
                                     onchange="this.form.submit()">
                             </form>
-                        </div>
 
-                        <div class="p-6">
-                            <h2 class="text-xl font-bold">{{ $user->name }}</h2>
-                            <p class="text-gray-600">{{ $user->role }}</p>
+                            <!-- Profile name below the image -->
+                            <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center p-2 bg-gray-900 rounded-b-full">
+                                <span class="text-lg font-semibold text-gray-200">{{ $user->name }}</span>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

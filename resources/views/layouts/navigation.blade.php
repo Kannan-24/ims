@@ -148,82 +148,74 @@
                 <!-- Dashboard Link -->
                 <li>
                     <a href="{{ route('dashboard') }}"
-                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out 
-                    {{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="ml-3">Dashboard</span>
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('dashboard') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Dashboard</span>
                     </a>
                 </li>
 
                 <!-- Users Link -->
                 <li>
                     <a href="{{ route('users.index') }}"
-                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('users.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="ml-3">Users</span>
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('users.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Users</span>
                     </a>
+                </li>
 
-                    <!-- Customers Link -->
+                <!-- Customers Link -->
                 <li>
                     <a href="{{ route('customers.index') }}"
-                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('customers.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="ml-3">Customers</span>
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('customers.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Customers</span>
                     </a>
                 </li>
 
                 <!-- Suppliers Link -->
                 <li>
                     <a href="{{ route('suppliers.index') }}"
-                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('suppliers.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="ml-3">Suppliers</span>
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('suppliers.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Suppliers</span>
                     </a>
                 </li>
 
                 <!-- Products Link -->
                 <li>
                     <a href="{{ route('products.index') }}"
-                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('products.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="ml-3">Products</span>
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('products.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Products</span>
                     </a>
                 </li>
 
-                <!-- Sales Link -->
+                <!-- Services Link -->
                 <li>
                     <a href="{{ route('services.index') }}"
-                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('services.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="ml-3">Services</span>
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('services.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Services</span>
                     </a>
                 </li>
 
                 <!-- Purchases Link -->
                 <li>
                     <a href="{{ route('purchases.index') }}"
-                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('purchases.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="ml-3">Purchases</span>
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('purchases.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Purchases</span>
                     </a>
                 </li>
 
                 <!-- Stocks Link -->
                 <li>
                     <a href="{{ route('stocks.index') }}"
-                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('stocks.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="ml-3">Stocks</span>
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('stocks.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Stocks</span>
                     </a>
                 </li>
 
                 <!-- Quotations Link -->
                 <li>
                     <a href="{{ route('quotations.index') }}"
-                        class="flex items-center p-3 rounded-lg transition duration-300 ease-in-out
-                    {{ request()->routeIs('quotations.*') ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="ml-3">Quotations</span>
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('quotations.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Quotations</span>
                     </a>
-
+                </li>
             </ul>
         </div>
     </aside>
