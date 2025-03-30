@@ -16,10 +16,9 @@
                         <thead>
                             <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
                                 <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">Quotation No</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(2)">Client</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">Quotation Code</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600">Company Name</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600">Sub Total</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600">Discount (%)</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600">Final Amount</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
                             </tr>
@@ -28,11 +27,10 @@
                             @foreach ($quotations as $quotation)
                                 <tr class="hover:bg-gray-700 transition duration-200">
                                     <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                                    <td class="px-6 py-4">{{ $quotation->quotation_no }}</td>
-                                    <td class="px-6 py-4">{{ $quotation->client->name }}</td>
+                                    <td class="px-6 py-4">{{ $quotation->quotation_code }}</td>
+                                    <td class="px-6 py-4">{{ $quotation->customer->company_name }}</td>
                                     <td class="px-6 py-4">{{ number_format($quotation->sub_total, 2) }}</td>
-                                    <td class="px-6 py-4">{{ number_format($quotation->discount, 2) }}</td>
-                                    <td class="px-6 py-4">{{ number_format($quotation->final_total, 2) }}</td>
+                                    <td class="px-6 py-4">{{ number_format($quotation->total, 2) }}</td>
                                     <td class="px-6 py-4 flex justify-center gap-3">
                                         <a href="{{ route('quotations.show', $quotation) }}" class="px-3 py-1 text-blue-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">View</a>
                                         <a href="{{ route('quotations.edit', $quotation) }}" class="px-3 py-1 text-yellow-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">Edit</a>

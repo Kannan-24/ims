@@ -44,11 +44,12 @@
                 </div>
 
                 <div id="contact-persons-container">
-                    <div class="mb-6 contact-person">
-                        <label class="block text-gray-300 font-semibold mb-2">Contact Person Name:</label>
-                        <input type="text" name="contact_persons[0][name]" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                    </div>
+
                 </div>
+
+                <button type="button" id="add-contact-person" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">
+                    Add Contact Person
+                </button>
 
                 <div class="flex justify-end">
                     <button type="submit" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition">
@@ -67,14 +68,14 @@
             contactPersonDiv.classList.add('mb-4', 'contact-person');
 
             contactPersonDiv.innerHTML = `
-                <label class="block mb-2 font-bold">Contact Person Name:</label>
-                <input type="text" name="contact_persons[${index}][name]" class="w-full px-4 py-2 border rounded-lg" required>
+                <label class="block text-gray-300 font-semibold mb-2">Contact Person Name:</label>
+                <input type="text" name="contact_persons[${index}][name]" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
 
-                <label class="block mb-2 font-bold">Contact Person Phone:</label>
-                <input type="text" name="contact_persons[${index}][phone_no]" class="w-full px-4 py-2 border rounded-lg" required>
+                <label class="block text-gray-300 font-semibold mb-2">Contact Person Phone:</label>
+                <input type="text" name="contact_persons[${index}][phone_no]" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
 
-                <label class="block mb-2 font-bold">Contact Person Email:</label>
-                <input type="email" name="contact_persons[${index}][email]" class="w-full px-4 py-2 border rounded-lg" required>
+                <label class="block text-gray-300 font-semibold mb-2">Contact Person Email:</label>
+                <input type="email" name="contact_persons[${index}][email]" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
             `;
 
             container.appendChild(contactPersonDiv);

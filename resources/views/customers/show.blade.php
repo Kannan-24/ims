@@ -40,13 +40,13 @@
 
                 <div class="mt-8">
                     <h3 class="text-2xl font-bold text-gray-200 mb-4">Contact Persons</h3>
-
+                
                     @if ($customer->contactPersons->isEmpty())
                         <p class="text-gray-400">No contact persons available for this customer.</p>
                     @else
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach ($customer->contactPersons as $contact)
-                                <div class="p-6 rounded-lg shadow-md transition-all transform hover:scale-105 bg-gradient-to-r from-blue-400 to-purple-500 text-white">
+                                <div class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
                                     <p class="text-lg font-semibold">{{ $contact->name }}</p>
                                     <p class="text-sm mt-1"><strong>Phone:</strong> {{ $contact->phone_no }}</p>
                                     <p class="text-sm"><strong>Email:</strong> {{ $contact->email ?? 'N/A' }}</p>
@@ -55,6 +55,7 @@
                         </div>
                     @endif
                 </div>
+                
             </div>
         </div>
     </div>
