@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->string('name');
             $table->text('description');
             $table->string('hsn_code');
+            $table->string('unit_type');
             $table->decimal('gst_percentage', 5, 2); //gst -> gst/2 = cgst, gst/2 = sgst
             $table->boolean('is_igst')->default(false); // Default is GST
             $table->timestamps();
