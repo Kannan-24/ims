@@ -18,6 +18,11 @@
                     <textarea name="description" id="description" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required></textarea>
                 </div>
 
+                <div classs="mb-6">
+                    <label class="block text-gray-300 font-semibold mb-2">Unit Type:</label>
+                    <input type="text" name="unit_type" id="unit_type" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                </div>
+
                 <div class="mb-6">
                     <label class="block text-gray-300 font-semibold mb-2">HSN Code:</label>
                     <input type="text" name="hsn_code" id="hsn_code" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>

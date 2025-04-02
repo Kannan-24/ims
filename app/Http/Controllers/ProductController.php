@@ -27,6 +27,7 @@ class ProductController extends Controller
             'description' => 'required',
             'hsn_code' => 'required|max:20',
             'gst_percentage' => 'required|numeric',
+            'unit_type' => 'required|in:kg,ltr,pcs',
             'is_igst' => 'sometimes|boolean',
         ]);
 
@@ -35,6 +36,7 @@ class ProductController extends Controller
             'description' => $request->description,
             'hsn_code' => $request->hsn_code,
             'gst_percentage' => $request->gst_percentage,
+            'unit_type' => $request->unit_type,
             'is_igst' => $request->has('is_igst'), // If checkbox checked, it's IGST
         ]);
 
@@ -59,6 +61,7 @@ class ProductController extends Controller
             'description' => 'required',
             'hsn_code' => 'required|max:20',
             'gst_percentage' => 'required|numeric',
+            'unit_type' => 'required|in:kg,ltr,pcs',
             'is_igst' => 'sometimes|boolean',
         ]);
 
@@ -67,6 +70,7 @@ class ProductController extends Controller
             'description' => $request->description,
             'hsn_code' => $request->hsn_code,
             'gst_percentage' => $request->gst_percentage,
+            'unit_type' => $request->unit_type,
             'is_igst' => $request->has('is_igst'),
         ]);
 

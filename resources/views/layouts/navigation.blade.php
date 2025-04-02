@@ -216,6 +216,14 @@
                         <span class="ms-3">Quotations</span>
                     </a>
                 </li>
+
+                <!-- Invoices Link -->
+                <li>
+                    <a href="{{ route('invoices.index') }}"
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('invoices.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Invoices</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </aside>

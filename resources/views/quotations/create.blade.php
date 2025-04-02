@@ -28,10 +28,10 @@
                         </select>
                     </div>
 
-                    <!-- Quotation Date & Invoice No -->
+                    <!-- Quotation Date & Quotation No -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="quotation_code" class="block text-gray-300 font-semibold mb-2">Invoice No:</label>
+                            <label for="quotation_code" class="block text-gray-300 font-semibold mb-2">Quotation No:</label>
                             <input type="text" name="quotation_code" id="quotation_code" value="{{ old('quotation_code') }}"
                                 class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
                         </div>
@@ -39,12 +39,6 @@
                             <label for="quotation_date" class="block text-gray-300 font-semibold mb-2">Quotation Date:</label>
                             <input type="date" name="quotation_date" id="quotation_date"
                                 value="{{ old('quotation_date') }}" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
-                        </div>
-                        <!-- Unit type -->
-                        <div>
-                            <label for="unit_type" class="block text-gray-300 font-semibold mb-2">Unit Type:</label>
-                            <input type="text" name="unit_type" id="unit_type"
-                                value="{{ old('unit_type') }}" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
                         </div>
                     </div>
 
@@ -123,7 +117,10 @@
             <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                 <thead>
                     <tr class="text-sm text-gray-400 bg-gray-700">
-                        <th class="px-6 py-4 border-b border-gray-600">Product Name</th>
+                        <th class="px-6 py-4 border-b border-gray-600">Product Name</th>    
+                        <th class="px-6 py-4 border-b border-gray-600">Description</th>
+                        <th class="px-6 py-4 border-b border-gray-600">HSN Code</th>
+                        <th class="px-6 py-4 border-b border-gray-600">Unit Type</th>
                         <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
                         <th class="px-6 py-4 border-b border-gray-600">Action</th>
                     </tr>
@@ -132,6 +129,9 @@
                     @foreach ($products as $product)
                         <tr data-id="{{ $product->id }}" class="product-row">
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->description }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->unit_type }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
                             <td class="px-6 py-4 border-b border-gray-600">
                                 <button type="button" class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"

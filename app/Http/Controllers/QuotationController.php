@@ -39,7 +39,6 @@ class QuotationController extends Controller
             'customer_id' => 'required|exists:customers,id',
             'quotation_code' => 'required|unique:quotations,quotation_code',
             'quotation_date' => 'required|date',
-            'unit_type' => 'required|string',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
@@ -51,7 +50,6 @@ class QuotationController extends Controller
             'customer_id' => $request->customer_id,
             'quotation_code' => $request->quotation_code,
             'quotation_date' => $request->quotation_date,
-            'unit_type' => $request->unit_type,
             'sub_total' => $request->sub_total,
             'cgst' => $request->total_cgst,
             'sgst' => $request->total_sgst,
@@ -62,19 +60,20 @@ class QuotationController extends Controller
 
         // Save quotation items
         foreach ($request->products as $product) {
+            $productModel = Product::findOrFail($product['product_id']);
+
             QuotationItem::create([
                 'quotation_id' => $quotation->id,
                 'product_id' => $product['product_id'],
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
+                'unit_type' => $productModel->unit_type,
                 'cgst' => $product['cgst'],
                 'sgst' => $product['sgst'],
                 'igst' => $product['igst'],
                 'total' => $product['total'],
-                'unit_type' => $request->unit_type, // Ensure unit_type is added here
             ]);
-}
-
+        }
 
         return redirect()->route('quotations.index')->with('success', 'Quotation created successfully.');
     }
@@ -107,7 +106,6 @@ class QuotationController extends Controller
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'quotation_date' => 'required|date',
-            'unit_type' => 'required|string',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
@@ -119,7 +117,6 @@ class QuotationController extends Controller
             'customer_id' => $request->customer_id,
             'quotation_code' => $request->quotation_code,
             'quotation_date' => $request->quotation_date,
-            'unit_type' => $request->unit_type,
             'sub_total' => $request->subtotal,
             'cgst' => $request->total_cgst,
             'sgst' => $request->total_sgst,
@@ -132,16 +129,17 @@ class QuotationController extends Controller
         QuotationItem::where('quotation_id', $quotation->id)->delete();
 
         foreach ($request->products as $product) {
+            $productModel = Product::findOrFail($product['product_id']);
             QuotationItem::create([
                 'quotation_id' => $quotation->id,
                 'product_id' => $product['product_id'],
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
+                'unit_type' => $productModel->unit_type, 
                 'cgst' => $product['cgst'],
                 'sgst' => $product['sgst'],
                 'igst' => $product['igst'],
                 'total' => $product['total'],
-                'unit_type' => $request->unit_type, // Ensure unit_type is added here
             ]);
         }
 
