@@ -73,9 +73,9 @@
                                         <td class="px-6 py-4">{{ $item->product->name }}</td>
                                         <td class="px-6 py-4">{{ $item->quantity }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($item->unit_price, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->cgst, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->sgst, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->igst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($invoice->cgst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($invoice->sgst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($invoice->igst, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($item->total, 2) }}</td>
                                     </tr>
                                 @endforeach
