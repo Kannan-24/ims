@@ -15,8 +15,10 @@
                     <table class="min-w-full text-left border-collapse table-auto">
                         <thead>
                             <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
-                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">Quotation Code</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#
+                                </th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">
+                                    Quotation Code</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600">Company Name</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600">Sub Total</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600">Final Amount</th>
@@ -32,11 +34,31 @@
                                     <td class="px-6 py-4">{{ number_format($quotation->sub_total, 2) }}</td>
                                     <td class="px-6 py-4">{{ number_format($quotation->total, 2) }}</td>
                                     <td class="px-6 py-4 flex justify-center gap-3">
-                                        <a href="{{ route('quotations.show', $quotation) }}" class="px-3 py-1 text-blue-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">View</a>
-                                        <a href="{{ route('quotations.edit', $quotation) }}" class="px-3 py-1 text-yellow-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">Edit</a>
-                                        <form action="{{ route('quotations.destroy', $quotation) }}" method="POST" class="inline">
+                                        <a href="{{ route('quotations.pdf', $quotation->id) }}"
+                                            class="text-green-400 hover:text-green-600 transition duration-300"
+                                            title="Download PDF">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+
+                                        <a href="{{ route('quotations.show', $quotation) }}"
+                                            class="text-blue-400 hover:text-blue-600 transition duration-300"
+                                            title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('quotations.edit', $quotation) }}"
+                                            class="text-yellow-400 hover:text-yellow-600 transition duration-300"
+                                            title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('quotations.destroy', $quotation) }}" method="POST"
+                                            class="inline">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="px-3 py-1 text-red-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300" onclick="return confirm('Are you sure you want to delete this quotation?')">Delete</button>
+                                            <button type="submit"
+                                                class="text-red-400 hover:text-red-600 transition duration-300"
+                                                title="Delete"
+                                                onclick="return confirm('Are you sure you want to delete this quotation?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
