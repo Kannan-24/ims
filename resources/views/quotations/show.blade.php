@@ -60,6 +60,7 @@
                                     <th class="px-6 py-4 text-left">#</th>
                                     <th class="px-6 py-4 text-left">Product Name</th>
                                     <th class="px-6 py-4 text-left">Quantity</th>
+                                    <th class="px-6 py-4 text-left">Unit Type</th>
                                     <th class="px-6 py-4 text-left">Unit Price</th>
                                     <th class="px-6 py-4 text-left">CGST</th>
                                     <th class="px-6 py-4 text-left">SGST</th>
@@ -73,10 +74,11 @@
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                         <td class="px-6 py-4">{{ $item->product->name }}</td>
                                         <td class="px-6 py-4">{{ $item->quantity }}</td>
+                                        <td class="px-6 py-4">{{ $item->product->unit_type }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($item->unit_price, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->cgst, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->sgst, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->igst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($quotation->cgst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($quotation->sgst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($quotation->igst, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($item->total, 2) }}</td>
                                     </tr>
                                 @endforeach

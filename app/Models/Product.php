@@ -14,6 +14,7 @@ class Product extends Model
         'description',
         'hsn_code',
         'gst_percentage',
+        'unit_type',
         'is_igst', // New field to determine GST/IGST
     ];
 

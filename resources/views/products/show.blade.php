@@ -36,6 +36,7 @@
                 <div class="space-y-4 text-gray-300">
                     <p><strong>Product Name:</strong> {{ $product->name }}</p>
                     <p><strong>Description:</strong> {{ $product->description }}</p>
+                    <p><strong>Unit Type:</strong> {{ $product->unit_type }}</p>
                     <p><strong>HSN Code:</strong> {{ $product->hsn_code }}</p>
                     <p><strong>Tax Type:</strong> 
                         @if($product->is_igst)

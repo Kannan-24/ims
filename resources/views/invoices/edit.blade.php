@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="title">
-        {{ __('Edit Quotation') }} - {{ config('app.name', 'SKM') }}
+        {{ __('Edit Invoice') }} - {{ config('app.name', 'SKM') }}
     </x-slot>
 
     <div class="mt-20 ml-4 py-9 sm:ml-64 sm:me-4 lg:me-0">
@@ -9,45 +9,61 @@
             <x-bread-crumb-navigation />
 
             <div class="bg-gray-800 p-6 rounded-lg shadow-md">
-                <h2 class="text-3xl font-bold text-gray-200 mb-6">Edit Quotation</h2>
+                <h2 class="text-3xl font-bold text-gray-200 mb-6">Edit Invoice</h2>
 
-                <form action="{{ route('quotations.update', $quotation->id) }}" method="POST">
+                <form action="{{ route('invoices.update', $invoice->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
-                    <!-- Customer Selection -->
+                    <!-- Order No -->
                     <div class="mb-6">
-                        <label for="customer_id" class="block text-gray-300 font-semibold mb-2">Customer:</label>
-                        <select name="customer_id" id="customer_id" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                            <option value="">Select Customer</option>
+                        <label for="order_no" class="block text-gray-300 font-semibold mb-2">Order No:</label>
+                        <input type="text" name="order_no" id="order_no"
+                            value="{{ old('order_no', $invoice->order_no) }}"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                    </div>
+
+                    <!-- Customer and Contact Person -->
+                    <div class="mb-6">
+                        <label for="customer_contact" class="block text-gray-300 font-semibold mb-2">Customer & Contact Person:</label>
+                        <select id="customer_contact" name="customer_contact" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            <option value="">Select Customer & Contact Person</option>
                             @foreach ($customers as $customer)
-                                <option value="{{ $customer->id }}"
-                                    {{ old('customer_id', $quotation->customer_id) == $customer->id ? 'selected' : '' }}>
-                                    {{ $customer->company_name }} - {{ $customer->state }}
-                                </option>
+                                @foreach ($customer->contactPersons as $contactPerson)
+                                    <option value="{{ $customer->id }}_{{ $contactPerson->id }}" 
+                                        {{ old('customer_contact', $invoice->customer_id . '_' . $invoice->contact_person_id) == $customer->id . '_' . $contactPerson->id ? 'selected' : '' }}>
+                                        {{ $customer->company_name }} - {{ $contactPerson->name }}
+                                    </option>
+                                @endforeach
                             @endforeach
                         </select>
                     </div>
 
-                    <!-- Quotation Date & Quotation No -->
+                    <!-- Invoice Date & Invoice No -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="quotation_code" class="block text-gray-300 font-semibold mb-2">Quotation No:</label>
-                            <input type="text" name="quotation_code" id="quotation_code"
-                                value="{{ old('quotation_code', $quotation->quotation_code) }}"
+                            <label for="invoice_no" class="block text-gray-300 font-semibold mb-2">Invoice No:</label>
+                            <input type="text" name="invoice_no" id="invoice_no"
+                                value="{{ old('invoice_no', $invoice->invoice_no) }}"
                                 class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
                         </div>
                         <div>
-                            <label for="quotation_date" class="block text-gray-300 font-semibold mb-2">Quotation Date:</label>
-                            <input type="date" name="quotation_date" id="quotation_date"
-                                value="{{ old('quotation_date', $quotation->quotation_date) }}"
+                            <label for="invoice_date" class="block text-gray-300 font-semibold mb-2">Invoice Date:</label>
+                            <input type="date" name="invoice_date" id="invoice_date"
+                                value="{{ old('invoice_date', $invoice->invoice_date) }}"
                                 class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                        </div>
+                        <div>
+                            <label for="order_date" class="block text-gray-300 font-semibold mb-2">Order Date:</label>
+                            <input type="date" name="order_date" id="order_date"
+                                value="{{ old('order_date', $invoice->order_date) }}"
+                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                         </div>
                     </div>
 
                     <!-- Product Table -->
                     <div class="mt-6">
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Quotation Items</h3>
+                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Invoice Items</h3>
                         <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                             <thead>
                                 <tr class="text-sm text-gray-400 bg-gray-700">
@@ -62,7 +78,7 @@
                                 </tr>
                             </thead>
                             <tbody class="text-sm text-gray-300" id="productTable">
-                                @foreach ($quotation->items as $index => $item)
+                                @foreach ($invoice->items as $index => $item)
                                     <tr>
                                         <td>
                                             <button type="button"
@@ -134,38 +150,38 @@
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">Subtotal:</label>
                                 <input type="text" id="subtotal" name="subtotal"
-                                    value="{{ old('subtotal', $quotation->sub_total) }}"
+                                    value="{{ old('subtotal', $invoice->sub_total) }}"
                                     class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">CGST Total:</label>
                                 <input type="text" id="totalCgst" name="total_cgst"
-                                    value="{{ old('total_cgst', $quotation->total_cgst) }}"
+                                    value="{{ old('total_cgst', $invoice->total_cgst) }}"
                                     class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">SGST Total:</label>
                                 <input type="text" id="totalSgst" name="total_sgst"
-                                    value="{{ old('total_sgst', $quotation->total_sgst) }}"
+                                    value="{{ old('total_sgst', $invoice->total_sgst) }}"
                                     class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">IGST Total:</label>
                                 <input type="text" id="totalIgst" name="total_igst"
-                                    value="{{ old('total_igst', $quotation->total_igst) }}"
+                                    value="{{ old('total_igst', $invoice->total_igst) }}"
                                     class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
                                 <input type="text" id="grandTotal" name="grand_total"
-                                    value="{{ old('grand_total', $quotation->grand_total) }}"
+                                    value="{{ old('grand_total', $invoice->grand_total) }}"
                                     class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                         </div>
                     </div>
 
                     <div class="mt-6">
-                        <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Update Quotation</button>
+                        <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Update Invoice</button>
                     </div>
                 </form>
             </div>
@@ -210,12 +226,6 @@
                 class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>
         </div>
     </div>
-</x-app-layout>
-
-
-
-
-
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -408,3 +418,4 @@
             });
         });
     </script>
+</x-app-layout>

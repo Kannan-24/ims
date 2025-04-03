@@ -17,6 +17,7 @@
                             <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
                                 <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">Name</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600">Unit Type</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600">HSN Code</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
                             </tr>
@@ -26,6 +27,7 @@
                                 <tr class="hover:bg-gray-700 transition duration-200">
                                     <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4">{{ $product->name }}</td>
+                                    <td class="px-6 py-4">{{ $product->unit_type }}</td>
                                     <td class="px-6 py-4">{{ $product->hsn_code }}</td>
                                     <td class="px-6 py-4 flex justify-center gap-3">
                                         <a href="{{ route('products.show', $product) }}" class="px-3 py-1 text-blue-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">View</a>

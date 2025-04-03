@@ -37,6 +37,17 @@
                         @enderror
                     </div>
 
+                    <!-- Unit Type -->
+                    <div class="mb-6">
+                        <label for="unit_type" class="block text-gray-300 font-semibold mb-2">Unit Type:</label>
+                        <input type="text" name="unit_type" id="unit_type" value="{{ old('unit_type', $product->unit_type) }}"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            required>
+                        @error('unit_type')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    
                     <!-- HSN Code -->
                     <div class="mb-6">
                         <label for="hsn_code" class="block text-gray-300 font-semibold mb-2">HSN Code:</label>
