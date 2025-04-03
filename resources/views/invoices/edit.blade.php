@@ -23,7 +23,7 @@
                             class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
                     </div>
 
-                    <!-- Customer and Contact Person -->
+                    <!-- Customer -->
                     <div class="mb-6">
                         <label for="customer_contact" class="block text-gray-300 font-semibold mb-2">Customer & Contact Person:</label>
                         <select id="customer_contact" name="customer_contact" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">

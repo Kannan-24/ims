@@ -18,26 +18,60 @@
                     <div class="mb-6">
                         <label for="order_no" class="block text-gray-300 font-semibold mb-2">Order No:</label>
                         <select id="order_no" name="order_no" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                            <option value="overcash">Overcash</option>
+                            <option value="overcash">Over Phone</option>
                             <option value="other">Other</option>
                         </select>
                         <textarea id="order_no_text" name="order_no_text" class="w-full mt-4 px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition hidden" placeholder="Enter Order No"></textarea>
                     </div>
 
-                    <!-- Customer and Contact Person -->
+                    <!-- Customer -->
                     <div class="mb-6">
-                        <label for="customer_contact" class="block text-gray-300 font-semibold mb-2">Customer & Contact Person:</label>
-                        <select id="customer_contact" name="customer_contact" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                            <option value="">Select Customer & Contact Person</option>
+                        <label for="customer" class="block text-gray-300 font-semibold mb-2">Customer:</label>
+                        <select id="customer" name="customer" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            <option value="">Select Customer</option>
                             @foreach ($customers as $customer)
-                                @foreach ($customer->contactPersons as $contactPerson)
-                                    <option value="{{ $customer->id }}_{{ $contactPerson->id }}">
-                                        {{ $customer->company_name }} - {{ $contactPerson->name }}
-                                    </option>
-                                @endforeach
+                                <option value="{{ $customer->id }}">{{ $customer->company_name }}</option>
                             @endforeach
                         </select>
                     </div>
+
+                    <!-- Contact Person -->
+                    <div class="mb-6">
+                        <label for="contact_person" class="block text-gray-300 font-semibold mb-2">Contact Person:</label>
+                        <select id="contact_person" name="contact_person" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" disabled>
+                            <option value="">Select Contact Person</option>
+                        </select>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const customerSelect = document.getElementById("customer");
+                            const contactPersonSelect = document.getElementById("contact_person");
+
+                            customerSelect.addEventListener("change", function () {
+                                const customerId = this.value;
+
+                                // Clear existing options in contact person dropdown
+                                contactPersonSelect.innerHTML = '<option value="">Select Contact Person</option>';
+                                contactPersonSelect.disabled = true;
+
+                                if (customerId) {
+                                    // Fetch contact persons for the selected customer
+                                    const contactPersons = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
+
+                                    if (contactPersons[customerId]) {
+                                        contactPersons[customerId].forEach(contactPerson => {
+                                            const option = document.createElement("option");
+                                            option.value = contactPerson.id;
+                                            option.textContent = contactPerson.name;
+                                            contactPersonSelect.appendChild(option);
+                                        });
+                                        contactPersonSelect.disabled = false;
+                                    }
+                                }
+                            });
+                        });
+                    </script>
 
                     <!-- Invoice Date & Invoice No -->
                     <div class="grid grid-cols-2 gap-4">

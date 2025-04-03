@@ -37,7 +37,8 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'customer_contact' => 'required',
+            'customer' => 'required|exists:customers,id',
+            'contact_person' => 'required|exists:contact_persons,id',
             'invoice_no' => 'required|unique:invoices,invoice_no',
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
@@ -48,13 +49,10 @@ class InvoiceController extends Controller
             'products.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        // Split customer_contact into customer_id and contactperson_id
-        [$customer_id, $contactperson_id] = explode('_', $request->customer_contact);
-
         // Create the invoice
         $invoice = Invoice::create([
-            'customer_id' => $customer_id,
-            'contactperson_id' => $contactperson_id,
+            'customer_id' => $request->customer,
+            'contactperson_id' => $request->contact_person,
             'invoice_no' => $request->invoice_no,
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
@@ -119,7 +117,8 @@ class InvoiceController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'customer_contact' => 'required',
+            'customer_id' => 'required|exists:customers,id',
+            'contactperson_id' => 'required|exists:contact_persons,id',
             'invoice_no' => 'required|unique:invoices,invoice_no,' . $id,
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
@@ -129,9 +128,6 @@ class InvoiceController extends Controller
             'products.*.quantity' => 'required|integer|min:1',
             'products.*.unit_price' => 'required|numeric|min:0',
         ]);
-
-        // Split customer_contact into customer_id and contactperson_id
-        [$customer_id, $contactperson_id] = explode('_', $request->customer_contact);
 
         $invoice = Invoice::findOrFail($id);
 
@@ -144,8 +140,8 @@ class InvoiceController extends Controller
         }
 
         $invoice->update([
-            'customer_id' => $customer_id,
-            'contactperson_id' => $contactperson_id,
+            'customer_id' => $request->customer_id,
+            'contactperson_id' => $request->contactperson_id,
             'invoice_no' => $request->invoice_no,
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
