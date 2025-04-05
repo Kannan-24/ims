@@ -34,7 +34,11 @@
                                     <td class="px-6 py-4">{{ $stock->total_quantity }}</td>
                                     <td class="px-6 py-4">{{ $stock->total_sold }}</td>
                                     <td class="px-6 py-4 flex justify-center gap-3">
-                                        <a href="{{ route('stocks.show', $stock->product_id) }}" class="px-3 py-1 text-blue-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">Show</a>
+                                        <a href="{{ route('stocks.show', $stock->product_id) }}"
+                                            class="text-blue-400 hover:text-blue-600 transition duration-300"
+                                            title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
