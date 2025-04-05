@@ -41,6 +41,7 @@ class QuotationController extends Controller
             'customer_id' => 'required|exists:customers,id',
             'quotation_code' => 'required|unique:quotations,quotation_code',
             'quotation_date' => 'required|date',
+            'terms_condition' => 'nullable|string',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
@@ -52,6 +53,7 @@ class QuotationController extends Controller
             'customer_id' => $request->customer_id,
             'quotation_code' => $request->quotation_code,
             'quotation_date' => $request->quotation_date,
+            'terms_condition' => $request->terms_condition,
             'sub_total' => $request->sub_total,
             'cgst' => $request->total_cgst,
             'sgst' => $request->total_sgst,
@@ -70,9 +72,9 @@ class QuotationController extends Controller
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
                 'unit_type' => $productModel->unit_type,
-                'cgst' => $product['cgst'],
-                'sgst' => $product['sgst'],
-                'igst' => $product['igst'],
+                'cgst' => $request->total_cgst,
+                'sgst' => $request->total_sgst,
+                'igst' => $request->total_igst,
                 'total' => $product['total'],
             ]);
         }
@@ -108,6 +110,7 @@ class QuotationController extends Controller
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'quotation_date' => 'required|date',
+            'terms_condition' => 'nullable|string',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
@@ -119,6 +122,7 @@ class QuotationController extends Controller
             'customer_id' => $request->customer_id,
             'quotation_code' => $request->quotation_code,
             'quotation_date' => $request->quotation_date,
+            'terms_condition' => $request->terms_condition,
             'sub_total' => $request->subtotal,
             'cgst' => $request->total_cgst,
             'sgst' => $request->total_sgst,
@@ -138,9 +142,9 @@ class QuotationController extends Controller
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
                 'unit_type' => $productModel->unit_type, 
-                'cgst' => $product['cgst'],
-                'sgst' => $product['sgst'],
-                'igst' => $product['igst'],
+                'cgst' => $request->total_cgst,
+                'sgst' => $request->total_sgst,
+                'igst' => $request->total_igst,
                 'total' => $product['total'],
             ]);
         }

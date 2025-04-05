@@ -102,9 +102,9 @@ class PurchaseController extends Controller
                 'quantity' => $product['quantity'],
                 'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
                 'unit_price' => $product['unit_price'],
-                'cgst' => $product['cgst'],
-                'sgst' => $product['sgst'],
-                'igst' => $product['igst'],
+                'cgst' => $request->total_cgst,
+                'sgst' => $request->total_sgst,
+                'igst' => $request->total_igst,
                 'total' => $product['total'],
             ]);
 
@@ -220,9 +220,9 @@ class PurchaseController extends Controller
                 'quantity' => $product['quantity'],
                 'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
                 'unit_price' => $product['unit_price'],
-                'cgst' => $product['cgst'],
-                'sgst' => $product['sgst'],
-                'igst' => $product['igst'],
+                'cgst' => $request->total_cgst,
+                'sgst' => $request->total_sgst,
+                'igst' => $request->total_igst,
                 'total' => $product['total'],
             ]);
 
