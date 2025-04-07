@@ -32,6 +32,7 @@
                 <div class="space-y-4 text-gray-300">
                     <p><strong>Quotation Code:</strong> {{ $quotation->quotation_code }}</p>
                     <p><strong>Quotation Date:</strong> {{ $quotation->quotation_date }}</p>
+                    <p><strong>Terms & Conditions:</strong> {{ $quotation->terms_condition ?? 'N/A' }}</p>
                 </div>
 
                 <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Customer Details</h3>
@@ -50,10 +51,14 @@
 
                 <hr class="my-6 border-gray-600">
 
-                @if ($quotation->items->isEmpty())
+                <h3 class="text-2xl font-bold text-gray-200 mb-4">Products</h3>
+                @php
+                    $products = $quotation->items->where('type', 'product');
+                @endphp
+                @if ($products->isEmpty())
                     <p class="text-gray-400">No products found for this quotation.</p>
                 @else
-                    <div class="overflow-x-auto mt-8">
+                    <div class="overflow-x-auto mt-4">
                         <table class="min-w-full bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
                             <thead class="bg-gray-700 text-gray-300">
                                 <tr>
@@ -69,17 +74,52 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($quotation->items as $item)
+                                @foreach ($products as $product)
                                     <tr class="border-t border-gray-700 hover:bg-gray-700 text-gray-300">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                                        <td class="px-6 py-4">{{ $item->product->name }}</td>
-                                        <td class="px-6 py-4">{{ $item->quantity }}</td>
-                                        <td class="px-6 py-4">{{ $item->product->unit_type }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->unit_price, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->cgst, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->sgst, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->igst, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($item->total, 2) }}</td>
+                                        <td class="px-6 py-4">{{ $product->product->name }}</td>
+                                        <td class="px-6 py-4">{{ $product->quantity }}</td>
+                                        <td class="px-6 py-4">{{ $product->unit_type }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($product->unit_price, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($product->cgst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($product->sgst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($product->igst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($product->total, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+
+                <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Services</h3>
+                @php
+                    $services = $quotation->items->where('type', 'service');
+                @endphp
+                @if ($services->isEmpty())
+                    <p class="text-gray-400">No services found for this quotation.</p>
+                @else
+                    <div class="overflow-x-auto mt-4">
+                        <table class="min-w-full bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+                            <thead class="bg-gray-700 text-gray-300">
+                                <tr>
+                                    <th class="px-6 py-4 text-left">#</th>
+                                    <th class="px-6 py-4 text-left">Service Name</th>
+                                    <th class="px-6 py-4 text-left">Quantity</th>
+                                    <th class="px-6 py-4 text-left">Unit Price</th>
+                                    <th class="px-6 py-4 text-left">GST</th>
+                                    <th class="px-6 py-4 text-left">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($services as $service)
+                                    <tr class="border-t border-gray-700 hover:bg-gray-700 text-gray-300">
+                                        <td class="px-6 py-4">{{ $loop->iteration }}</td>
+                                        <td class="px-6 py-4">{{ $service->service->name }}</td>
+                                        <td class="px-6 py-4">{{ $service->quantity }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($service->unit_price, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($service->gst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($service->total, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -106,6 +146,10 @@
                             <tr class="border-t border-gray-700">
                                 <td class="px-4 py-2 font-semibold">IGST:</td>
                                 <td class="px-4 py-2">₹{{ number_format($quotation->igst, 2) }}</td>
+                            </tr>
+                            <tr class="border-t border-gray-700">
+                                <td class="px-4 py-2 font-semibold">GST:</td>
+                                <td class="px-4 py-2">₹{{ number_format($service->gst, 2) }}</td>
                             </tr>
                             <tr class="border-t border-gray-700">
                                 <td class="px-4 py-2 font-bold text-xl">Grand Total:</td>

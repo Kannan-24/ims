@@ -37,4 +37,10 @@ class Product extends Model
     {
         return $this->hasMany(Stock::class);
     }
+
+    public function service()
+    {
+        return $this->hasMany(Service::class);
+    }
+    
 }

@@ -102,9 +102,9 @@ class PurchaseController extends Controller
                 'quantity' => $product['quantity'],
                 'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
                 'unit_price' => $product['unit_price'],
-                'cgst' => $request->total_cgst,
-                'sgst' => $request->total_sgst,
-                'igst' => $request->total_igst,
+                'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
+                'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
+                'igst' => ($product['unit_price'] * $product['igst']) / 100,
                 'total' => $product['total'],
             ]);
 
@@ -220,9 +220,10 @@ class PurchaseController extends Controller
                 'quantity' => $product['quantity'],
                 'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
                 'unit_price' => $product['unit_price'],
-                'cgst' => $request->total_cgst,
-                'sgst' => $request->total_sgst,
-                'igst' => $request->total_igst,
+                'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
+                'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
+                'igst' => ($product['unit_price'] * $product['igst']) / 100,
+                'gst' => $product['cgst'] + $product['sgst'] + $product['igst'],
                 'total' => $product['total'],
             ]);
 
