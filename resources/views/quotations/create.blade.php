@@ -42,6 +42,14 @@
                         </div>
                     </div>
 
+                    <!-- Terms and Condition -->
+                    <div class="mb-6">
+                        <label for="terms_condition" class="block text-gray-300 font-semibold mb-2">Terms and condition:</label>
+                        <textarea id="terms_condition" name="terms_condition" rows="4"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            placeholder="Enter terms and condition">{{ old('terms_condition') }}</textarea>
+                    </div>
+                                        
                     <!-- Product Table -->
                     <div class="mt-6">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Quotation Items</h3>
@@ -64,7 +72,67 @@
                         </table>
                         <button type="button" id="addRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Product</button>
                     </div>
+                    <!-- Services Table -->
+                    <div class="mt-6">
+                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Items</h3>
+                        <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                            <thead>
+                                <tr class="text-sm text-gray-400 bg-gray-700">
+                                    <th class="px-3 py-3 border-b border-gray-600">Service</th>
+                                    <th class="px-3 py-3 border-b border-gray-600">Quantity</th>
+                                    <th class="px-3 py-3 border-b border-gray-600">Unit Price</th>
+                                    <th class="px-3 py-3 border-b border-gray-600">GST %</th>
+                                    <th class="px-3 py-3 border-b border-gray-600">GST Total</th>
+                                    <th class="px-3 py-3 border-b border-gray-600">Total</th>
+                                    <th class="px-3 py-3 border-b border-gray-600">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm text-gray-300" id="serviceTable">
 
+                            </tbody>
+                        </table>
+                        <button type="button" id="addServiceRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Service</button>
+                    </div>
+
+                    <!-- Service Selection Modal -->
+                    <div id="serviceModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center">
+                        <div class="bg-gray-800 p-6 rounded-lg shadow-md w-1/2">
+                            <h2 class="text-2xl font-bold text-gray-200 mb-6">Select Service</h2>
+
+                            <!-- Search Bar -->
+                            <input type="text" id="serviceSearch" placeholder="Search Service..."
+                                class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+
+                            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                                <thead>
+                                    <tr class="text-sm text-gray-400 bg-gray-700">
+                                        <th class="px-6 py-4 border-b border-gray-600">Service Name</th>
+                                        <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
+                                        <th class="px-6 py-4 border-b border-gray-600">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="serviceTableBody" class="text-sm text-gray-300">
+                                    @foreach ($services as $service)
+                                        <tr data-id="{{ $service->id }}" class="service-row">
+                                            <td class="px-6 py-4 border-b border-gray-600">{{ $service->name }}</td>
+                                            <td class="px-6 py-4 border-b border-gray-600">{{ $service->gst_percentage }}%</td>
+                                            <td class="px-6 py-4 border-b border-gray-600">
+                                                <button type="button" class="select-service px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                                    data-id="{{ $service->id }}" data-name="{{ $service->name }}"
+                                                    data-gst="{{ $service->gst_percentage }}">
+                                                    Select
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
+                            <button type="button" id="closeServiceModal"
+                                class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>
+                        </div>
+                    </div>
+                    
                     <!-- Summary Section -->
                     <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
@@ -87,6 +155,12 @@
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">IGST Total:</label>
                                 <input type="text" id="totalIgst" name="total_igst" value="{{ old('total_igst') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                            </div>
+                            <!-- GST Total -->
+                            <div>
+                                <label class="block text-gray-300 font-semibold mb-2">GST Total:</label>
+                                <input type="text" id="totalGst" name="total_gst" value="{{ old('total_gst') }}"
                                     class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
@@ -120,7 +194,7 @@
                         <th class="px-6 py-4 border-b border-gray-600">Product Name</th>    
                         <th class="px-6 py-4 border-b border-gray-600">Description</th>
                         <th class="px-6 py-4 border-b border-gray-600">HSN Code</th>
-                        <th class="px-6 py-4 border-b border-gray-600">Unit Type</th>
+                        <th class="px-6 py-4 border-b border-gray-600">Stock</th>
                         <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
                         <th class="px-6 py-4 border-b border-gray-600">Action</th>
                     </tr>
@@ -131,7 +205,7 @@
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->description }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
-                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->unit_type }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">{{ ($product->stock->first()->quantity ?? 0) - ($product->stock->first()->sold ?? 0) }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
                             <td class="px-6 py-4 border-b border-gray-600">
                                 <button type="button" class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
@@ -149,6 +223,7 @@
                 class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>
         </div>
     </div>
+</x-app-layout>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -156,7 +231,12 @@
             const addRowBtn = document.getElementById("addRow");
             const productModal = document.getElementById("productModal");
             const closeModalBtn = document.getElementById("closeModal");
+            const serviceTable = document.getElementById("serviceTable");
+            const addServiceRowBtn = document.getElementById("addServiceRow");
+            const serviceModal = document.getElementById("serviceModal");
+            const closeServiceModalBtn = document.getElementById("closeServiceModal");
             let currentRow = null;
+            let currentServiceRow = null;
 
             function filterProducts() {
                 let searchValue = document.getElementById("productSearch").value.toUpperCase();
@@ -216,6 +296,31 @@
                 productModal.classList.remove("hidden");
             }
 
+            function addServiceRow() {
+                var newIndex = serviceTable.rows.length;
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td class="p-2">
+                    <button type="button" class="open-service-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Select Service</button>
+                    <input type="hidden" name="services[${newIndex}][service_id]" class="service-id">
+                    <span class="service-name"></span>
+                </td>
+                <td class="p-2"><input type="number" name="services[${newIndex}][quantity]" class="service-quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1"></td>
+                <td class="p-2"><input type="number" name="services[${newIndex}][unit_price]" class="service-unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0"></td>
+                <td class="p-2"><input type="text" name="services[${newIndex}][gst_percentage]" class="service-gst-percentage w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2"><input type="text" name="services[${newIndex}][gst_total]" class="service-gst-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2"><input type="text" name="services[${newIndex}][total]" class="service-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2">
+                    <button type="button" class="remove-service-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
+                </td>`;
+
+                serviceTable.appendChild(row);
+                addEventListenersToServiceRow(row);
+                currentServiceRow = row;
+                serviceModal.classList.remove("hidden");
+            }
+
             function addEventListenersToRow(row) {
                 let quantityInput = row.querySelector(".quantity");
                 let unitPriceInput = row.querySelector(".unit-price");
@@ -234,6 +339,29 @@
                 });
 
                 row.querySelector(".remove-row").addEventListener("click", function() {
+                    row.remove();
+                    calculateSummary();
+                });
+            }
+
+            function addEventListenersToServiceRow(row) {
+                let quantityInput = row.querySelector(".service-quantity");
+                let unitPriceInput = row.querySelector(".service-unit-price");
+
+                row.querySelector(".open-service-modal").addEventListener("click", function() {
+                    currentServiceRow = row;
+                    serviceModal.classList.remove("hidden");
+                });
+
+                quantityInput.addEventListener("input", function() {
+                    calculateServiceRowTotal(row);
+                });
+
+                unitPriceInput.addEventListener("input", function() {
+                    calculateServiceRowTotal(row);
+                });
+
+                row.querySelector(".remove-service-row").addEventListener("click", function() {
                     row.remove();
                     calculateSummary();
                 });
@@ -271,11 +399,26 @@
                 calculateSummary();
             }
 
+            function calculateServiceRowTotal(row) {
+                let quantity = parseFloat(row.querySelector(".service-quantity").value) || 0;
+                let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
+                let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
+
+                let gstTotal = (quantity * unitPrice * gstPercentage) / 100;
+                row.querySelector(".service-gst-total").value = gstTotal.toFixed(2);
+
+                let total = (quantity * unitPrice) + gstTotal;
+                row.querySelector(".service-total").value = total.toFixed(2);
+
+                calculateSummary();
+            }
+
             function calculateSummary() {
                 let subtotal = 0,
                     totalCgst = 0,
                     totalSgst = 0,
                     totalIgst = 0,
+                    totalGst = 0,
                     grandTotal = 0;
 
                 document.querySelectorAll("#productTable tr").forEach(row => {
@@ -291,12 +434,21 @@
                     totalIgst += (baseAmount * igst) / 100;
                 });
 
-                grandTotal = subtotal + totalCgst + totalSgst + totalIgst;
+                document.querySelectorAll("#serviceTable tr").forEach(row => {
+                    let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
+                    let gstTotal = parseFloat(row.querySelector(".service-gst-total").value) || 0;
+
+                    subtotal += unitPrice;
+                    totalGst += gstTotal;
+                });
+
+                grandTotal = subtotal + totalCgst + totalSgst + totalIgst + totalGst;
 
                 document.getElementById("subtotal").value = subtotal.toFixed(2);
                 document.getElementById("totalCgst").value = totalCgst.toFixed(2);
                 document.getElementById("totalSgst").value = totalSgst.toFixed(2);
                 document.getElementById("totalIgst").value = totalIgst.toFixed(2);
+                document.getElementById("totalGst").value = totalGst.toFixed(2);
                 document.getElementById("grandTotal").value = grandTotal.toFixed(2);
             }
 
@@ -319,11 +471,32 @@
                 });
             });
 
+            document.querySelectorAll(".select-service").forEach(button => {
+                button.addEventListener("click", function() {
+                    let serviceId = this.getAttribute("data-id");
+                    let serviceName = this.getAttribute("data-name");
+                    let gstPercentage = this.getAttribute("data-gst");
+
+                    currentServiceRow.querySelector(".service-id").value = serviceId;
+                    currentServiceRow.querySelector(".service-name").textContent = serviceName;
+                    currentServiceRow.querySelector(".service-gst-percentage").value = gstPercentage;
+
+                    calculateServiceRowTotal(currentServiceRow);
+
+                    serviceModal.classList.add("hidden");
+                });
+            });
+
             closeModalBtn.addEventListener("click", function() {
                 productModal.classList.add("hidden");
             });
 
+            closeServiceModalBtn.addEventListener("click", function() {
+                serviceModal.classList.add("hidden");
+            });
+
             addRowBtn.addEventListener("click", addProductRow);
+            addServiceRowBtn.addEventListener("click", addServiceRow);
         });
     </script>
-</x-app-layout>
+

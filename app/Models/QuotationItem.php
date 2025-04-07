@@ -12,13 +12,16 @@ class QuotationItem extends Model
     protected $fillable = [
         'quotation_id',
         'product_id',
+        'service_id',
+        'type', // 'product' or 'service'
         'unit_type',
         'quantity',
         'unit_price',
         'total',
         'cgst',
         'sgst',
-        'igst'
+        'igst',
+        'gst' // Combined GST
     ];
 
     /**
@@ -35,5 +38,10 @@ class QuotationItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
     }
 }

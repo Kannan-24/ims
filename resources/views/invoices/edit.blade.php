@@ -25,19 +25,64 @@
 
                     <!-- Customer -->
                     <div class="mb-6">
-                        <label for="customer_contact" class="block text-gray-300 font-semibold mb-2">Customer & Contact Person:</label>
-                        <select id="customer_contact" name="customer_contact" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                            <option value="">Select Customer & Contact Person</option>
+                        <label for="customer" class="block text-gray-300 font-semibold mb-2">Customer:</label>
+                        <select id="customer" name="customer" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            <option value="">Select Customer</option>
                             @foreach ($customers as $customer)
-                                @foreach ($customer->contactPersons as $contactPerson)
-                                    <option value="{{ $customer->id }}_{{ $contactPerson->id }}" 
-                                        {{ old('customer_contact', $invoice->customer_id . '_' . $invoice->contact_person_id) == $customer->id . '_' . $contactPerson->id ? 'selected' : '' }}>
-                                        {{ $customer->company_name }} - {{ $contactPerson->name }}
-                                    </option>
-                                @endforeach
+                                <option value="{{ $customer->id }}" 
+                                    {{ old('customer', $invoice->customer_id) == $customer->id ? 'selected' : '' }}>
+                                    {{ $customer->company_name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
+
+                    <!-- Contact Person -->
+                    <div class="mb-6">
+                        <label for="contact_person" class="block text-gray-300 font-semibold mb-2">Contact Person:</label>
+                        <select id="contact_person" name="contact_person" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
+                            {{ old('customer', $invoice->customer_id) ? '' : 'disabled' }}>
+                            <option value="">Select Contact Person</option>
+                            @if (old('customer', $invoice->customer_id))
+                                @foreach ($customers->firstWhere('id', old('customer', $invoice->customer_id))->contactPersons as $contactPerson)
+                                    <option value="{{ $contactPerson->id }}" 
+                                        {{ old('contact_person', $invoice->contact_person_id) == $contactPerson->id ? 'selected' : '' }}>
+                                        {{ $contactPerson->name }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const customerSelect = document.getElementById("customer");
+                            const contactPersonSelect = document.getElementById("contact_person");
+
+                            customerSelect.addEventListener("change", function () {
+                                const customerId = this.value;
+
+                                // Clear existing options in contact person dropdown
+                                contactPersonSelect.innerHTML = '<option value="">Select Contact Person</option>';
+                                contactPersonSelect.disabled = true;
+
+                                if (customerId) {
+                                    // Fetch contact persons for the selected customer
+                                    const contactPersons = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
+
+                                    if (contactPersons[customerId]) {
+                                        contactPersons[customerId].forEach(contactPerson => {
+                                            const option = document.createElement("option");
+                                            option.value = contactPerson.id;
+                                            option.textContent = contactPerson.name;
+                                            contactPersonSelect.appendChild(option);
+                                        });
+                                        contactPersonSelect.disabled = false;
+                                    }
+                                }
+                            });
+                        });
+                    </script>
 
                     <!-- Invoice Date & Invoice No -->
                     <div class="grid grid-cols-2 gap-4">
@@ -197,30 +242,36 @@
             <input type="text" id="productSearch" placeholder="Search Product..."
                 class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
 
-            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
-                <thead>
-                    <tr class="text-sm text-gray-400 bg-gray-700">
-                        <th class="px-6 py-4 border-b border-gray-600">Product Name</th>
-                        <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
-                        <th class="px-6 py-4 border-b border-gray-600">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="productTableBody" class="text-sm text-gray-300">
-                    @foreach ($products as $product)
-                        <tr data-id="{{ $product->id }}" class="product-row">
-                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
-                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
-                            <td class="px-6 py-4 border-b border-gray-600">
-                                <button type="button" class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
-                                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                                    data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
-                                    Select
-                                </button>
-                            </td>
+                <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                    <thead>
+                        <tr class="text-sm text-gray-400 bg-gray-700">
+                            <th class="px-6 py-4 border-b border-gray-600">Product Name</th>    
+                            <th class="px-6 py-4 border-b border-gray-600">Description</th>
+                            <th class="px-6 py-4 border-b border-gray-600">HSN Code</th>
+                            <th class="px-6 py-4 border-b border-gray-600">Stock</th>
+                            <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
+                            <th class="px-6 py-4 border-b border-gray-600">Action</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="productTableBody" class="text-sm text-gray-300">
+                        @foreach ($products as $product)
+                            <tr data-id="{{ $product->id }}" class="product-row">
+                                <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
+                                <td class="px-6 py-4 border-b border-gray-600">{{ $product->description }}</td>
+                                <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
+                                <td class="px-6 py-4 border-b border-gray-600">{{ ($product->stock->first()->quantity ?? 0) - ($product->stock->first()->sold ?? 0) }}</td>
+                                <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
+                                <td class="px-6 py-4 border-b border-gray-600">
+                                    <button type="button" class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                        data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                                        data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
+                                        Select
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
             <button type="button" id="closeModal"
                 class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>

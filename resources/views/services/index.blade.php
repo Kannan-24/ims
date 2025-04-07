@@ -30,11 +30,25 @@
                                     <td class="px-6 py-4">{{ $service->name }}</td>
                                     <td class="px-6 py-4">{{ $service->hsn_code }}</td>
                                     <td class="px-6 py-4 flex justify-center gap-3">
-                                        <a href="{{ route('services.show', $service) }}" class="px-3 py-1 text-blue-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">View</a>
-                                        <a href="{{ route('services.edit', $service) }}" class="px-3 py-1 text-yellow-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300">Edit</a>
-                                        <form action="{{ route('services.destroy', $service) }}" method="POST" class="inline">
+                                        <a href="{{ route('services.show', $service) }}"
+                                            class="text-blue-400 hover:text-blue-600 transition duration-300"
+                                            title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('services.edit', $service) }}"
+                                            class="text-yellow-400 hover:text-yellow-600 transition duration-300"
+                                            title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('services.destroy', $service) }}" method="POST"
+                                            class="inline">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="px-3 py-1 text-red-400 bg-gray-800 hover:bg-gray-600 rounded-md shadow-sm transition duration-300" onclick="return confirm('Are you sure you want to delete this service?')">Delete</button>
+                                            <button type="submit"
+                                                class="text-red-400 hover:text-red-600 transition duration-300"
+                                                title="Delete"
+                                                onclick="return confirm('Are you sure you want to delete this service?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>

@@ -9,6 +9,7 @@ use App\Models\Stock;
 use App\Models\Customer;
 use App\Models\ContactPerson;
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
@@ -49,6 +50,17 @@ class InvoiceController extends Controller
             'products.*.unit_price' => 'required|numeric|min:0',
         ]);
 
+        foreach ($request->products as $product) {
+            $stock = Stock::where('product_id', $product['product_id'])->first();
+
+            if (!$stock || ($stock->quantity - $stock->sold) < $product['quantity']) {
+                $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
+                return redirect()->back()->withErrors([
+                    'products' => "Product '{$productName}' is out of stock."
+                ])->withInput();
+            }
+        }
+
         // Create the invoice
         $invoice = Invoice::create([
             'customer_id' => $request->customer,
@@ -75,16 +87,17 @@ class InvoiceController extends Controller
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
                 'unit_type' => $productModel->unit_type,
-                'cgst' => $product['cgst'],
-                'sgst' => $product['sgst'],
-                'igst' => $product['igst'],
+                'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
+                'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
+                'igst' => ($product['unit_price'] * $product['igst']) / 100,
                 'total' => $product['total'],
             ]);
 
             // Update the sold column in the stock table
             $stock = Stock::where('product_id', $product['product_id'])->first();
             if ($stock) {
-                $stock->increment('sold', $product['quantity']);
+                $stock->sold += $product['quantity'];
+                $stock->save();
             }
         }
 
@@ -117,8 +130,8 @@ class InvoiceController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'contactperson_id' => 'required|exists:contact_persons,id',
+            'customer' => 'required|exists:customers,id',
+            'contact_person' => 'required|exists:contact_persons,id',
             'invoice_no' => 'required|unique:invoices,invoice_no,' . $id,
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
@@ -139,9 +152,21 @@ class InvoiceController extends Controller
             }
         }
 
+        // Check stock availability for new products
+        foreach ($request->products as $product) {
+            $stock = Stock::where('product_id', $product['product_id'])->first();
+
+            if (!$stock || ($stock->quantity - $stock->sold) < $product['quantity']) {
+                $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
+                return redirect()->back()->withErrors([
+                    'products' => "Product '{$productName}' is out of stock."
+                ])->withInput();
+            }
+        }
+
         $invoice->update([
-            'customer_id' => $request->customer_id,
-            'contactperson_id' => $request->contactperson_id,
+            'customer_id' => $request->customer,
+            'contactperson_id' => $request->contact_person,
             'invoice_no' => $request->invoice_no,
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
@@ -166,9 +191,9 @@ class InvoiceController extends Controller
                 'quantity' => $product['quantity'],
                 'unit_price' => $product['unit_price'],
                 'unit_type' => $productModel->unit_type,
-                'cgst' => $product['cgst'],
-                'sgst' => $product['sgst'],
-                'igst' => $product['igst'],
+                'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
+                'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
+                'igst' => ($product['unit_price'] * $product['igst']) / 100,
                 'total' => $product['total'],
             ]);
 
@@ -187,7 +212,18 @@ class InvoiceController extends Controller
      */
     public function destroy($id)
     {
-        $invoice = Invoice::findOrFail($id);
+        $invoice = Invoice::with('items')->findOrFail($id);
+
+        // Revert the sold quantities for the items in the invoice
+        foreach ($invoice->items as $item) {
+            $stock = Stock::where('product_id', $item->product_id)->first();
+            if ($stock) {
+                $stock->decrement('sold', $item->quantity);
+            }
+        }
+
+        // Delete the invoice and its items
+        $invoice->items()->delete();
         $invoice->delete();
 
         return redirect()->route('invoices.index')->with('success', 'Invoice deleted successfully.');

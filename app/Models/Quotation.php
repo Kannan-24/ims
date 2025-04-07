@@ -18,7 +18,8 @@ class Quotation extends Model
         'sgst',
         'igst',
         'gst',
-        'total'
+        'total',
+        'terms_condition'
     ];
 
     /**
