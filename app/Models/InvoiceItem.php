@@ -12,13 +12,16 @@ class InvoiceItem extends Model
     protected $fillable = [
         'invoice_id',
         'product_id',
+        'service_id',
+        'type', // 'product' or 'service'
         'unit_type',
         'quantity',
         'unit_price',
         'total',
         'cgst',
         'sgst',
-        'igst'
+        'igst',
+        'gst' // Combined GST
     ];
 
     /**
@@ -35,5 +38,13 @@ class InvoiceItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Get the service associated with the invoice item.
+     */
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
     }
 }

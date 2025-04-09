@@ -54,35 +54,6 @@
                         </select>
                     </div>
 
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            const customerSelect = document.getElementById("customer");
-                            const contactPersonSelect = document.getElementById("contact_person");
-
-                            customerSelect.addEventListener("change", function () {
-                                const customerId = this.value;
-
-                                // Clear existing options in contact person dropdown
-                                contactPersonSelect.innerHTML = '<option value="">Select Contact Person</option>';
-                                contactPersonSelect.disabled = true;
-
-                                if (customerId) {
-                                    // Fetch contact persons for the selected customer
-                                    const contactPersons = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
-
-                                    if (contactPersons[customerId]) {
-                                        contactPersons[customerId].forEach(contactPerson => {
-                                            const option = document.createElement("option");
-                                            option.value = contactPerson.id;
-                                            option.textContent = contactPerson.name;
-                                            contactPersonSelect.appendChild(option);
-                                        });
-                                        contactPersonSelect.disabled = false;
-                                    }
-                                }
-                            });
-                        });
-                    </script>
 
                     <!-- Invoice Date & Invoice No -->
                     <div class="grid grid-cols-2 gap-4">
@@ -469,4 +440,33 @@
             });
         });
     </script>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const customerSelect = document.getElementById("customer");
+                            const contactPersonSelect = document.getElementById("contact_person");
+
+                            customerSelect.addEventListener("change", function () {
+                                const customerId = this.value;
+
+                                // Clear existing options in contact person dropdown
+                                contactPersonSelect.innerHTML = '<option value="">Select Contact Person</option>';
+                                contactPersonSelect.disabled = true;
+
+                                if (customerId) {
+                                    // Fetch contact persons for the selected customer
+                                    const contactPersons = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
+
+                                    if (contactPersons[customerId]) {
+                                        contactPersons[customerId].forEach(contactPerson => {
+                                            const option = document.createElement("option");
+                                            option.value = contactPerson.id;
+                                            option.textContent = contactPerson.name;
+                                            contactPersonSelect.appendChild(option);
+                                        });
+                                        contactPersonSelect.disabled = false;
+                                    }
+                                }
+                            });
+                        });
+                    </script>
 </x-app-layout>

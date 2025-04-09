@@ -72,6 +72,7 @@
                         </table>
                         <button type="button" id="addRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Product</button>
                     </div>
+
                     <!-- Services Table -->
                     <div class="mt-6">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Items</h3>

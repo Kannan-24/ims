@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Stock;
 use App\Models\Customer;
+use App\Models\Service;
 use App\Models\ContactPerson;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +30,8 @@ class InvoiceController extends Controller
     {
         $customers = Customer::all();
         $products = Product::all();
-        return view('invoices.create', compact('customers', 'products'));
+        $services = Service::all();
+        return view('invoices.create', compact('customers', 'products', 'services'));
     }
 
     /**
@@ -44,24 +46,29 @@ class InvoiceController extends Controller
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
             'order_no' => 'required|string',
-            'products' => 'required|array',
-            'products.*.product_id' => 'required|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
-            'products.*.unit_price' => 'required|numeric|min:0',
+            'terms_condition' => 'nullable|string',
+            'products' => 'nullable|array',
+            'products.*.product_id' => 'nullable|exists:products,id',
+            'products.*.quantity' => 'required_with:products.*.product_id|integer|min:1',
+            'products.*.unit_price' => 'required_with:products.*.product_id|numeric|min:0',
+            'services' => 'nullable|array',
+            'services.*.service_id' => 'nullable|exists:services,id',
+            'services.*.quantity' => 'required_with:services.*.service_id|integer|min:1',
+            'services.*.unit_price' => 'required_with:services.*.service_id|numeric|min:0',
+            'services.*.gst_total' => 'nullable|numeric|min:0',
         ]);
 
-        foreach ($request->products as $product) {
-            $stock = Stock::where('product_id', $product['product_id'])->first();
+        $totalServiceGst = 0;
 
-            if (!$stock || ($stock->quantity - $stock->sold) < $product['quantity']) {
-                $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
-                return redirect()->back()->withErrors([
-                    'products' => "Product '{$productName}' is out of stock."
-                ])->withInput();
+        // Calculate total GST from services
+        if ($request->has('services')) {
+            foreach ($request->services as $service) {
+                if (isset($service['gst_total'])) {
+                    $totalServiceGst += $service['gst_total'];
+                }
             }
         }
 
-        // Create the invoice
         $invoice = Invoice::create([
             'customer_id' => $request->customer,
             'contactperson_id' => $request->contact_person,
@@ -69,35 +76,63 @@ class InvoiceController extends Controller
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
             'order_no' => $request->order_no,
+            'terms_condition' => $request->terms_condition,
             'sub_total' => $request->sub_total,
             'cgst' => $request->total_cgst,
             'sgst' => $request->total_sgst,
             'igst' => $request->total_igst,
-            'gst' => $request->total_cgst + $request->total_sgst + $request->total_igst,
+            'gst' => $request->total_cgst + $request->total_sgst + $request->total_igst + $totalServiceGst,
             'total' => $request->total,
         ]);
 
-        // Save invoice items and update stock
-        foreach ($request->products as $product) {
-            $productModel = Product::findOrFail($product['product_id']);
+        // Store products
+        if ($request->has('products')) {
+            foreach ($request->products as $product) {
+                if (isset($product['product_id'])) {
+                    $productModel = Product::findOrFail($product['product_id']);
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'product_id' => $product['product_id'],
+                        'service_id' => null,
+                        'quantity' => $product['quantity'],
+                        'unit_price' => $product['unit_price'],
+                        'unit_type' => $productModel->unit_type,
+                        'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
+                        'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
+                        'igst' => ($product['unit_price'] * $product['igst']) / 100,
+                        'gst' => 0,
+                        'total' => $product['total'],
+                        'type' => 'product',
+                    ]);
 
-            InvoiceItem::create([
-                'invoice_id' => $invoice->id,
-                'product_id' => $product['product_id'],
-                'quantity' => $product['quantity'],
-                'unit_price' => $product['unit_price'],
-                'unit_type' => $productModel->unit_type,
-                'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
-                'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
-                'igst' => ($product['unit_price'] * $product['igst']) / 100,
-                'total' => $product['total'],
-            ]);
+                    // Update the sold column in the stock table
+                    $stock = Stock::where('product_id', $product['product_id'])->first();
+                    if ($stock) {
+                        $stock->increment('sold', $product['quantity']);
+                    }
+                }
+            }
+        }
 
-            // Update the sold column in the stock table
-            $stock = Stock::where('product_id', $product['product_id'])->first();
-            if ($stock) {
-                $stock->sold += $product['quantity'];
-                $stock->save();
+        // Store services
+        if ($request->has('services')) {
+            foreach ($request->services as $service) {
+                if (isset($service['service_id'])) {
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'product_id' => null,
+                        'service_id' => $service['service_id'],
+                        'quantity' => $service['quantity'],
+                        'unit_price' => $service['unit_price'],
+                        'unit_type' => '-',
+                        'cgst' => 0,
+                        'sgst' => 0,
+                        'igst' => 0,
+                        'gst' => $service['gst_total'],
+                        'total' => $service['total'],
+                        'type' => 'service',
+                    ]);
+                }
             }
         }
 
@@ -109,7 +144,7 @@ class InvoiceController extends Controller
      */
     public function show($id)
     {
-        $invoice = Invoice::with('customer', 'items.product')->findOrFail($id);
+        $invoice = Invoice::with(['customer', 'items.product', 'items.service'])->findOrFail($id);
         return view('invoices.show', compact('invoice'));
     }
 
@@ -121,7 +156,8 @@ class InvoiceController extends Controller
         $invoice = Invoice::with('items')->findOrFail($id);
         $customers = Customer::all();
         $products = Product::all();
-        return view('invoices.edit', compact('invoice', 'customers', 'products'));
+        $services = Service::all();
+        return view('invoices.edit', compact('invoice', 'customers', 'products', 'services'));
     }
 
     /**
