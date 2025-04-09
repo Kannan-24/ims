@@ -36,7 +36,7 @@
                                     <td class="px-6 py-4 flex justify-center gap-3">
                                         <a href="{{ route('quotations.pdf', $quotation->id) }}"
                                             class="text-green-400 hover:text-green-600 transition duration-300"
-                                            title="Download PDF">
+                                            title="Download PDF" target="_blank">
                                             <i class="fas fa-file-pdf"></i>
                                         </a>
 

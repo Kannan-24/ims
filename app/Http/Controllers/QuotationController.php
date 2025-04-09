@@ -255,13 +255,15 @@ class QuotationController extends Controller
         return redirect()->route('quotations.index')->with('success', 'Quotation deleted successfully.');
     }
 
-
     public function generatePDF($id)
     {
         $quotation = Quotation::with('customer', 'items.product')->findOrFail($id);
 
         $pdf = PDF::loadView('quotations.pdf', compact('quotation'));
 
-        return $pdf->download('quotation_' . $quotation->quotation_code . '.pdf');
+        // Show the PDF in the browser
+        return $pdf->stream('quotation_' . $quotation->quotation_code . '.pdf');
     }
+
+
 }
