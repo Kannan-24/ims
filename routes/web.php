@@ -53,8 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/products/{product}/assign-suppliers', [ProductController::class, 'assignSuppliersForm'])->name('products.assignSuppliersForm');
     Route::post('/products/{product}/assign-suppliers', [ProductController::class, 'assignSupplier'])->name('products.assignSupplier');
     Route::get('/suppliers/assign/{supplier}', [SupplierController::class, 'supplierAssign'])->name('suppliers.assignSupplier');
-    Route::delete('/products/{product}/suppliers/{supplier}', [ProductController::class, 'removeSupplier'])
-        ->name('suppliers.remove');
+    Route::delete('/products/{product}/suppliers/{supplier}/remove', [ProductController::class, 'removeAssignedSupplier'])->name('suppliers.remove');
     Route::get('/purchases/get-products/{supplier}', [PurchaseController::class, 'getProductsBySupplier']);
 });
 

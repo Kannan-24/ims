@@ -116,7 +116,13 @@ class CustomerController extends Controller
             'contact_persons' => 'required|array|min:1',
             'contact_persons.*.name' => 'required|max:100',
             'contact_persons.*.phone_no' => 'required|max:20',
-            'contact_persons.*.email' => 'required|email|max:100|unique:contact_persons,email,' . $customer->id,
+            'contact_persons.*.email' => function ($attribute, $value, $fail) use ($customer) {
+                $contactPersonId = explode('.', $attribute)[1]; // Extract index from attribute
+                $existingEmail = $customer->contactPersons[$contactPersonId]->email ?? null;
+                if ($value !== $existingEmail && ContactPerson::where('email', $value)->exists()) {
+                    $fail('The ' . $attribute . ' has already been taken.');
+                }
+            },
         ]);
 
         DB::transaction(function () use ($request, $customer) {
@@ -143,7 +149,7 @@ class CustomerController extends Controller
             }
         });
 
-        return redirect()->route('customers.index')->with('success', 'Customer and contacts updated successfully.');
+        return redirect()->route('customers.show', $customer)->with('success', 'Customer and contacts updated successfully.');
     }
 
     /**

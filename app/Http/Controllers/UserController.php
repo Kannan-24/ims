@@ -46,8 +46,14 @@ class UserController extends Controller
             'role' => 'required|string|max:255',
         ]);
 
+        // Generate a unique employee ID
+        $lastUser = User::latest('id')->first();
+        $lastEmployeeId = $lastUser ? intval(substr($lastUser->employee_id, 4)) : 0;
+        $newEmployeeId = 'SKME' . str_pad($lastEmployeeId + 1, 3, '0', STR_PAD_LEFT);
+
         // Create a new user
         User::create([
+            'employee_id' => $newEmployeeId,
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
@@ -105,6 +111,7 @@ class UserController extends Controller
 
         // Update the user with the new data.
         $user->update([
+            'employee_id' => $user->employee_id, // Keep the existing employee ID
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password ? bcrypt($request->password) : $user->password,

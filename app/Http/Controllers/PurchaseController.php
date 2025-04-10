@@ -94,7 +94,7 @@ class PurchaseController extends Controller
 
         $batchCode = "Batch_{$nextLetter}" . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
-        // **Loop through products and use the SAME batch code**
+        // **Loop through products and use thse SAME batch code**
         foreach ($request->products as $product) {
             PurchaseItem::create([
                 'purchase_id' => $purchase->id,
@@ -102,9 +102,10 @@ class PurchaseController extends Controller
                 'quantity' => $product['quantity'],
                 'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
                 'unit_price' => $product['unit_price'],
-                'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
-                'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
-                'igst' => ($product['unit_price'] * $product['igst']) / 100,
+                'gst'  => $product['gst_percentage'],
+                'cgst' => $product['cgst_value'],
+                'sgst' => $product['sgst_value'],
+                'igst' => $product['igst_value'],
                 'total' => $product['total'],
             ]);
 

@@ -38,14 +38,14 @@
                     <p><strong>Description:</strong> {{ $product->description }}</p>
                     <p><strong>Unit Type:</strong> {{ $product->unit_type }}</p>
                     <p><strong>HSN Code:</strong> {{ $product->hsn_code }}</p>
-                    <p><strong>Tax Type:</strong> 
-                        @if($product->is_igst)
+                    <p><strong>Tax Type:</strong>
+                        @if ($product->is_igst)
                             <span class="text-red-400 font-semibold">IGST</span>
                         @else
                             <span class="text-green-400 font-semibold">GST</span>
                         @endif
                     </p>
-                    <p><strong>{{ $product->is_igst ? 'IGST' : 'GST' }} Percentage:</strong> 
+                    <p><strong>{{ $product->is_igst ? 'IGST' : 'GST' }} Percentage:</strong>
                         {{ $product->gst_percentage }}%
                     </p>
                 </div>
@@ -58,16 +58,20 @@
                     @else
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
                             @foreach ($product->suppliers as $supplier)
-                                <div class="relative overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg transition-transform transform hover:scale-105 cursor-pointer"
-                                    onclick="window.location='{{ route('suppliers.show', $supplier->id) }}'">
+                                <div
+                                    class="relative overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg transition-transform transform hover:scale-105 cursor-pointer">
                                     <div class="p-6">
-                                        <h2 class="text-lg font-semibold text-white">{{ $supplier->supplier_id }}</h2>
-                                        <p class="text-sm text-gray-200">{{ $supplier->supplier_name }}</p>
-                                        <p class="text-sm text-gray-200">{{ $supplier->state }}</p>
+                                        <a href="{{ route('suppliers.show', $supplier->id) }}">
+                                            <h2 class="text-lg font-semibold text-white">{{ $supplier->supplier_id }}
+                                            </h2>
+                                            <p class="text-sm text-gray-200">{{ $supplier->supplier_name }}</p>
+                                            <p class="text-sm text-gray-200">{{ $supplier->state }}</p>
+                                        </a>
+
                                         <div class="mt-4">
                                             <form
                                                 action="{{ route('suppliers.remove', ['product' => $product->id, 'supplier' => $supplier->id]) }}"
-                                                method="POST" 
+                                                method="POST"
                                                 onsubmit="return confirm('Are you sure you want to remove this supplier?');">
                                                 @csrf
                                                 @method('DELETE')
@@ -78,6 +82,7 @@
                                             </form>
                                         </div>
                                     </div>
+
                                     <div class="absolute top-0 right-0 p-3">
                                         <span
                                             class="inline-block px-3 py-1 text-xs font-semibold text-white bg-black bg-opacity-30 rounded-full">
@@ -87,6 +92,7 @@
                                 </div>
                             @endforeach
                         </div>
+
                     @endif
                 </div>
             </div>

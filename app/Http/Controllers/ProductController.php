@@ -101,9 +101,11 @@ class ProductController extends Controller
         return redirect()->route('products.show', $product)->with('success', 'Supplier(s) assigned successfully.');
     }
 
-    public function removeSupplier(Product $product, Supplier $supplier)
+    public function removeAssignedSupplier(Product $product, Supplier $supplier)
     {
-        DB::table('product_suppliers')->where('product_id', $product->id)->where('supplier_id', $supplier->id)->delete();
-        return redirect()->back()->with('success', 'Supplier removed successfully.');
+        // Detach the supplier from the pivot table
+        $product->suppliers()->detach($supplier->id);
+
+        return redirect()->route('products.show', $product)->with('success', 'Supplier removed successfully.');
     }
 }

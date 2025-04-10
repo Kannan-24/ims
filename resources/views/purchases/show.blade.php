@@ -59,6 +59,7 @@
                                     <th class="px-6 py-4 text-left">Product Name</th>
                                     <th class="px-6 py-4 text-left">Quantity</th>
                                     <th class="px-6 py-4 text-left">Unit Price</th>
+                                    <th class="px-6 py-4 text-left">GST</th>
                                     <th class="px-6 py-4 text-left">CGST</th>
                                     <th class="px-6 py-4 text-left">SGST</th>
                                     <th class="px-6 py-4 text-left">IGST</th>
@@ -72,6 +73,7 @@
                                         <td class="px-6 py-4">{{ $item->product->name }}</td>
                                         <td class="px-6 py-4">{{ $item->quantity }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($item->unit_price, 2) }}</td>
+                                        <td class="px-6 py-4">{{ $item->gst }}%</td>
                                         <td class="px-6 py-4">₹{{ number_format($item->cgst, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($item->sgst, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($item->igst, 2) }}</td>

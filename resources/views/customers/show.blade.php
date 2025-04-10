@@ -28,15 +28,40 @@
 
                 <hr class="my-6 border-gray-600">
 
-                <div class="space-y-4 text-gray-300">
-                    <p><strong>Customer Name:</strong> {{ $customer->company_name }}</p>
-                    <p><strong>Address:</strong> {{ $customer->address }}</p>
-                    <p><strong>City:</strong> {{ $customer->city }}</p>
-                    <p><strong>State:</strong> {{ $customer->state }}</p>
-                    <p><strong>ZIP Code:</strong> {{ $customer->zip_code }}</p>
-                    <p><strong>Country:</strong> {{ $customer->country }}</p>
-                    <p><strong>GST Number:</strong> {{ $customer->gst_number }}</p>
-                </div>
+                <table class="w-auto text-gray-300 border-collapse">
+                    <tr>
+                        <td class="px-4 py-2 font-semibold">Customer ID</td>
+                        <td class="px-4 py-2">{{ $customer->cid }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 font-semibold">Customer Name</td>
+                        <td class="px-4 py-2">{{ $customer->company_name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 font-semibold">Address</td>
+                        <td class="px-4 py-2">{{ $customer->address }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 font-semibold">City</td>
+                        <td class="px-4 py-2">{{ $customer->city }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 font-semibold">State</td>
+                        <td class="px-4 py-2">{{ $customer->state }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 font-semibold">ZIP Code</td>
+                        <td class="px-4 py-2">{{ $customer->zip_code }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 font-semibold">Country</td>
+                        <td class="px-4 py-2">{{ $customer->country }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 font-semibold">GST Number</td>
+                        <td class="px-4 py-2">{{ $customer->gst_number }}</td>
+                    </tr>
+                </table>
 
                 <div class="mt-8">
                     <h3 class="text-2xl font-bold text-gray-200 mb-4">Contact Persons</h3>

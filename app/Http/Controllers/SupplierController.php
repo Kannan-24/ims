@@ -47,18 +47,14 @@ class SupplierController extends Controller
             'gst' => 'required|max:50',
         ]);
 
-        // Generate the supplier_id
         $lastSupplier = Supplier::latest('id')->first();
-        $lastSupplierId = $lastSupplier ? $lastSupplier->supplier_id : 'SUP00'; // Default if no suppliers are found
+        $lastSupplierId = $lastSupplier ? $lastSupplier->supplier_id : 'SKMS00';
 
-        // Extract the numeric part and increment it
         preg_match('/\d+/', $lastSupplierId, $matches);
-        $lastNumber = $matches ? (int) $matches[0] : 0; // Extract number from the supplier_id and cast it to an integer
+        $lastNumber = $matches ? (int) $matches[0] : 0;
 
-        // Create the new supplier_id
-        $newSupplierId = 'SUP' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT); // Increment and pad the number
+        $newSupplierId = 'SKMS' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT);
 
-        // Create a new supplier
         Supplier::create([
             'supplier_id' => $newSupplierId,
             'name' => $request->supplier_name,

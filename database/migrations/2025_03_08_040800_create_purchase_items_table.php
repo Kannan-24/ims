@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->string('unit_type'); // kg, litre, etc.
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
+            $table->decimal('gst', 10, 2)->nullable();
             $table->decimal('total', 10, 2);
             $table->decimal('cgst', 10, 2)->nullable();
             $table->decimal('sgst', 10, 2)->nullable();

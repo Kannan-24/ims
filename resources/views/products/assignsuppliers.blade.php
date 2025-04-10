@@ -22,10 +22,10 @@
                         <select name="suppliers" id="suppliers"
                             class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                             required onchange="fetchSupplierDetails(this.value)">
-                            <option value="">Select a supplier</option>
+                            <option value="">Select supplier</option>
                             @foreach ($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}">{{ $supplier->supplier_id }} -
-                                    {{ $supplier->supplier_name }} - {{ $supplier->state }}</option>
+                                    {{ $supplier->name }} - {{ $supplier->state }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -35,7 +35,7 @@
                         class="p-6 mt-3 bg-gray-700 border border-gray-600 rounded-lg shadow-lg hidden">
                         <h3 class="text-xl font-bold text-blue-400">Supplier Details</h3>
                         <div class="mt-2">
-                            <p class="text-lg text-gray-300"><strong>Name:</strong> <span id="supplier-name"
+                            <p class="text-lg text-gray-300"><strong>Company Name:</strong> <span id="supplier-name"
                                     class="text-gray-300"></span></p>
                             <p class="text-lg text-gray-300"><strong>Contact Person:</strong> <span id="supplier-contact-person"
                                     class="text-gray-300"></span></p>
@@ -72,7 +72,11 @@
             fetch(`/suppliers/assign/${supplierId}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('supplier-name').textContent = data.supplier.name;
+                    if (!data || !data.supplier) {
+                        console.error('Supplier data not found');
+                        return;
+                    }
+                    document.getElementById('supplier-name').textContent = '{{ $supplier->name }}';
                     document.getElementById('supplier-contact-person').textContent = data.supplier.contact_person;
                     document.getElementById('supplier-email').textContent = data.supplier.email;
                     document.getElementById('supplier-phone').textContent = data.supplier.phone;
