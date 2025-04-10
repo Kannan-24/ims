@@ -11,7 +11,7 @@
             <div class="bg-gray-800 p-6 rounded-lg shadow-md">
                 <h2 class="text-3xl font-bold text-gray-200 mb-6">Create Purchase</h2>
 
-                <form action="{{ route('purchases.store') }}" method="POST">
+                <form action="{{ route('purchases.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <!-- Supplier Selection -->

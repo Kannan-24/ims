@@ -198,7 +198,7 @@
     </div>
 
     <!-- Product Selection Modal -->
-    <div id="productModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 items-center justify-center hidden">
+    <div id="productModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center">
         <div class="bg-gray-800 p-6 rounded-lg shadow-md w-1/2">
             <h2 class="text-2xl font-bold text-gray-200 mb-6">Select Product</h2>
 
@@ -239,7 +239,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        calculateSummary(); // Ensure default values are calculated on page load.
         const productTable = document.getElementById("productTable");
         const addRowBtn = document.getElementById("addRow");
         const productModal = document.getElementById("productModal");
@@ -301,7 +300,6 @@
             productTable.appendChild(row);
             addEventListenersToRow(row);
             currentRow = row;
-            productModal.classList.add("flex");
             productModal.classList.remove("hidden");
         }
 
@@ -403,8 +401,7 @@
 
                 updateGSTValues(currentRow);
                 calculateRowTotal(currentRow);
-                productModal.classList.remove("flex");
-                productModal.classList.add("hidden");
+
                 productModal.classList.add("hidden");
             });
         });

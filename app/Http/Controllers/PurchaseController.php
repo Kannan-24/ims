@@ -8,6 +8,8 @@ use App\Models\Supplier;
 use App\Models\PurchaseItem;
 use App\Models\Stock;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PurchaseController extends Controller
 {
@@ -56,9 +58,10 @@ class PurchaseController extends Controller
             'products.*.sgst' => 'required|numeric',
             'products.*.igst' => 'required|numeric',
             'products.*.total' => 'required|numeric',
+            'purchase_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        // Find or create the purchase
+        // Save or update the purchase
         $purchase = Purchase::updateOrCreate(
             [
                 'supplier_id' => $request->supplier_id,
@@ -75,7 +78,8 @@ class PurchaseController extends Controller
             ]
         );
 
-        $latestBatch = \App\Models\Stock::latest()->first();
+        // Batch code logic
+        $latestBatch = Stock::latest()->first();
         $nextLetter = 'A';
         $nextNumber = 1;
 
@@ -84,7 +88,7 @@ class PurchaseController extends Controller
             $currentNumber = (int)$matches[2];
 
             if ($currentNumber >= 999) {
-                $nextLetter = chr(ord($currentLetter) + 1); // Move to next letter
+                $nextLetter = chr(ord($currentLetter) + 1);
                 $nextNumber = 1;
             } else {
                 $nextLetter = $currentLetter;
@@ -94,18 +98,20 @@ class PurchaseController extends Controller
 
         $batchCode = "Batch_{$nextLetter}" . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
-        // **Loop through products and use thse SAME batch code**
+        // Create purchase items and stock entries
         foreach ($request->products as $product) {
+            $unitType = Product::find($product['product_id'])->unit_type ?? 'unit';
+
             PurchaseItem::create([
                 'purchase_id' => $purchase->id,
                 'product_id' => $product['product_id'],
                 'quantity' => $product['quantity'],
-                'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
+                'unit_type' => $unitType,
                 'unit_price' => $product['unit_price'],
-                'gst'  => $product['gst_percentage'],
-                'cgst' => $product['cgst_value'],
-                'sgst' => $product['sgst_value'],
-                'igst' => $product['igst_value'],
+                'gst' => $product['gst_percentage'],
+                'cgst' => $product['cgst'],
+                'sgst' => $product['sgst'],
+                'igst' => $product['igst'],
                 'total' => $product['total'],
             ]);
 
@@ -113,10 +119,25 @@ class PurchaseController extends Controller
                 'product_id' => $product['product_id'],
                 'purchase_id' => $purchase->id,
                 'supplier_id' => $request->supplier_id,
-                'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
+                'unit_type' => $unitType,
                 'quantity' => $product['quantity'],
-                'batch_code' => $batchCode, // ✅ SAME batch code for all products
+                'batch_code' => $batchCode,
             ]);
+        }
+
+        if ($request->hasFile('purchase_file')) {
+            $file = $request->file('purchase_file');
+            $extension = $file->getClientOriginalExtension();
+            $fileName = $request->invoice_no . '.' . $extension;
+            $folder = 'purchase_files';
+
+            // ✅ Ensure the folder exists
+            if (!Storage::disk('public')->exists($folder)) {
+                Storage::disk('public')->makeDirectory($folder, 0755, true);
+            }
+
+            // ✅ Store the file with the invoice number as the name
+            $file->storeAs($folder, $fileName, 'public');
         }
 
         return redirect()->route('purchases.index')->with('response', [
@@ -132,7 +153,25 @@ class PurchaseController extends Controller
     {
         $purchase = Purchase::with(['supplier', 'items.product'])->findOrFail($id);
 
-        return view('purchases.show', compact('purchase'));
+        // File name is expected to be invoice_no.pdf/jpg/png stored in 'public/purchase_files'
+        $fileName = $purchase->invoice_no . '.pdf';
+        $imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+
+        $filePath = null;
+        if (Storage::disk('public')->exists("purchase_files/$fileName")) {
+            $filePath = asset("storage/purchase_files/$fileName");
+        } else {
+            // Check if it's an image file instead of PDF
+            foreach ($imageExtensions as $ext) {
+                $imageFile = $purchase->invoice_no . '.' . $ext;
+                if (Storage::disk('public')->exists("purchase_files/$imageFile")) {
+                    $filePath = asset("storage/purchase_files/$imageFile");
+                    break;
+                }
+            }
+        }
+
+        return view('purchases.show', compact('purchase', 'filePath'));
     }
 
 
@@ -175,6 +214,7 @@ class PurchaseController extends Controller
             'products.*.sgst' => 'required|numeric',
             'products.*.igst' => 'required|numeric',
             'products.*.total' => 'required|numeric',
+            'purchase_file' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
         ]);
 
         $purchase->update([
@@ -189,18 +229,18 @@ class PurchaseController extends Controller
             'total' => $request->grand_total,
         ]);
 
-        // Delete old purchase items and stocks
+        // 🔁 Delete old purchase items and stocks
         $purchase->purchaseItems()->delete();
         $purchase->stocks()->delete();
 
-        // Generate new batch code
+        // 🔁 Generate new batch code
         $latestBatch = \App\Models\Stock::latest()->first();
         $nextLetter = 'A';
         $nextNumber = 1;
 
         if ($latestBatch && preg_match('/Batch_([A-Z])(\d{3})/', $latestBatch->batch_code, $matches)) {
             $currentLetter = $matches[1];
-            $currentNumber = (int)$matches[2];
+            $currentNumber = (int) $matches[2];
 
             if ($currentNumber >= 999) {
                 $nextLetter = chr(ord($currentLetter) + 1);
@@ -213,7 +253,7 @@ class PurchaseController extends Controller
 
         $batchCode = "Batch_{$nextLetter}" . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
-        // Loop through products and use the SAME batch code
+        // 🔁 Loop through products and add entries
         foreach ($request->products as $product) {
             PurchaseItem::create([
                 'purchase_id' => $purchase->id,
@@ -224,7 +264,7 @@ class PurchaseController extends Controller
                 'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
                 'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
                 'igst' => ($product['unit_price'] * $product['igst']) / 100,
-                'gst' => $product['cgst'] + $product['sgst'] + $product['igst'],
+                'gst'  => $product['cgst'] + $product['sgst'] + $product['igst'],
                 'total' => $product['total'],
             ]);
 
@@ -236,6 +276,20 @@ class PurchaseController extends Controller
                 'quantity' => $product['quantity'],
                 'batch_code' => $batchCode,
             ]);
+        }
+
+        // 📦 Handle file upload if exists
+        if ($request->hasFile('purchase_file')) {
+            $file = $request->file('purchase_file');
+            $invoiceFolder = 'purchases/' . $request->invoice_no;
+
+            // Ensure folder exists
+            if (!Storage::exists($invoiceFolder)) {
+                Storage::makeDirectory($invoiceFolder);
+            }
+
+            $filename = 'invoice_' . Str::slug($request->invoice_no) . '.' . $file->getClientOriginalExtension();
+            $file->storeAs($invoiceFolder, $filename);
         }
 
         return redirect()->route('purchases.index')->with('response', [

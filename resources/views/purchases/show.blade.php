@@ -112,6 +112,18 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if ($filePath)
+                    <div class="mt-6">
+                        <h2 class="text-xl font-semibold mb-2">Uploaded File</h2>
+                        <a href="{{ $filePath }}" target="_blank"
+                            class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
+                            View Uploaded File
+                        </a>
+                    </div>
+                @else
+                    <p class="text-red-500 font-semibold">No uploaded file found for this purchase.</p>
+                @endif
             </div>
         </div>
     </div>
