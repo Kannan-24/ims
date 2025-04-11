@@ -29,7 +29,7 @@ class QuotationController extends Controller
     public function create()
     {
         $customers = Customer::all();
-        $products = Product::all();
+        $products = Product::with('stock')->get();
         $services = Service::all();
         return view('quotations.create', compact('customers', 'products', 'services'));
     }
@@ -48,13 +48,18 @@ class QuotationController extends Controller
             'products.*.product_id' => 'nullable|exists:products,id',
             'products.*.quantity' => 'required_with:products.*.product_id|integer|min:1',
             'products.*.unit_price' => 'required_with:products.*.product_id|numeric|min:0',
+            'products.*.cgst' => 'nullable|numeric|min:0',
+            'products.*.sgst' => 'nullable|numeric|min:0',
+            'products.*.igst' => 'nullable|numeric|min:0',
+            'products.*.total' => 'nullable|numeric|min:0',
             'services' => 'nullable|array',
             'services.*.service_id' => 'nullable|exists:services,id',
             'services.*.quantity' => 'required_with:services.*.service_id|integer|min:1',
             'services.*.unit_price' => 'required_with:services.*.service_id|numeric|min:0',
             'services.*.gst_total' => 'nullable|numeric|min:0',
+            'services.*.total' => 'nullable|numeric|min:0',
         ]);
-    
+
         $totalServiceGst = 0;
 
         // Calculate total GST from services
@@ -71,14 +76,14 @@ class QuotationController extends Controller
             'quotation_code' => $request->quotation_code,
             'quotation_date' => $request->quotation_date,
             'terms_condition' => $request->terms_condition,
-            'sub_total' => $request->sub_total,
-            'cgst' => $request->total_cgst,
-            'sgst' => $request->total_sgst,
-            'igst' => $request->total_igst,
-            'gst' => $request->total_cgst + $request->total_sgst + $request->total_igst + $totalServiceGst,
-            'total' => $request->total,
+            'sub_total' => $request->product_subtotal + $request->service_subtotal,
+            'cgst' => $request->product_total_cgst + ($totalServiceGst / 2),
+            'sgst' => $request->product_total_sgst + ($totalServiceGst / 2),
+            'igst' => $request->product_total_igst,
+            'gst' => $request->product_total_cgst + $request->product_total_sgst + $request->product_total_igst + $totalServiceGst,
+            'total' => $request->grand_total,
         ]);
-    
+
         // Store products
         if ($request->has('products')) {
             foreach ($request->products as $product) {
@@ -91,17 +96,17 @@ class QuotationController extends Controller
                         'quantity' => $product['quantity'],
                         'unit_price' => $product['unit_price'],
                         'unit_type' => $productModel->unit_type,
-                        'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
-                        'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
-                        'igst' => ($product['unit_price'] * $product['igst']) / 100,
-                        'gst' => 0,
+                        'cgst' => $request->product_total_cgst,
+                        'sgst' => $request->product_total_sgst,
+                        'igst' => $request->product_total_igst,
+                        'gst' => $request->product_total_cgst + $request->product_total_sgst + $request->product_total_igst,
                         'total' => $product['total'],
                         'type' => 'product',
                     ]);
                 }
             }
         }
-    
+
         // Store services
         if ($request->has('services')) {
             foreach ($request->services as $service) {
@@ -113,8 +118,8 @@ class QuotationController extends Controller
                         'quantity' => $service['quantity'],
                         'unit_price' => $service['unit_price'],
                         'unit_type' => '-',
-                        'cgst' => 0,
-                        'sgst' => 0,
+                        'cgst' => $service['gst_total'] / 2,
+                        'sgst' => $service['gst_total'] / 2,
                         'igst' => 0,
                         'gst' => $service['gst_total'],
                         'total' => $service['total'],
@@ -123,7 +128,7 @@ class QuotationController extends Controller
                 }
             }
         }
-    
+
         return redirect()->route('quotations.index')->with('success', 'Quotation created successfully.');
     }
 

@@ -73,40 +73,34 @@
                         <button type="button" id="addRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Product</button>
                     </div>
                     
-                    <!-- Summary Section -->
+                    <!-- Product Summary Section -->
                     <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
+                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Product Summary</h3>
                         <div class="grid grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Subtotal:</label>
-                                <input type="text" id="subtotal" name="sub_total" value="{{ old('subtotal') }}"
+                                <label class="block text-gray-300 font-semibold mb-2">Product Subtotal:</label>
+                                <input type="text" id="productSubtotal" name="product_subtotal" value="{{ old('product_subtotal') }}"
                                     class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
-                                <label class="block text-gray-300 font-semibold mb-2">CGST Total:</label>
-                                <input type="text" id="totalCgst" name="total_cgst" value="{{ old('total_cgst') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <label class="block text-gray-300 font-semibold mb-2">Product CGST Total:</label>
+                                <input type="text" id="productTotalCgst" name="product_total_cgst" value="{{ old('product_total_cgst') }}"
+                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
-                                <label class="block text-gray-300 font-semibold mb-2">SGST Total:</label>
-                                <input type="text" id="totalSgst" name="total_sgst" value="{{ old('total_sgst') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <label class="block text-gray-300 font-semibold mb-2">Product SGST Total:</label>
+                                <input type="text" id="productTotalSgst" name="product_total_sgst" value="{{ old('product_total_sgst') }}"
+                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
-                                <label class="block text-gray-300 font-semibold mb-2">IGST Total:</label>
-                                <input type="text" id="totalIgst" name="total_igst" value="{{ old('total_igst') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <!-- GST Total -->
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">GST Total:</label>
-                                <input type="text" id="totalGst" name="total_gst" value="{{ old('total_gst') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <label class="block text-gray-300 font-semibold mb-2">Product IGST Total:</label>
+                                <input type="text" id="productTotalIgst" name="product_total_igst" value="{{ old('product_total_igst') }}"
+                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
-                                <input type="text" id="grandTotal" name="total"
-                                    value="{{ old('grand_total') }}" class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <label class="block text-gray-300 font-semibold mb-2">Product Total:</label>
+                                <input type="text" id="productTotal" name="product_total" value="{{ old('product_total') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                         </div>
                     </div>
@@ -136,19 +130,29 @@
                                 </tbody>
                             </table>
                             <button type="button" id="addServiceRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Service</button>
-                            <!-- Summary Section -->
+
+                            <!-- Service Summary Section -->
                             <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
-                                <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
+                                <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Summary</h3>
                                 <div class="grid grid-cols-3 gap-4">
                                     <div>
-                                        <label class="block text-gray-300 font-semibold mb-2">Subtotal:</label>
-                                        <input type="text" id="subtotal" name="sub_total" value="{{ old('subtotal') }}"
+                                        <label class="block text-gray-300 font-semibold mb-2">Service Subtotal:</label>
+                                        <input type="text" id="serviceSubtotal" name="service_subtotal" value="{{ old('service_subtotal') }}"
                                             class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                                     </div>
-                                    <!-- GST Total -->
                                     <div>
-                                        <label class="block text-gray-300 font-semibold mb-2">GST Total:</label>
-                                        <input type="text" id="totalGst" name="total_gst" value="{{ old('total_gst') }}"
+                                        <label class="block text-gray-300 font-semibold mb-2">Service CGST Total:</label>
+                                        <input type="text" id="serviceTotalCgst" name="service_total_cgst" value="{{ old('service_total_cgst') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-300 font-semibold mb-2">Service SGST Total:</label>
+                                        <input type="text" id="serviceTotalSgst" name="service_total_sgst" value="{{ old('service_total_sgst') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-300 font-semibold mb-2">Service Total:</label>
+                                        <input type="text" id="serviceTotal" name="service_total" value="{{ old('service_total') }}"
                                             class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                                     </div>
                                 </div>
@@ -209,6 +213,26 @@
                             });
                         });
                     </script>
+
+                    <!-- Grand Total Section -->
+                    <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Grand Total</h3>
+                        <div>
+                            <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
+                            <input type="text" id="grandTotal" name="grand_total" value="{{ old('grand_total') }}"
+                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 font-semibold mb-2">Grand Sub Total:</label>
+                            <input type="text" id="grandSubTotal" name="grand_sub_total" value="{{ old('grand_sub_total') }}"
+                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>        
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 font-semibold mb-2">Grand GST Total:</label>
+                            <input type="text" id="grandGstTotal" name="grand_gst_total" value="{{ old('grand_gst_total') }}"
+                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                        </div>
+                    </div>
 
                     <div class="mt-6">
                         <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Submit Quotation</button>
@@ -453,13 +477,20 @@
             }
 
             function calculateSummary() {
-                let subtotal = 0,
-                    totalCgst = 0,
-                    totalSgst = 0,
-                    totalIgst = 0,
-                    totalGst = 0,
-                    grandTotal = 0;
+                let productSubtotal = 0,
+                    productTotal = 0,
+                    productTotalCgst = 0,
+                    productTotalSgst = 0,
+                    productTotalIgst = 0,
+                    serviceSubtotal = 0,
+                    serviceTotal = 0,
+                    serviceTotalCgst = 0,
+                    serviceTotalSgst = 0,
+                    grandTotal = 0,
+                    grandSubTotal = 0,
+                    grandGstTotal = 0;
 
+                // Calculate product summary
                 document.querySelectorAll("#productTable tr").forEach(row => {
                     let rowTotal = parseFloat(row.querySelector(".total").value) || 0;
                     let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
@@ -467,28 +498,47 @@
                     let igst = parseFloat(row.querySelector(".igst").value) || 0;
 
                     let baseAmount = rowTotal / (1 + (cgst + sgst + igst) / 100);
-                    subtotal += baseAmount;
-                    totalCgst += (baseAmount * cgst) / 100;
-                    totalSgst += (baseAmount * sgst) / 100;
-                    totalIgst += (baseAmount * igst) / 100;
+                    productSubtotal += baseAmount;
+                    productTotal += rowTotal;
+                    productTotalCgst += (baseAmount * cgst) / 100;
+                    productTotalSgst += (baseAmount * sgst) / 100;
+                    productTotalIgst += (baseAmount * igst) / 100;
                 });
 
+                // Calculate service summary
                 document.querySelectorAll("#serviceTable tr").forEach(row => {
                     let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
-                    let gstTotal = parseFloat(row.querySelector(".service-gst-total").value) || 0;
+                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
+                    let gstTotal = (unitPrice * gstPercentage) / 100;
 
-                    subtotal += unitPrice;
-                    totalGst += gstTotal;
+                    serviceSubtotal += unitPrice;
+                    serviceTotal += unitPrice + gstTotal;
+                    serviceTotalCgst += gstTotal / 2;
+                    serviceTotalSgst += gstTotal / 2;
                 });
 
-                grandTotal = subtotal + totalCgst + totalSgst + totalIgst + totalGst;
+                // Calculate grand total
+                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst + serviceTotalSgst;
+                grandTotal = productTotal + serviceTotal;
+                grandSubTotal = productSubtotal + serviceSubtotal;
 
-                document.getElementById("subtotal").value = subtotal.toFixed(2);
-                document.getElementById("totalCgst").value = totalCgst.toFixed(2);
-                document.getElementById("totalSgst").value = totalSgst.toFixed(2);
-                document.getElementById("totalIgst").value = totalIgst.toFixed(2);
-                document.getElementById("totalGst").value = totalGst.toFixed(2);
+                // Update product summary fields
+                document.getElementById("productSubtotal").value = productSubtotal.toFixed(2);
+                document.getElementById("productTotal").value = productTotal.toFixed(2);
+                document.getElementById("productTotalCgst").value = productTotalCgst.toFixed(2);
+                document.getElementById("productTotalSgst").value = productTotalSgst.toFixed(2);
+                document.getElementById("productTotalIgst").value = productTotalIgst.toFixed(2);
+
+                // Update service summary fields
+                document.getElementById("serviceSubtotal").value = serviceSubtotal.toFixed(2);
+                document.getElementById("serviceTotal").value = serviceTotal.toFixed(2);
+                document.getElementById("serviceTotalCgst").value = serviceTotalCgst.toFixed(2);
+                document.getElementById("serviceTotalSgst").value = serviceTotalSgst.toFixed(2);
+
+                // Update grand total fields
                 document.getElementById("grandTotal").value = grandTotal.toFixed(2);
+                document.getElementById("grandSubTotal").value = grandSubTotal.toFixed(2);
+                document.getElementById("grandGstTotal").value = grandGstTotal.toFixed(2);
             }
 
             document.querySelectorAll(".select-product").forEach(button => {
