@@ -24,6 +24,22 @@
                         <textarea id="order_no_text" name="order_no_text" class="w-full mt-4 px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition hidden" placeholder="Enter Order No"></textarea>
                     </div>
 
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const orderNoSelect = document.getElementById("order_no");
+                            const orderNoText = document.getElementById("order_no_text");
+
+                            orderNoSelect.addEventListener("change", function () {
+                                if (this.value === "other") {
+                                    orderNoText.classList.remove("hidden");
+                                } else {
+                                    orderNoText.classList.add("hidden");
+                                    orderNoText.value = ""; // Clear the text area when hidden
+                                }
+                            });
+                        });
+                    </script>
+
                     <!-- Customer -->
                     <div class="mb-6">
                         <label for="customer" class="block text-gray-300 font-semibold mb-2">Customer:</label>

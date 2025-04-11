@@ -72,27 +72,88 @@
                         </table>
                         <button type="button" id="addRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Product</button>
                     </div>
+                    
+                    <!-- Summary Section -->
+                    <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-gray-300 font-semibold mb-2">Subtotal:</label>
+                                <input type="text" id="subtotal" name="sub_total" value="{{ old('subtotal') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 font-semibold mb-2">CGST Total:</label>
+                                <input type="text" id="totalCgst" name="total_cgst" value="{{ old('total_cgst') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 font-semibold mb-2">SGST Total:</label>
+                                <input type="text" id="totalSgst" name="total_sgst" value="{{ old('total_sgst') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 font-semibold mb-2">IGST Total:</label>
+                                <input type="text" id="totalIgst" name="total_igst" value="{{ old('total_igst') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                            </div>
+                            <!-- GST Total -->
+                            <div>
+                                <label class="block text-gray-300 font-semibold mb-2">GST Total:</label>
+                                <input type="text" id="totalGst" name="total_gst" value="{{ old('total_gst') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
+                                <input type="text" id="grandTotal" name="total"
+                                    value="{{ old('grand_total') }}" class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Services Table -->
                     <div class="mt-6">
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Items</h3>
-                        <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
-                            <thead>
-                                <tr class="text-sm text-gray-400 bg-gray-700">
-                                    <th class="px-3 py-3 border-b border-gray-600">Service</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">Quantity</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">Unit Price</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">GST %</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">GST Total</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">Total</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm text-gray-300" id="serviceTable">
+                        <label class="flex items-center text-gray-300 font-semibold mb-4">
+                            <input type="checkbox" id="toggleServiceSelection" class="mr-2">
+                            Include Services
+                        </label>
+                        <div id="serviceSection" class="hidden">
+                            <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Items</h3>
+                            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                                <thead>
+                                    <tr class="text-sm text-gray-400 bg-gray-700">
+                                        <th class="px-3 py-3 border-b border-gray-600">Service</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Quantity</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Unit Price</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">GST %</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">GST Total</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Total</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm text-gray-300" id="serviceTable">
 
-                            </tbody>
-                        </table>
-                        <button type="button" id="addServiceRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Service</button>
+                                </tbody>
+                            </table>
+                            <button type="button" id="addServiceRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Service</button>
+                            <!-- Summary Section -->
+                            <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
+                                <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-gray-300 font-semibold mb-2">Subtotal:</label>
+                                        <input type="text" id="subtotal" name="sub_total" value="{{ old('subtotal') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                    </div>
+                                    <!-- GST Total -->
+                                    <div>
+                                        <label class="block text-gray-300 font-semibold mb-2">GST Total:</label>
+                                        <input type="text" id="totalGst" name="total_gst" value="{{ old('total_gst') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Service Selection Modal -->
@@ -133,44 +194,21 @@
                                 class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>
                         </div>
                     </div>
-                    
-                    <!-- Summary Section -->
-                    <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Subtotal:</label>
-                                <input type="text" id="subtotal" name="sub_total" value="{{ old('subtotal') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">CGST Total:</label>
-                                <input type="text" id="totalCgst" name="total_cgst" value="{{ old('total_cgst') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">SGST Total:</label>
-                                <input type="text" id="totalSgst" name="total_sgst" value="{{ old('total_sgst') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">IGST Total:</label>
-                                <input type="text" id="totalIgst" name="total_igst" value="{{ old('total_igst') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <!-- GST Total -->
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">GST Total:</label>
-                                <input type="text" id="totalGst" name="total_gst" value="{{ old('total_gst') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
-                                <input type="text" id="grandTotal" name="total"
-                                    value="{{ old('grand_total') }}" class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                        </div>
-                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const toggleServiceCheckbox = document.getElementById("toggleServiceSelection");
+                            const serviceSection = document.getElementById("serviceSection");
+
+                            toggleServiceCheckbox.addEventListener("change", function () {
+                                if (this.checked) {
+                                    serviceSection.classList.remove("hidden");
+                                } else {
+                                    serviceSection.classList.add("hidden");
+                                }
+                            });
+                        });
+                    </script>
 
                     <div class="mt-6">
                         <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Submit Quotation</button>

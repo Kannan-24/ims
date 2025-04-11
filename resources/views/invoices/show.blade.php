@@ -149,10 +149,6 @@
                                 <td class="px-4 py-2">₹{{ number_format($invoice->igst, 2) }}</td>
                             </tr>
                             <tr class="border-t border-gray-700">
-                                <td class="px-4 py-2 font-semibold">GST:</td>
-                                <td class="px-4 py-2">₹{{ number_format($service->gst, 2) }}</td>
-                            </tr>
-                            <tr class="border-t border-gray-700">
                                 <td class="px-4 py-2 font-bold text-xl">Grand Total:</td>
                                 <td class="px-4 py-2 font-bold text-xl">₹{{ number_format($invoice->total, 2) }}</td>
                             </tr>

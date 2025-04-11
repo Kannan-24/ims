@@ -46,6 +46,7 @@ class InvoiceController extends Controller
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
             'order_no' => 'required|string',
+            'order_no_text' => 'nullable|string',
             'terms_condition' => 'nullable|string',
             'products' => 'nullable|array',
             'products.*.product_id' => 'nullable|exists:products,id',
@@ -58,6 +59,8 @@ class InvoiceController extends Controller
             'services.*.gst_total' => 'nullable|numeric|min:0',
         ]);
 
+        $orderNo = $request->order_no === 'other' ? $request->order_no_text : $request->order_no;
+
         $totalServiceGst = 0;
 
         // Calculate total GST from services
@@ -69,13 +72,24 @@ class InvoiceController extends Controller
             }
         }
 
+        foreach ($request->products as $product) {
+            $stock = Stock::where('product_id', $product['product_id'])->first();
+
+            if (!$stock || ($stock->quantity - $stock->sold) < $product['quantity']) {
+                $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
+                return redirect()->back()->withErrors([
+                    'products' => "Product '{$productName}' is out of stock."
+                ])->withInput();
+            }
+        }
+        
         $invoice = Invoice::create([
             'customer_id' => $request->customer,
             'contactperson_id' => $request->contact_person,
             'invoice_no' => $request->invoice_no,
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
-            'order_no' => $request->order_no,
+            'order_no' => $orderNo,
             'terms_condition' => $request->terms_condition,
             'sub_total' => $request->sub_total,
             'cgst' => $request->total_cgst,
