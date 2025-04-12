@@ -163,6 +163,7 @@ class InvoiceController extends Controller
         DB::table('payments')->insert([
             'invoice_id' => $invoice->id,
             'total_amount' => $request->grand_total,
+            'pending_amount' => $request->grand_total,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
