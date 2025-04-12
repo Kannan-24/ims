@@ -17,10 +17,9 @@
                             <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
                                 <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">Product Name</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(2)">Supplier</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600">Unit Type</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600">Total Quantity</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600">Total Sold</th>
+                                <th class="px-6 py-4 border-b-2 border-gray-600">Remaining Stock</th>
                                 <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
                             </tr>
                         </thead>
@@ -29,7 +28,6 @@
                                 <tr class="hover:bg-gray-700 transition duration-200">
                                     <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4">{{ $stock->product->name ?? 'N/A' }}</td>
-                                    <td class="px-6 py-4">{{ $stock->supplier->name ?? 'N/A' }}</td>
                                     <td class="px-6 py-4">{{ $stock->unit_type }}</td>
                                     <td class="px-6 py-4">{{ $stock->total_quantity }}</td>
                                     <td class="px-6 py-4">{{ ($stock->total_quantity - $stock->total_sold) }}</td>
