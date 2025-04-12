@@ -7,7 +7,7 @@
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
 
             <x-bread-crumb-navigation />
-
+            
             <div class="bg-gray-800 p-6 rounded-lg shadow-md">
                 <h2 class="text-3xl font-bold text-gray-200 mb-6">Edit Purchase</h2>
 
@@ -18,8 +18,7 @@
                     <!-- Supplier Selection -->
                     <div class="mb-6">
                         <label for="supplier_id" class="block text-gray-300 font-semibold mb-2">Supplier:</label>
-                        <select name="supplier_id" id="supplier_id"
-                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <select name="supplier_id" id="supplier_id" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             <option value="">Select Supplier</option>
                             @foreach ($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}"
@@ -34,26 +33,20 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label for="invoice_no" class="block text-gray-300 font-semibold mb-2">Invoice No:</label>
-                            <input type="text" name="invoice_no" id="invoice_no"
-                                value="{{ old('invoice_no', $purchase->invoice_no) }}"
-                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                required>
+                            <input type="text" name="invoice_no" id="invoice_no" value="{{ old('invoice_no', $purchase->invoice_no) }}"
+                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
                         </div>
                         <div>
-                            <label for="purchase_date" class="block text-gray-300 font-semibold mb-2">Purchase
-                                Date:</label>
+                            <label for="purchase_date" class="block text-gray-300 font-semibold mb-2">Purchase Date:</label>
                             <input type="date" name="purchase_date" id="purchase_date"
-                                value="{{ old('purchase_date', $purchase->invoice_date) }}"
-                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                required>
+                                value="{{ old('purchase_date', $purchase->invoice_date) }}" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
                         </div>
                     </div>
 
                     <!-- Product Table -->
                     <div class="mt-6">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Purchase Items</h3>
-                        <table
-                            class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                        <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                             <thead>
                                 <tr class="text-sm text-gray-400 bg-gray-700">
                                     <th class="px-3 py-3 border-b border-gray-600">Product</th>
@@ -129,9 +122,7 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <button type="button" id="addRow"
-                            class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+
-                            Add Product</button>
+                        <button type="button" id="addRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Product</button>
                     </div>
 
                     <!-- Summary Section -->
@@ -142,36 +133,31 @@
                                 <label class="block text-gray-300 font-semibold mb-2">Subtotal:</label>
                                 <input type="text" id="subtotal" name="subtotal"
                                     value="{{ old('subtotal', $purchase->subtotal) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                    readonly>
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">CGST Total:</label>
                                 <input type="text" id="totalCgst" name="total_cgst"
                                     value="{{ old('total_cgst', $purchase->total_cgst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                    readonly>
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">SGST Total:</label>
                                 <input type="text" id="totalSgst" name="total_sgst"
                                     value="{{ old('total_sgst', $purchase->total_sgst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                    readonly>
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">IGST Total:</label>
                                 <input type="text" id="totalIgst" name="total_igst"
                                     value="{{ old('total_igst', $purchase->total_igst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                    readonly>
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
                                 <input type="text" id="grandTotal" name="grand_total"
                                     value="{{ old('grand_total', $purchase->grand_total) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                    readonly>
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
                             </div>
                         </div>
                     </div>
@@ -183,10 +169,9 @@
                         <div class="grid grid-cols-2 gap-4">
                             <!-- Image Upload -->
                             <div>
-                                <label for="purchase_image" class="block text-gray-300 font-semibold mb-2">Upload
-                                    Image:</label>
-                                <input type="file" name="purchase_image" id="purchase_image" accept="image/*"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                <label for="purchase_image" class="block text-gray-300 font-semibold mb-2">Upload Image:</label>
+                                <input type="file" name="purchase_image" id="purchase_image"
+                                    accept="image/*" class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                                 @error('purchase_image')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
@@ -194,10 +179,9 @@
 
                             <!-- PDF Upload -->
                             <div>
-                                <label for="purchase_pdf" class="block text-gray-300 font-semibold mb-2">Upload
-                                    PDF:</label>
-                                <input type="file" name="purchase_pdf" id="purchase_pdf" accept="application/pdf"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                <label for="purchase_pdf" class="block text-gray-300 font-semibold mb-2">Upload PDF:</label>
+                                <input type="file" name="purchase_pdf" id="purchase_pdf"
+                                    accept="application/pdf" class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                                 @error('purchase_pdf')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
@@ -206,9 +190,7 @@
                     </div>
 
                     <div class="mt-6">
-                        <button type="submit"
-                            class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Update
-                            Purchase</button>
+                        <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Update Purchase</button>
                     </div>
                 </form>
             </div>
@@ -224,8 +206,7 @@
             <input type="text" id="productSearch" placeholder="Search Product..."
                 class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
 
-            <table
-                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                 <thead>
                     <tr class="text-sm text-gray-400 bg-gray-700">
                         <th class="px-6 py-4 border-b border-gray-600">Product Name</th>
@@ -239,8 +220,7 @@
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
                             <td class="px-6 py-4 border-b border-gray-600">
-                                <button type="button"
-                                    class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                <button type="button" class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
                                     data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                                     data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
                                     Select

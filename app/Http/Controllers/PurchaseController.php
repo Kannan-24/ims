@@ -109,9 +109,9 @@ class PurchaseController extends Controller
                 'unit_type' => $unitType,
                 'unit_price' => $product['unit_price'],
                 'gst' => $product['gst_percentage'],
-                'cgst' => $product['cgst'],
-                'sgst' => $product['sgst'],
-                'igst' => $product['igst'],
+                'cgst' => $product['cgst_value'],
+                'sgst' => $product['sgst_value'],
+                'igst' => $product['igst_value'],
                 'total' => $product['total'],
             ]);
 
