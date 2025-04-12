@@ -52,13 +52,8 @@
 
                 <hr class="my-6 border-gray-600">
 
-                <h3 class="text-2xl font-bold text-gray-200 mb-4">Products</h3>
-                @php
-                    $products = $invoice->items->where('type', 'product');
-                @endphp
-                @if ($products->isEmpty())
-                    <p class="text-gray-400">No products found for this invoice.</p>
-                @else
+                @if ($invoice->items->where('type', 'product')->isNotEmpty())
+                    <h3 class="text-2xl font-bold text-gray-200 mb-4">Products</h3>
                     <div class="overflow-x-auto mt-4">
                         <table class="min-w-full bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
                             <thead class="bg-gray-700 text-gray-300">
@@ -75,7 +70,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($products as $product)
+                                @foreach ($invoice->items->where('type', 'product') as $product)
                                     <tr class="border-t border-gray-700 hover:bg-gray-700 text-gray-300">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                         <td class="px-6 py-4">{{ $product->product->name }}</td>
@@ -93,13 +88,8 @@
                     </div>
                 @endif
 
-                <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Services</h3>
-                @php
-                    $services = $invoice->items->where('type', 'service');
-                @endphp
-                @if ($services->isEmpty())
-                    <p class="text-gray-400">No services found for this invoice.</p>
-                @else
+                @if ($invoice->items->where('type', 'service')->isNotEmpty())
+                    <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Services</h3>
                     <div class="overflow-x-auto mt-4">
                         <table class="min-w-full bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
                             <thead class="bg-gray-700 text-gray-300">
@@ -108,18 +98,20 @@
                                     <th class="px-6 py-4 text-left">Service Name</th>
                                     <th class="px-6 py-4 text-left">Quantity</th>
                                     <th class="px-6 py-4 text-left">Unit Price</th>
-                                    <th class="px-6 py-4 text-left">GST</th>
+                                    <th class="px-6 py-4 text-left">CGST</th>
+                                    <th class="px-6 py-4 text-left">SGST</th>
                                     <th class="px-6 py-4 text-left">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($services as $service)
+                                @foreach ($invoice->items->where('type', 'service') as $service)
                                     <tr class="border-t border-gray-700 hover:bg-gray-700 text-gray-300">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                         <td class="px-6 py-4">{{ $service->service->name }}</td>
                                         <td class="px-6 py-4">{{ $service->quantity }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($service->unit_price, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($service->gst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($service->cgst, 2) }}</td>
+                                        <td class="px-6 py-4">₹{{ number_format($service->sgst, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($service->total, 2) }}</td>
                                     </tr>
                                 @endforeach

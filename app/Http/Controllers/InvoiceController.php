@@ -29,7 +29,7 @@ class InvoiceController extends Controller
     public function create()
     {
         $customers = Customer::all();
-        $products = Product::all();
+        $products = Product::with('stock')->get();
         $services = Service::all();
         return view('invoices.create', compact('customers', 'products', 'services'));
     }
@@ -41,7 +41,6 @@ class InvoiceController extends Controller
     {
         $request->validate([
             'customer' => 'required|exists:customers,id',
-            'contact_person' => 'required|exists:contact_persons,id',
             'invoice_no' => 'required|unique:invoices,invoice_no',
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
@@ -52,11 +51,16 @@ class InvoiceController extends Controller
             'products.*.product_id' => 'nullable|exists:products,id',
             'products.*.quantity' => 'required_with:products.*.product_id|integer|min:1',
             'products.*.unit_price' => 'required_with:products.*.product_id|numeric|min:0',
+            'products.*.cgst' => 'nullable|numeric|min:0',
+            'products.*.sgst' => 'nullable|numeric|min:0',
+            'products.*.igst' => 'nullable|numeric|min:0',
+            'products.*.total' => 'nullable|numeric|min:0',
             'services' => 'nullable|array',
             'services.*.service_id' => 'nullable|exists:services,id',
             'services.*.quantity' => 'required_with:services.*.service_id|integer|min:1',
             'services.*.unit_price' => 'required_with:services.*.service_id|numeric|min:0',
             'services.*.gst_total' => 'nullable|numeric|min:0',
+            'services.*.total' => 'nullable|numeric|min:0',
         ]);
 
         $orderNo = $request->order_no === 'other' ? $request->order_no_text : $request->order_no;
@@ -82,7 +86,7 @@ class InvoiceController extends Controller
                 ])->withInput();
             }
         }
-        
+
         $invoice = Invoice::create([
             'customer_id' => $request->customer,
             'contactperson_id' => $request->contact_person,
@@ -90,13 +94,14 @@ class InvoiceController extends Controller
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
             'order_no' => $orderNo,
+            'order_no_text' => $request->order_no_text,
             'terms_condition' => $request->terms_condition,
-            'sub_total' => $request->sub_total,
-            'cgst' => $request->total_cgst,
-            'sgst' => $request->total_sgst,
-            'igst' => $request->total_igst,
-            'gst' => $request->total_cgst + $request->total_sgst + $request->total_igst + $totalServiceGst,
-            'total' => $request->total,
+            'sub_total' => $request->product_subtotal + $request->service_subtotal,
+            'cgst' => $request->product_total_cgst + ($totalServiceGst / 2),
+            'sgst' => $request->product_total_sgst + ($totalServiceGst / 2),
+            'igst' => $request->product_total_igst,
+            'gst' => $request->product_total_cgst + $request->product_total_sgst + $request->product_total_igst + $totalServiceGst,
+            'total' => $request->grand_total,
         ]);
 
         // Store products
@@ -111,10 +116,10 @@ class InvoiceController extends Controller
                         'quantity' => $product['quantity'],
                         'unit_price' => $product['unit_price'],
                         'unit_type' => $productModel->unit_type,
-                        'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
-                        'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
-                        'igst' => ($product['unit_price'] * $product['igst']) / 100,
-                        'gst' => 0,
+                        'cgst' => $request->product_total_cgst,
+                        'sgst' => $request->product_total_sgst,
+                        'igst' => $request->product_total_igst,
+                        'gst' => $request->product_total_cgst + $request->product_total_sgst + $request->product_total_igst,
                         'total' => $product['total'],
                         'type' => 'product',
                     ]);
@@ -139,8 +144,8 @@ class InvoiceController extends Controller
                         'quantity' => $service['quantity'],
                         'unit_price' => $service['unit_price'],
                         'unit_type' => '-',
-                        'cgst' => 0,
-                        'sgst' => 0,
+                        'cgst' => $service['gst_total'] / 2,
+                        'sgst' => $service['gst_total'] / 2,
                         'igst' => 0,
                         'gst' => $service['gst_total'],
                         'total' => $service['total'],
