@@ -45,6 +45,7 @@ class InvoiceController extends Controller
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
             'order_no' => 'required|string',
+            'order_no_text' => 'nullable|string',
             'terms_condition' => 'nullable|string',
             'products' => 'nullable|array',
             'products.*.product_id' => 'nullable|exists:products,id',
@@ -61,6 +62,8 @@ class InvoiceController extends Controller
             'services.*.gst_total' => 'nullable|numeric|min:0',
             'services.*.total' => 'nullable|numeric|min:0',
         ]);
+
+        $orderNo = $request->order_no === 'other' ? $request->order_no_text : $request->order_no;
 
         $totalServiceGst = 0;
 
@@ -90,7 +93,8 @@ class InvoiceController extends Controller
             'invoice_no' => $request->invoice_no,
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
-            'order_no' => $request->order_no,
+            'order_no' => $orderNo,
+            'order_no_text' => $request->order_no_text,
             'terms_condition' => $request->terms_condition,
             'sub_total' => $request->product_subtotal + $request->service_subtotal,
             'cgst' => $request->product_total_cgst + ($totalServiceGst / 2),
