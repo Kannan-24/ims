@@ -7,42 +7,72 @@
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
             <x-bread-crumb-navigation />
 
-            <h2 class="text-3xl font-bold text-gray-200 mb-6">Add Payment Item</h2>
+            
+            <div class="bg-gray-800 text-gray-300 p-6 rounded-lg shadow-xl">
+                
+                <h2 class="text-3xl font-bold text-gray-200 mb-6">Add Payment Item</h2>
+                <table class="w-56 text-gray-300">
+                    <tr>
+                        <td class="py-2">Total</td>
+                        <td class="py-2">{{ number_format($payment->total_amount, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2">Paid</td>
+                        <td class="py-2">{{ number_format($payment->paid_amount, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2">Pending</td>
+                        <td class="py-2">{{ number_format($payment->pending_amount, 2) }}</td>
+                    </tr>
+                </table>
 
-            <form action="{{ route('payments.store', $payment->id) }}" method="POST">
-                @csrf
+                <hr class="my-6 border-gray-600">
 
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Amount:</label>
-                    <input type="number" name="amount" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
-                </div>
+                <form action="{{ route('payments.store', $payment->id) }}" method="POST">
+                    @csrf
 
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Payment Date:</label>
-                    <input type="date" name="payment_date" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
-                </div>
+                    <div class="mb-4">
+                        <label for="amount" class="block text-sm font-semibold text-gray-100">Amount</label>
+                        <input type="number" name="amount" id="amount"
+                            class="mt-1 w-full p-2 bg-gray-700 border-gray-600 text-gray-300 rounded-md" required>
+                    </div>
 
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Payment Method:</label>
-                    <select name="payment_method" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
-                        <option value="cash">Cash</option>
-                        <option value="cheque">Cheque</option>
-                        <option value="upi">UPI</option>
-                        <option value="bank_transfer">Bank Transfer</option>
-                    </select>
-                </div>
+                    <div class="mb-4">
+                        <label for="payment_date" class="block text-sm font-semibold text-gray-100">Payment Date</label>
+                        <input type="date" name="payment_date" id="payment_date"
+                            class="mt-1 w-full p-2 bg-gray-700 border-gray-600 text-gray-300 rounded-md" required>
+                    </div>
 
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Reference Number:</label>
-                    <input type="text" name="reference_number" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                </div>
+                    <div class="mb-4">
+                        <label for="payment_method" class="block text-sm font-semibold text-gray-100">Payment Method</label>
+                        <select name="payment_method" id="payment_method"
+                            class="mt-1 w-full p-2 bg-gray-700 border-gray-600 text-gray-300 rounded-md" required>
+                            <option value="cash">Cash</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="upi">UPI</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                        </select>
+                    </div>
 
-                <div class="flex justify-end">
-                    <button type="submit" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition">
-                        Save Payment Item
-                    </button>
-                </div>
-            </form>
+                    <div class="mb-4">
+                        <label for="reference_number" class="block text-sm font-semibold text-gray-100">Reference Number</label>
+                        <input type="text" name="reference_number" id="reference_number" value="Cash"
+                            class="mt-1 w-full p-2 bg-gray-700 border-gray-600 text-gray-300 rounded-md">
+                    </div>
+
+                    <div class="mt-6 flex justify-end">
+                        <a href="{{ route('payments.index') }}"
+                            class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-md mr-4">
+                            Back
+                        </a>
+
+                        <button type="submit"
+                            class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md">
+                            Save Payment
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </x-app-layout>
