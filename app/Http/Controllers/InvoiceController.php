@@ -41,6 +41,7 @@ class InvoiceController extends Controller
     {
         $request->validate([
             'customer' => 'required|exists:customers,id',
+            'contact_person' => 'required|exists:contact_persons,id',
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
             'order_no' => 'required|string',

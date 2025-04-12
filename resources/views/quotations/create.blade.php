@@ -14,27 +14,61 @@
                 <form action="{{ route('quotations.store') }}" method="POST">
                     @csrf
 
-                    <!-- Customer Selection -->
+                    <!-- Customer -->
                     <div class="mb-6">
-                        <label for="customer_id" class="block text-gray-300 font-semibold mb-2">Customer:</label>
-                        <select name="customer_id" id="customer_id" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <label for="customer" class="block text-gray-300 font-semibold mb-2">Customer:</label>
+                        <select id="customer" name="customer"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             <option value="">Select Customer</option>
                             @foreach ($customers as $customer)
-                                <option value="{{ $customer->id }}"
-                                    {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
-                                    {{ $customer->company_name }} - {{ $customer->state }}
-                                </option>
+                                <option value="{{ $customer->id }}">{{ $customer->company_name }}</option>
                             @endforeach
                         </select>
                     </div>
 
+                    <!-- Contact Person -->
+                    <div class="mb-6">
+                        <label for="contact_person" class="block text-gray-300 font-semibold mb-2">Contact
+                            Person:</label>
+                        <select id="contact_person" name="contact_person"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            disabled>
+                            <option value="">Select Contact Person</option>
+                        </select>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const customerSelect = document.getElementById("customer");
+                            const contactPersonSelect = document.getElementById("contact_person");
+
+                            customerSelect.addEventListener("change", function() {
+                                const customerId = this.value;
+
+                                // Clear existing options in contact person dropdown
+                                contactPersonSelect.innerHTML = '<option value="">Select Contact Person</option>';
+                                contactPersonSelect.disabled = true;
+
+                                if (customerId) {
+                                    // Fetch contact persons for the selected customer
+                                    const contactPersons = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
+
+                                    if (contactPersons[customerId]) {
+                                        contactPersons[customerId].forEach(contactPerson => {
+                                            const option = document.createElement("option");
+                                            option.value = contactPerson.id;
+                                            option.textContent = contactPerson.name;
+                                            contactPersonSelect.appendChild(option);
+                                        });
+                                        contactPersonSelect.disabled = false;
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
                     <!-- Quotation Date & Quotation No -->
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="quotation_code" class="block text-gray-300 font-semibold mb-2">Quotation No:</label>
-                            <input type="text" name="quotation_code" id="quotation_code" value="{{ old('quotation_code') }}"
-                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
-                        </div>
                         <div>
                             <label for="quotation_date" class="block text-gray-300 font-semibold mb-2">Quotation Date:</label>
                             <input type="date" name="quotation_date" id="quotation_date"
@@ -507,14 +541,14 @@
 
                 // Calculate service summary
                 document.querySelectorAll("#serviceTable tr").forEach(row => {
-                    let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
+                    let rowTotal = parseFloat(row.querySelector(".service-total").value) || 0;
                     let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
-                    let gstTotal = (unitPrice * gstPercentage) / 100;
 
-                    serviceSubtotal += unitPrice;
-                    serviceTotal += unitPrice + gstTotal;
-                    serviceTotalCgst += gstTotal / 2;
-                    serviceTotalSgst += gstTotal / 2;
+                    let baseAmount = rowTotal / (1 + gstPercentage / 100);
+                    serviceSubtotal += baseAmount;
+                    serviceTotal += rowTotal;
+                    serviceTotalCgst += (baseAmount * gstPercentage) / 200;
+                    serviceTotalSgst += (baseAmount * gstPercentage) / 200;
                 });
 
                 // Calculate grand total

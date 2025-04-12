@@ -610,14 +610,14 @@
 
                 // Calculate service summary
                 document.querySelectorAll("#serviceTable tr").forEach(row => {
-                    let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
+                    let rowTotal = parseFloat(row.querySelector(".service-total").value) || 0;
                     let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
-                    let gstTotal = (unitPrice * gstPercentage) / 100;
 
-                    serviceSubtotal += unitPrice;
-                    serviceTotal += unitPrice + gstTotal;
-                    serviceTotalCgst += gstTotal / 2;
-                    serviceTotalSgst += gstTotal / 2;
+                    let baseAmount = rowTotal / (1 + gstPercentage / 100);
+                    serviceSubtotal += baseAmount;
+                    serviceTotal += rowTotal;
+                    serviceTotalCgst += (baseAmount * gstPercentage) / 200;
+                    serviceTotalSgst += (baseAmount * gstPercentage) / 200;
                 });
 
                 // Calculate grand total

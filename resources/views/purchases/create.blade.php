@@ -32,12 +32,6 @@
                     <!-- Purchase Date & Invoice No -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="invoice_no" class="block text-gray-300 font-semibold mb-2">Invoice No:</label>
-                            <input type="text" name="invoice_no" id="invoice_no" value="{{ old('invoice_no') }}"
-                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                required>
-                        </div>
-                        <div>
                             <label for="purchase_date" class="block text-gray-300 font-semibold mb-2">Purchase
                                 Date:</label>
                             <input type="date" name="purchase_date" id="purchase_date"

@@ -43,14 +43,21 @@
                     <p><strong>Address:</strong> {{ $invoice->customer->address }},
                         {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }},
                         {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
-
-                    @foreach ($invoice->customer->contactPersons as $contactPerson)
-                        @if ($contactPerson->id == $invoice->contactperson_id)
-                            <p><strong>Contact Person Name:</strong> {{ $contactPerson->name }}</p>
-                            <p><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
-                            <p><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
-                        @endif
-                    @endforeach
+                        <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Contact Person Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach ($invoice->customer->contactPersons as $contactPerson)
+                                @if ($contactPerson->id == $invoice->contactperson_id)
+                                    <div class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
+                                        <p class="text-lg font-semibold">{{ $contactPerson->name }}</p>
+                                        <p class="text-sm mt-1"><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
+                                        <p class="text-sm"><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
+                                        <p><strong>Address:</strong> {{ $invoice->customer->address }},
+                                            {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }},
+                                            {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
                 </div>
 
                 <hr class="my-6 border-gray-600">

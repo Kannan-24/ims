@@ -40,8 +40,8 @@ class QuotationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'quotation_code' => 'required|unique:quotations,quotation_code',
+            'customer' => 'required|exists:customers,id',
+            'contact_person' => 'required|exists:contact_persons,id',
             'quotation_date' => 'required|date',
             'terms_condition' => 'nullable|string',
             'products' => 'nullable|array',
@@ -60,6 +60,10 @@ class QuotationController extends Controller
             'services.*.total' => 'nullable|numeric|min:0',
         ]);
 
+        // Generate the quotation code automatically
+        $lastQuotation = Quotation::latest('id')->first();
+        $quotationCode = 'QUO-' . str_pad(($lastQuotation ? $lastQuotation->id + 1 : 1), 3, '0', STR_PAD_LEFT);
+
         $totalServiceGst = 0;
 
         // Calculate total GST from services
@@ -72,8 +76,9 @@ class QuotationController extends Controller
         }
 
         $quotation = Quotation::create([
-            'customer_id' => $request->customer_id,
-            'quotation_code' => $request->quotation_code,
+            'customer_id' => $request->customer,
+            'contactperson_id' => $request->contact_person,
+            'quotation_code' => $quotationCode,
             'quotation_date' => $request->quotation_date,
             'terms_condition' => $request->terms_condition,
             'sub_total' => $request->product_subtotal + $request->service_subtotal,

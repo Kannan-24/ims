@@ -13,6 +13,7 @@ class Quotation extends Model
         'quotation_code',
         'quotation_date',
         'customer_id',
+        'contactperson_id',
         'sub_total',
         'cgst',
         'sgst',

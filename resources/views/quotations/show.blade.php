@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="title">
-        {{ __('Quotation Details') }} - {{ config('app.name', 'ATMS') }}
+        {{ __('Quotation Details') }} - {{ config('app.name', 'SKM') }}
     </x-slot>
 
     <div class="py-6 mt-20 ml-4 sm:ml-64">
@@ -36,17 +36,27 @@
                 </div>
 
                 <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Customer Details</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach ($quotation->customer->contactPersons as $contactPerson)
-                    <div class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
-                        <p class="text-lg font-semibold">{{ $contactPerson->name }}</p>
-                        <p class="text-sm mt-1"><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
-                        <p class="text-sm"><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
-                        <p><strong>Address:</strong> {{ $quotation->customer->address }},
-                                {{ $quotation->customer->city }} - {{ $quotation->customer->zip_code }},
-                                {{ $quotation->customer->state }}, {{ $quotation->customer->country }}</p>
+                <div class="space-y-4 text-gray-300">
+                    <p><strong>Name:</strong> {{ $quotation->customer->company_name }}</p>
+                    <p><strong>GST Number:</strong> {{ $quotation->customer->gst_number ?? 'N/A' }}</p>
+                    <p><strong>Address:</strong> {{ $quotation->customer->address }},
+                        {{ $quotation->customer->city }} - {{ $quotation->customer->zip_code }},
+                        {{ $quotation->customer->state }}, {{ $quotation->customer->country }}</p>
+                    <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Contact Person Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @foreach ($quotation->customer->contactPersons as $contactPerson)
+                            @if ($contactPerson->id == $quotation->contactperson_id)
+                                <div class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
+                                    <p class="text-lg font-semibold">{{ $contactPerson->name }}</p>
+                                    <p class="text-sm mt-1"><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
+                                    <p class="text-sm"><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
+                                    <p><strong>Address:</strong> {{ $quotation->customer->address }},
+                                        {{ $quotation->customer->city }} - {{ $quotation->customer->zip_code }},
+                                        {{ $quotation->customer->state }}, {{ $quotation->customer->country }}</p>
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
-                    @endforeach
                 </div>
 
                 <hr class="my-6 border-gray-600">
