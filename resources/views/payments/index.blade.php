@@ -32,16 +32,16 @@
                                     <tr class="hover:bg-gray-700 transition duration-200">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                         <td class="px-6 py-4">{{ $payment->invoice->invoice_no ?? 'N/A' }}</td>
-                                        <td class="px-6 py-4">{{ $payment->invoice->customer->company_name ?? 'N/A' }}</td>
+                                        <td class="px-6 py-4">{{ $payment->invoice->customer->company_name ?? 'N/A' }}
+                                        </td>
                                         <td class="px-6 py-4">₹{{ number_format($payment->total_amount, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($payment->paid_amount, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($payment->pending_amount, 2) }}</td>
                                         <td class="px-6 py-4">
-                                            @if ($payment->pending_amount <= 0)
-                                                <span class="text-green-400">Paid</span>
-                                            @else
-                                                <span class="text-yellow-400">Pending</span>
-                                            @endif
+                                            <span
+                                                class="{{ $payment->status === 'paid' ? 'text-green-400' : ($payment->status === 'unpaid' ? 'text-red-400' : 'text-yellow-400') }}">
+                                                {{ $payment->status }}
+                                            </span>
                                         </td>
                                         <td class="px-6 py-4 flex justify-center gap-3">
                                             <a href="{{ route('payments.show', $payment) }}"

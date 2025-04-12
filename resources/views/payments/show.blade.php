@@ -17,15 +17,10 @@
                     <p><strong>Total Amount:</strong> ₹{{ number_format($payment->total_amount, 2) }}</p>
                     <p><strong>Paid Amount:</strong> ₹{{ number_format($payment->paid_amount, 2) }}</p>
                     <p><strong>Pending Amount:</strong> ₹{{ number_format($payment->pending_amount, 2) }}</p>
-                    <p><strong>Status:</strong> 
-                        @if ($payment->pending_amount <= 0)
-                            <span class="text-green-400">Paid</span>
-                        @elseif ($payment->pending_amount > 0 && $payment->paid_amount > 0)
-                            <span class="text-yellow-400">Partial</span>
-                        @else
-                            <span class="text-red-400">Unpaid</span>
-                        @endif
-                    </p>
+                    <p><strong>Status:</strong><span
+                            class="{{ $payment->status === 'paid' ? 'text-green-400' : ($payment->status === 'unpaid' ? 'text-red-400' : 'text-yellow-400') }}">
+                            {{ $payment->status }}
+                        </span></p>
                 </div>
 
                 <div class="mt-6">
@@ -50,7 +45,8 @@
                                     <tr class="hover:bg-gray-700 transition duration-200">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($item->amount, 2) }}</td>
-                                        <td class="px-6 py-4">{{ \Carbon\Carbon::parse($item->payment_date)->format('d-m-Y') }}</td>
+                                        <td class="px-6 py-4">
+                                            {{ \Carbon\Carbon::parse($item->payment_date)->format('d-m-Y') }}</td>
                                         <td class="px-6 py-4">{{ ucfirst($item->payment_method) }}</td>
                                         <td class="px-6 py-4">{{ $item->reference_number ?? 'N/A' }}</td>
                                         <td class="px-6 py-4 text-center">
@@ -58,14 +54,18 @@
                                             <a href="{{ route('payments.edit', $item->id) }}"
                                                 class="text-yellow-400 hover:text-yellow-600 transition duration-300"
                                                 title="Edit">
-                                                <i class="fas fa-edit"></i> 
+                                                <i class="fas fa-edit"></i>
                                             </a>
 
                                             <!-- Delete Button for each payment item -->
-                                            <form action="{{ route('payments.destroy', $item->id) }}" method="POST" class="inline-block">
+                                            <form action="{{ route('payments.destroy', $item->id) }}" method="POST"
+                                                class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-400 hover:text-red-600 transition duration-300" title="Delete" onclick="return confirm('Are you sure you want to delete this payment item?');">
+                                                <button type="submit"
+                                                    class="text-red-400 hover:text-red-600 transition duration-300"
+                                                    title="Delete"
+                                                    onclick="return confirm('Are you sure you want to delete this payment item?');">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
@@ -77,10 +77,10 @@
                     @endif
                 </div>
 
-                @if ($payment->pending_amount > 0)
+                @if ($payment->status !== 'paid')
                     <div class="mt-6">
                         <a href="{{ route('payments.create', $payment->id) }}"
-                           class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition">
+                            class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition">
                             Add Payment Item
                         </a>
                     </div>
