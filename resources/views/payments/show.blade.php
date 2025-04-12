@@ -7,21 +7,78 @@
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
             <x-bread-crumb-navigation />
 
-            <h2 class="text-3xl font-bold text-gray-200 mb-6">Payment Details</h2>
-
             <div class="bg-gray-800 text-gray-300 p-6 rounded-lg shadow-xl">
-                <div class="mb-4">
-                    <h3 class="text-2xl font-semibold text-gray-100">Invoice Details</h3>
-                    <p><strong>Invoice No:</strong> {{ $payment->invoice->invoice_no ?? 'N/A' }}</p>
-                    <p><strong>Customer Name:</strong> {{ $payment->invoice->customer->company_name ?? 'N/A' }}</p>
-                    <p><strong>Total Amount:</strong> ₹{{ number_format($payment->total_amount, 2) }}</p>
-                    <p><strong>Paid Amount:</strong> ₹{{ number_format($payment->paid_amount, 2) }}</p>
-                    <p><strong>Pending Amount:</strong> ₹{{ number_format($payment->pending_amount, 2) }}</p>
-                    <p><strong>Status:</strong><span
-                            class="{{ $payment->status === 'paid' ? 'text-green-400' : ($payment->status === 'unpaid' ? 'text-red-400' : 'text-yellow-400') }}">
-                            {{ $payment->status }}
-                        </span></p>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-200">Payment Details</h2>
+                    <div class="flex gap-2">
+                        <a href="{{ route('payments.index') }}"
+                            class="flex items-center px-4 py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition">
+                            Back
+                        </a>
+                        @if ($payment->status !== 'paid')
+                            <a href="{{ route('payments.create', $payment->id) }}"
+                                class="flex items-center px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition">
+                                Add Payment
+                            </a>
+                        @endif
+                    </div>
                 </div>
+
+                <hr class="my-6 border-gray-600">
+                
+                <table class="w-auto text-left table-auto mt-2">
+                    <tr>
+                        <th class="  py-2">Invoice No</th>
+                        <td class="px-4 py-2">
+                            <a href="{{ route('invoices.show', $payment->invoice->id) }}"
+                                class="text-blue-400 hover:text-blue-600 transition duration-300">
+                                {{ $payment->invoice->invoice_no ?? 'N/A' }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="  py-2">Customer Name</th>
+                        <td class="px-4 py-2">{{ $payment->invoice->customer->company_name ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th class="  py-2">GST Number</th>
+                        <td class="px-4 py-2">{{ $payment->invoice->customer->gst_number ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th class="  py-2">Contact Person</th>
+                        <td class="px-4 py-2">
+                            @foreach ($payment->invoice->customer->contactPersons as $contactPerson)
+                                @if ($contactPerson->id == $payment->invoice->contactperson_id)
+                                    <div>
+                                        <p> {{ $contactPerson->name }}</p>
+                                        <p> {{ $contactPerson->phone_no }}</p>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="  py-2">Total Amount</th>
+                        <td class="px-4 py-2">₹{{ number_format($payment->total_amount, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <th class="  py-2">Paid Amount</th>
+                        <td class="px-4 py-2">₹{{ number_format($payment->paid_amount, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <th class="  py-2">Pending Amount</th>
+                        <td class="px-4 py-2">₹{{ number_format($payment->pending_amount, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <th class="  py-2">Status</th>
+                        <td class="px-4 py-2">
+                            <span
+                                class="{{ $payment->status === 'paid' ? 'text-green-400' : ($payment->status === 'unpaid' ? 'text-red-400' : 'text-yellow-400') }}">
+                                {{ $payment->status }}
+                            </span>
+                        </td>
+                    </tr>
+                </table>
 
                 <div class="mt-6">
                     <h3 class="text-2xl font-semibold text-gray-100">Payment Items</h3>
@@ -77,14 +134,7 @@
                     @endif
                 </div>
 
-                @if ($payment->status !== 'paid')
-                    <div class="mt-6">
-                        <a href="{{ route('payments.create', $payment->id) }}"
-                            class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition">
-                            Add Payment Item
-                        </a>
-                    </div>
-                @endif
+                
             </div>
         </div>
     </div>
