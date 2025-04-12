@@ -38,7 +38,19 @@
                             </tr>
                         </thead>
                         <tbody class="text-sm text-gray-400">
+                            @php
+                                $remainingSold = 0;
+                            @endphp
                             @foreach ($stocks as $stock)
+                                @php
+                                    $currentSold = $stock->sold + $remainingSold;
+                                    $remainingSold = 0;
+
+                                    if ($currentSold > $stock->quantity) {
+                                        $remainingSold = $currentSold - $stock->quantity;
+                                        $currentSold = $stock->quantity;
+                                    }
+                                @endphp
                                 <tr class="border-b border-gray-600 hover:bg-gray-700">
                                     <td class="px-6 py-4">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4">
@@ -48,7 +60,7 @@
                                     </td>
                                     <td class="px-6 py-4">{{ $stock->unit_type }}</td>
                                     <td class="px-6 py-4">{{ $stock->quantity }}</td>
-                                    <td class="px-6 py-4">{{ $stock->sold }}</td>
+                                    <td class="px-6 py-4">{{ $currentSold }}</td>
                                     <td class="px-6 py-4">{{ $stock->batch_code }}</td>
                                     <td class="px-6 py-4">{{ $stock->created_at->format('d-m-Y') }}</td>
                                 </tr>

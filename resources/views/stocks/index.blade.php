@@ -32,7 +32,7 @@
                                     <td class="px-6 py-4">{{ $stock->supplier->name ?? 'N/A' }}</td>
                                     <td class="px-6 py-4">{{ $stock->unit_type }}</td>
                                     <td class="px-6 py-4">{{ $stock->total_quantity }}</td>
-                                    <td class="px-6 py-4">{{ $stock->total_sold }}</td>
+                                    <td class="px-6 py-4">{{ ($stock->total_quantity - $stock->total_sold) }}</td>
                                     <td class="px-6 py-4 flex justify-center gap-3">
                                         <a href="{{ route('stocks.show', $stock->product_id) }}"
                                             class="text-blue-400 hover:text-blue-600 transition duration-300"
