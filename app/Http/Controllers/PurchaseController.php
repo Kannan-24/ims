@@ -44,6 +44,7 @@ class PurchaseController extends Controller
         $request->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'purchase_date' => 'required|date',
+            'invoice_no' => 'required|string',
             'subtotal' => 'required|numeric',
             'total_cgst' => 'required|numeric',
             'total_sgst' => 'required|numeric',
@@ -60,15 +61,12 @@ class PurchaseController extends Controller
             'purchase_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        $lastInvoice = Purchase::latest('id')->first();
-        $newInvoiceNo = 'INV-' . str_pad(($lastInvoice ? $lastInvoice->id + 1 : 1), 3, '0', STR_PAD_LEFT);
-
         // Save or update the purchase
         $purchase = Purchase::updateOrCreate(
             [
                 'supplier_id' => $request->supplier_id,
                 'invoice_date' => $request->purchase_date,
-                'invoice_no' => $newInvoiceNo,
+                'invoice_no' => $request->invoice_no,
             ],
             [
                 'sub_total' => $request->subtotal,
