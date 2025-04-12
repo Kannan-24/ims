@@ -25,7 +25,7 @@
                 </div>
 
                 <hr class="my-6 border-gray-600">
-                
+
                 <table class="w-auto text-left table-auto mt-2">
                     <tr>
                         <th class="  py-2">Invoice No</th>
@@ -134,7 +134,7 @@
                     @endif
                 </div>
 
-                
+
             </div>
         </div>
     </div>
