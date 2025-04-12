@@ -47,4 +47,12 @@ class Invoice extends Model
     {
         return $this->hasMany(Stock::class);
     }
+
+    /**
+     * Get the payments associated with the invoice.
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }
