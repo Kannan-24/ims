@@ -37,16 +37,19 @@
                 </div>
 
                 <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Customer Details</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-4 text-gray-300">
+                    <p><strong>Name:</strong> {{ $invoice->customer->company_name }}</p>
+                    <p><strong>GST Number:</strong> {{ $invoice->customer->gst_number ?? 'N/A' }}</p>
+                    <p><strong>Address:</strong> {{ $invoice->customer->address }},
+                        {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }},
+                        {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
+
                     @foreach ($invoice->customer->contactPersons as $contactPerson)
-                    <div class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
-                        <p class="text-lg font-semibold">{{ $contactPerson->name }}</p>
-                        <p class="text-sm mt-1"><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
-                        <p class="text-sm"><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
-                        <p><strong>Address:</strong> {{ $invoice->customer->address }},
-                                {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }},
-                                {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
-                    </div>
+                        @if ($contactPerson->id == $invoice->contactperson_id)
+                            <p><strong>Contact Person Name:</strong> {{ $contactPerson->name }}</p>
+                            <p><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
+                            <p><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
+                        @endif
                     @endforeach
                 </div>
 

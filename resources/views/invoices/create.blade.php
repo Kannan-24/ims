@@ -7,7 +7,7 @@
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
 
             <x-bread-crumb-navigation />
-            
+
             <div class="bg-gray-800 p-6 rounded-lg shadow-md">
                 <h2 class="text-3xl font-bold text-gray-200 mb-6">Create Invoice</h2>
 
@@ -17,19 +17,22 @@
                     <!-- Order No -->
                     <div class="mb-6">
                         <label for="order_no" class="block text-gray-300 font-semibold mb-2">Order No:</label>
-                        <select id="order_no" name="order_no" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <select id="order_no" name="order_no"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             <option value="overcash">Over Phone</option>
                             <option value="other">Other</option>
                         </select>
-                        <textarea id="order_no_text" name="order_no_text" class="w-full mt-4 px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition hidden" placeholder="Enter Order No"></textarea>
+                        <textarea id="order_no_text" name="order_no_text"
+                            class="w-full mt-4 px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition hidden"
+                            placeholder="Enter Order No"></textarea>
                     </div>
 
                     <script>
-                        document.addEventListener("DOMContentLoaded", function () {
+                        document.addEventListener("DOMContentLoaded", function() {
                             const orderNoSelect = document.getElementById("order_no");
                             const orderNoText = document.getElementById("order_no_text");
 
-                            orderNoSelect.addEventListener("change", function () {
+                            orderNoSelect.addEventListener("change", function() {
                                 if (this.value === "other") {
                                     orderNoText.classList.remove("hidden");
                                 } else {
@@ -43,7 +46,8 @@
                     <!-- Customer -->
                     <div class="mb-6">
                         <label for="customer" class="block text-gray-300 font-semibold mb-2">Customer:</label>
-                        <select id="customer" name="customer" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <select id="customer" name="customer"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             <option value="">Select Customer</option>
                             @foreach ($customers as $customer)
                                 <option value="{{ $customer->id }}">{{ $customer->company_name }}</option>
@@ -53,18 +57,21 @@
 
                     <!-- Contact Person -->
                     <div class="mb-6">
-                        <label for="contact_person" class="block text-gray-300 font-semibold mb-2">Contact Person:</label>
-                        <select id="contact_person" name="contact_person" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" disabled>
+                        <label for="contact_person" class="block text-gray-300 font-semibold mb-2">Contact
+                            Person:</label>
+                        <select id="contact_person" name="contact_person"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            disabled>
                             <option value="">Select Contact Person</option>
                         </select>
                     </div>
 
                     <script>
-                        document.addEventListener("DOMContentLoaded", function () {
+                        document.addEventListener("DOMContentLoaded", function() {
                             const customerSelect = document.getElementById("customer");
                             const contactPersonSelect = document.getElementById("contact_person");
 
-                            customerSelect.addEventListener("change", function () {
+                            customerSelect.addEventListener("change", function() {
                                 const customerId = this.value;
 
                                 // Clear existing options in contact person dropdown
@@ -92,26 +99,24 @@
                     <!-- Invoice Date & Invoice No -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="invoice_no" class="block text-gray-300 font-semibold mb-2">Invoice No:</label>
-                            <input type="text" name="invoice_no" id="invoice_no" value="{{ old('invoice_no') }}"
-                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
-                        </div>
-                        <div>
                             <label for="invoice_date" class="block text-gray-300 font-semibold mb-2">Invoice Date:</label>
-                            <input type="date" name="invoice_date" id="invoice_date"
-                                value="{{ old('invoice_date') }}" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                            <input type="date" name="invoice_date" id="invoice_date" value="{{ old('invoice_date', now()->format('Y-m-d')) }}"
+                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
                         </div>
                         <div>
                             <label for="order_date" class="block text-gray-300 font-semibold mb-2">Order Date:</label>
-                            <input type="date" name="order_date" id="order_date"
-                                value="{{ old('order_date') }}" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                            <input type="date" name="order_date" id="order_date" value="{{ old('order_date') }}"
+                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
                         </div>
                     </div>
 
                     <!-- Product Table -->
                     <div class="mt-6">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Quotation Items</h3>
-                        <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                        <table
+                            class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                             <thead>
                                 <tr class="text-sm text-gray-400 bg-gray-700">
                                     <th class="px-3 py-3 border-b border-gray-600">Product</th>
@@ -128,37 +133,49 @@
 
                             </tbody>
                         </table>
-                        <button type="button" id="addRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Product</button>
+                        <button type="button" id="addRow"
+                            class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+
+                            Add Product</button>
                     </div>
-                    
+
                     <!-- Product Summary Section -->
                     <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Product Summary</h3>
                         <div class="grid grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">Product Subtotal:</label>
-                                <input type="text" id="productSubtotal" name="product_subtotal" value="{{ old('product_subtotal') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <input type="text" id="productSubtotal" name="product_subtotal"
+                                    value="{{ old('product_subtotal') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                    readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">Product CGST Total:</label>
-                                <input type="text" id="productTotalCgst" name="product_total_cgst" value="{{ old('product_total_cgst') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <input type="text" id="productTotalCgst" name="product_total_cgst"
+                                    value="{{ old('product_total_cgst') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                    readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">Product SGST Total:</label>
-                                <input type="text" id="productTotalSgst" name="product_total_sgst" value="{{ old('product_total_sgst') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <input type="text" id="productTotalSgst" name="product_total_sgst"
+                                    value="{{ old('product_total_sgst') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                    readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">Product IGST Total:</label>
-                                <input type="text" id="productTotalIgst" name="product_total_igst" value="{{ old('product_total_igst') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <input type="text" id="productTotalIgst" name="product_total_igst"
+                                    value="{{ old('product_total_igst') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                    readonly>
                             </div>
                             <div>
                                 <label class="block text-gray-300 font-semibold mb-2">Product Total:</label>
-                                <input type="text" id="productTotal" name="product_total" value="{{ old('product_total') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <input type="text" id="productTotal" name="product_total"
+                                    value="{{ old('product_total') }}"
+                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                    readonly>
                             </div>
                         </div>
                     </div>
@@ -171,7 +188,8 @@
                         </label>
                         <div id="serviceSection" class="hidden">
                             <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Items</h3>
-                            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                            <table
+                                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                                 <thead>
                                     <tr class="text-sm text-gray-400 bg-gray-700">
                                         <th class="px-3 py-3 border-b border-gray-600">Service</th>
@@ -187,7 +205,9 @@
 
                                 </tbody>
                             </table>
-                            <button type="button" id="addServiceRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Service</button>
+                            <button type="button" id="addServiceRow"
+                                class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+
+                                Add Service</button>
 
                             <!-- Service Summary Section -->
                             <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
@@ -195,23 +215,33 @@
                                 <div class="grid grid-cols-3 gap-4">
                                     <div>
                                         <label class="block text-gray-300 font-semibold mb-2">Service Subtotal:</label>
-                                        <input type="text" id="serviceSubtotal" name="service_subtotal" value="{{ old('service_subtotal') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                        <input type="text" id="serviceSubtotal" name="service_subtotal"
+                                            value="{{ old('service_subtotal') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                            readonly>
                                     </div>
                                     <div>
-                                        <label class="block text-gray-300 font-semibold mb-2">Service CGST Total:</label>
-                                        <input type="text" id="serviceTotalCgst" name="service_total_cgst" value="{{ old('service_total_cgst') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                        <label class="block text-gray-300 font-semibold mb-2">Service CGST
+                                            Total:</label>
+                                        <input type="text" id="serviceTotalCgst" name="service_total_cgst"
+                                            value="{{ old('service_total_cgst') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                            readonly>
                                     </div>
                                     <div>
-                                        <label class="block text-gray-300 font-semibold mb-2">Service SGST Total:</label>
-                                        <input type="text" id="serviceTotalSgst" name="service_total_sgst" value="{{ old('service_total_sgst') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                        <label class="block text-gray-300 font-semibold mb-2">Service SGST
+                                            Total:</label>
+                                        <input type="text" id="serviceTotalSgst" name="service_total_sgst"
+                                            value="{{ old('service_total_sgst') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                            readonly>
                                     </div>
                                     <div>
                                         <label class="block text-gray-300 font-semibold mb-2">Service Total:</label>
-                                        <input type="text" id="serviceTotal" name="service_total" value="{{ old('service_total') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                        <input type="text" id="serviceTotal" name="service_total"
+                                            value="{{ old('service_total') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                            readonly>
                                     </div>
                                 </div>
                             </div>
@@ -219,7 +249,8 @@
                     </div>
 
                     <!-- Service Selection Modal -->
-                    <div id="serviceModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center">
+                    <div id="serviceModal"
+                        class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center">
                         <div class="bg-gray-800 p-6 rounded-lg shadow-md w-1/2">
                             <h2 class="text-2xl font-bold text-gray-200 mb-6">Select Service</h2>
 
@@ -227,7 +258,8 @@
                             <input type="text" id="serviceSearch" placeholder="Search Service..."
                                 class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
 
-                            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                            <table
+                                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                                 <thead>
                                     <tr class="text-sm text-gray-400 bg-gray-700">
                                         <th class="px-6 py-4 border-b border-gray-600">Service Name</th>
@@ -239,9 +271,11 @@
                                     @foreach ($services as $service)
                                         <tr data-id="{{ $service->id }}" class="service-row">
                                             <td class="px-6 py-4 border-b border-gray-600">{{ $service->name }}</td>
-                                            <td class="px-6 py-4 border-b border-gray-600">{{ $service->gst_percentage }}%</td>
                                             <td class="px-6 py-4 border-b border-gray-600">
-                                                <button type="button" class="select-service px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                                {{ $service->gst_percentage }}%</td>
+                                            <td class="px-6 py-4 border-b border-gray-600">
+                                                <button type="button"
+                                                    class="select-service px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
                                                     data-id="{{ $service->id }}" data-name="{{ $service->name }}"
                                                     data-gst="{{ $service->gst_percentage }}">
                                                     Select
@@ -258,11 +292,11 @@
                     </div>
 
                     <script>
-                        document.addEventListener("DOMContentLoaded", function () {
+                        document.addEventListener("DOMContentLoaded", function() {
                             const toggleServiceCheckbox = document.getElementById("toggleServiceSelection");
                             const serviceSection = document.getElementById("serviceSection");
 
-                            toggleServiceCheckbox.addEventListener("change", function () {
+                            toggleServiceCheckbox.addEventListener("change", function() {
                                 if (this.checked) {
                                     serviceSection.classList.remove("hidden");
                                 } else {
@@ -277,23 +311,31 @@
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Grand Total</h3>
                         <div>
                             <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
-                            <input type="text" id="grandTotal" name="grand_total" value="{{ old('grand_total') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                            <input type="text" id="grandTotal" name="grand_total"
+                                value="{{ old('grand_total') }}"
+                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                readonly>
                         </div>
                         <div>
                             <label class="block text-gray-300 font-semibold mb-2">Grand Sub Total:</label>
-                            <input type="text" id="grandSubTotal" name="grand_sub_total" value="{{ old('grand_sub_total') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>        
+                            <input type="text" id="grandSubTotal" name="grand_sub_total"
+                                value="{{ old('grand_sub_total') }}"
+                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                readonly>
                         </div>
                         <div>
                             <label class="block text-gray-300 font-semibold mb-2">Grand GST Total:</label>
-                            <input type="text" id="grandGstTotal" name="grand_gst_total" value="{{ old('grand_gst_total') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                            <input type="text" id="grandGstTotal" name="grand_gst_total"
+                                value="{{ old('grand_gst_total') }}"
+                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                readonly>
                         </div>
                     </div>
 
                     <div class="mt-6">
-                        <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Submit Quotation</button>
+                        <button type="submit"
+                            class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Submit
+                            Quotation</button>
                     </div>
                 </form>
             </div>
@@ -309,10 +351,11 @@
             <input type="text" id="productSearch" placeholder="Search Product..."
                 class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
 
-            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+            <table
+                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                 <thead>
                     <tr class="text-sm text-gray-400 bg-gray-700">
-                        <th class="px-6 py-4 border-b border-gray-600">Product Name</th>    
+                        <th class="px-6 py-4 border-b border-gray-600">Product Name</th>
                         <th class="px-6 py-4 border-b border-gray-600">Description</th>
                         <th class="px-6 py-4 border-b border-gray-600">HSN Code</th>
                         <th class="px-6 py-4 border-b border-gray-600">Stock</th>
@@ -326,10 +369,13 @@
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->description }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
-                            <td class="px-6 py-4 border-b border-gray-600">{{ ($product->stock->first()->quantity ?? 0) - ($product->stock->first()->sold ?? 0) }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">
+                                {{ ($product->stock->first()->quantity ?? 0) - ($product->stock->first()->sold ?? 0) }}
+                            </td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
                             <td class="px-6 py-4 border-b border-gray-600">
-                                <button type="button" class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                <button type="button"
+                                    class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
                                     data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                                     data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
                                     Select
@@ -575,7 +621,8 @@
                 });
 
                 // Calculate grand total
-                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst + serviceTotalSgst;
+                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst +
+                    serviceTotalSgst;
                 grandTotal = productTotal + serviceTotal;
                 grandSubTotal = productSubtotal + serviceSubtotal;
 
@@ -625,7 +672,8 @@
 
                     currentServiceRow.querySelector(".service-id").value = serviceId;
                     currentServiceRow.querySelector(".service-name").textContent = serviceName;
-                    currentServiceRow.querySelector(".service-gst-percentage").value = gstPercentage;
+                    currentServiceRow.querySelector(".service-gst-percentage").value =
+                        gstPercentage;
 
                     calculateServiceRowTotal(currentServiceRow);
 

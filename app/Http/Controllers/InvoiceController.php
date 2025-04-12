@@ -41,7 +41,6 @@ class InvoiceController extends Controller
     {
         $request->validate([
             'customer' => 'required|exists:customers,id',
-            'invoice_no' => 'required|unique:invoices,invoice_no',
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
             'order_no' => 'required|string',
@@ -64,6 +63,10 @@ class InvoiceController extends Controller
         ]);
 
         $orderNo = $request->order_no === 'other' ? $request->order_no_text : $request->order_no;
+
+        // Generate the invoice number automatically
+        $lastInvoice = Invoice::latest('id')->first();
+        $newInvoiceNo = 'INV-' . str_pad(($lastInvoice ? $lastInvoice->id + 1 : 1), 3, '0', STR_PAD_LEFT);
 
         $totalServiceGst = 0;
 
@@ -90,7 +93,7 @@ class InvoiceController extends Controller
         $invoice = Invoice::create([
             'customer_id' => $request->customer,
             'contactperson_id' => $request->contact_person,
-            'invoice_no' => $request->invoice_no,
+            'invoice_no' => $newInvoiceNo,
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
             'order_no' => $orderNo,
@@ -154,6 +157,14 @@ class InvoiceController extends Controller
                 }
             }
         }
+
+        // Store payment record
+        DB::table('payments')->insert([
+            'invoice_id' => $invoice->id,
+            'amount' => $request->grand_total,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         return redirect()->route('invoices.index')->with('success', 'Invoice created successfully.');
     }

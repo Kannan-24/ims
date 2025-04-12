@@ -224,6 +224,14 @@
                         <span class="ms-3">Invoices</span>
                     </a>
                 </li>
+
+                <!-- Payments Link -->
+                <li>
+                    <a href="{{ route('payments.index') }}"
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('payments.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Payments</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </aside>

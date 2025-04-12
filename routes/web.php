@@ -12,6 +12,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -48,7 +49,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('stocks', StockController::class);
     Route::resource('quotations', QuotationController::class);
     Route::resource('invoices', InvoiceController::class);
-
+    Route::resource('payments', PaymentController::class);
+    
     Route::get('/quotations/{id}/pdf', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');
     Route::get('/products/{product}/assign-suppliers', [ProductController::class, 'assignSuppliersForm'])->name('products.assignSuppliersForm');
     Route::post('/products/{product}/assign-suppliers', [ProductController::class, 'assignSupplier'])->name('products.assignSupplier');
