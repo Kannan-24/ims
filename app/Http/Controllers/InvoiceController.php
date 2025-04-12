@@ -66,8 +66,14 @@ class InvoiceController extends Controller
         $orderNo = $request->order_no === 'other' ? $request->order_no_text : $request->order_no;
 
         // Generate the invoice number automatically
-        $lastInvoice = Invoice::latest('id')->first();
-        $newInvoiceNo = 'INV-' . str_pad(($lastInvoice ? $lastInvoice->id + 1 : 1), 3, '0', STR_PAD_LEFT);
+        $currentYear = date('Y');
+        $nextYear = date('y', strtotime('+1 year'));
+        $previousYear = date('y', strtotime('-1 year'));
+        $financialYear = (date('m') >= 4) ? $currentYear . '-' . $nextYear : $previousYear . '-' . date('y');
+        
+        $lastInvoice = Invoice::where('invoice_no', 'like', 'INV/' . $financialYear . '/%')->latest('id')->first();
+        $lastInvoiceNumber = $lastInvoice ? (int)explode('/', $lastInvoice->invoice_no)[2] : 0;
+        $newInvoiceNo = 'INV/' . $financialYear . '/' . ($lastInvoiceNumber + 1);
 
         $totalServiceGst = 0;
 
