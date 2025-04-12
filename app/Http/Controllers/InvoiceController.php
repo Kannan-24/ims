@@ -81,13 +81,13 @@ class InvoiceController extends Controller
         }
 
         foreach ($request->products as $product) {
-            $stock = Stock::where('product_id', $product['product_id'])->first();
+            $stock = Stock::where('product_id', $product['product_id'])->get();
 
-            if (!$stock || ($stock->quantity - $stock->sold) < $product['quantity']) {
-                $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
-                return redirect()->back()->withErrors([
-                    'products' => "Product '{$productName}' is out of stock."
-                ])->withInput();
+            if ($stock->isEmpty() || $stock->sum('quantity') - $stock->sum('sold') < $product['quantity']) {
+            $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
+            return redirect()->back()->withErrors([
+                'products' => "Product '{$productName}' is out of stock."
+            ])->withInput();
             }
         }
 
