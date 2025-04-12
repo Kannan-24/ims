@@ -369,9 +369,7 @@
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->description }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
-                            <td class="px-6 py-4 border-b border-gray-600">
-                                {{ ($product->stock->first()->quantity ?? 0) - ($product->stock->first()->sold ?? 0) }}
-                            </td>
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->stock->sum('quantity') - $product->stock->sum('sold') }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
                             <td class="px-6 py-4 border-b border-gray-600">
                                 <button type="button"
