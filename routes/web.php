@@ -50,7 +50,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('quotations', QuotationController::class);
     Route::resource('invoices', InvoiceController::class);
     Route::resource('payments', PaymentController::class);
-    
+
+    Route::get('payments/{paymentId}/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::post('payments/{paymentId}/store', [PaymentController::class, 'store'])->name('payments.store');
+
     Route::get('/quotations/{id}/pdf', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');
     Route::get('/products/{product}/assign-suppliers', [ProductController::class, 'assignSuppliersForm'])->name('products.assignSuppliersForm');
     Route::post('/products/{product}/assign-suppliers', [ProductController::class, 'assignSupplier'])->name('products.assignSupplier');

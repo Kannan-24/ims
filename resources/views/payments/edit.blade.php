@@ -1,86 +1,51 @@
 <x-app-layout>
+    <x-slot name="title">
+        Edit Payment Item - {{ config('app.name', 'ATMS') }}
+    </x-slot>
+
     <div class="py-6 mt-20 ml-4 sm:ml-64">
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
             <x-bread-crumb-navigation />
 
-            <h2 class="text-3xl font-bold text-gray-200 mb-6">Edit Supplier</h2>
+            <h2 class="text-3xl font-bold text-gray-200 mb-6">Edit Payment Item</h2>
 
-            <form action="{{ route('suppliers.update', $supplier->id) }}" method="POST">
-                @csrf
-                @method('PUT')
+            <div class="bg-gray-800 text-gray-300 p-6 rounded-lg shadow-xl">
+                <form action="{{ route('payments.update', $item->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Supplier ID:</label>
-                    <input type="text" name="supplier_id" id="supplier_id" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->supplier_id }}" required>
-                </div>
+                    <div class="mb-4">
+                        <label for="amount" class="block text-sm font-semibold text-gray-100">Amount</label>
+                        <input type="number" name="amount" id="amount" value="{{ $item->amount }}" step="0.01" class="mt-1 w-full p-2 bg-gray-700 border-gray-600 text-gray-300 rounded-md">
+                    </div>
 
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Supplier Name:</label>
-                    <input type="text" name="supplier_name" id="supplier_name" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->name }}" required>
-                </div>
+                    <div class="mb-4">
+                        <label for="payment_date" class="block text-sm font-semibold text-gray-100">Payment Date</label>
+                        <input type="date" name="payment_date" id="payment_date" value="{{ $item->payment_date }}" class="mt-1 w-full p-2 bg-gray-700 border-gray-600 text-gray-300 rounded-md">
+                    </div>
 
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Contact Person:</label>
-                    <input type="text" name="contact_person" id="contact_person" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->contact_person }}" required>
-                </div>
+                    <div class="mb-4">
+                        <label for="payment_method" class="block text-sm font-semibold text-gray-100">Payment Method</label>
+                        <select name="payment_method" id="payment_method" class="mt-1 w-full p-2 bg-gray-700 border-gray-600 text-gray-300 rounded-md">
+                            <option value="cash" {{ $item->payment_method == 'cash' ? 'selected' : '' }}>Cash</option>
+                            <option value="cheque" {{ $item->payment_method == 'cheque' ? 'selected' : '' }}>Cheque</option>
+                            <option value="upi" {{ $item->payment_method == 'upi' ? 'selected' : '' }}>UPI</option>
+                            <option value="bank_transfer" {{ $item->payment_method == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer</option>
+                        </select>
+                    </div>
 
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Email:</label>
-                    <input type="email" name="email" id="email" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->email }}" required>
-                </div>
+                    <div class="mb-4">
+                        <label for="reference_number" class="block text-sm font-semibold text-gray-100">Reference Number</label>
+                        <input type="text" name="reference_number" id="reference_number" value="{{ $item->reference_number }}" class="mt-1 w-full p-2 bg-gray-700 border-gray-600 text-gray-300 rounded-md">
+                    </div>
 
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Phone Number:</label>
-                    <input type="text" name="phone_number" id="phone_number" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->phone_number }}" required>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Address:</label>
-                    <input type="text" name="address" id="address" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->address }}" required>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">City:</label>
-                    <input type="text" name="city" id="city" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->city }}" required>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">State:</label>
-                    <input type="text" name="state" id="state" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->state }}" required>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Postal Code:</label>
-                    <input type="text" name="postal_code" id="postal_code" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->postal_code }}" required>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Country:</label>
-                    <input type="text" name="country" id="country" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->country }}" required>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">GST Number:</label>
-                    <input type="text" name="gst" id="gst" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        value="{{ $supplier->gst }}" required>
-                </div>
-
-                <div class="flex justify-end">
-                    <button type="submit" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition">
-                        Update Supplier
-                    </button>
-                </div>
-            </form>
+                    <div class="mt-6 flex justify-end">
+                        <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </x-app-layout>

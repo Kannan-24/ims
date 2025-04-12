@@ -2,91 +2,142 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Payment;
-use App\Models\Invoice;
 use Illuminate\Http\Request;
+use App\Models\Payment;
+use App\Models\PaymentItem;
+// Removed unused Invoice import
 
 class PaymentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Show all payments
     public function index()
     {
         $payments = Payment::with('invoice')->latest()->get();
         return view('payments.index', compact('payments'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Show payment details
+    public function show($id)
     {
-        $invoices = Invoice::all();
-        return view('payments.create', compact('invoices'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'invoice_id' => 'required|exists:invoices,id',
-            'payment_date' => 'required|date',
-            'amount' => 'required|numeric|min:0',
-            'payment_method' => 'required|string',
-            'transaction_reference' => 'nullable|string',
-            'note' => 'nullable|string',
-        ]);
-
-        Payment::create($request->all());
-
-        return redirect()->route('payments.index')->with('success', 'Payment recorded successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Payment $payment)
-    {
+        $payment = Payment::with('items', 'invoice')->findOrFail($id);
         return view('payments.show', compact('payment'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Payment $payment)
+    // Show form to add a new payment item (partial or full)
+    public function create($paymentId)
     {
-        $invoices = Invoice::all();
-        return view('payments.edit', compact('payment', 'invoices'));
+        $payment = Payment::findOrFail($paymentId);  // Fetch the payment using the ID
+        return view('payments.create', compact('payment'));  // Pass payment to the view
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Payment $payment)
+    // Store a new payment item (partial or full)
+    public function store(Request $request, $paymentId)
     {
         $request->validate([
-            'invoice_id' => 'required|exists:invoices,id',
+            'amount' => 'required|numeric|min:0.01',
             'payment_date' => 'required|date',
-            'amount' => 'required|numeric|min:0',
-            'payment_method' => 'required|string',
-            'transaction_reference' => 'nullable|string',
-            'note' => 'nullable|string',
+            'reference_number' => 'nullable|string',
+            'payment_method' => 'required|in:cash,cheque,upi,bank_transfer',
         ]);
 
-        $payment->update($request->all());
+        // Find the payment
+        $payment = Payment::findOrFail($paymentId);
 
-        return redirect()->route('payments.index')->with('success', 'Payment updated successfully.');
+        // Store the payment item
+        PaymentItem::create([
+            'payment_id' => $paymentId,
+            'amount' => $request->amount,
+            'payment_date' => $request->payment_date,
+            'reference_number' => $request->reference_number,
+            'payment_method' => $request->payment_method,
+        ]);
+
+        // Recalculate payment status
+        $paidAmount = $payment->items()->sum('amount');
+        if ($paidAmount >= $payment->total_amount) {
+            $payment->status = 'paid';
+        } elseif ($paidAmount > 0) {
+            $payment->status = 'partial';
+        } else {
+            $payment->status = 'unpaid';
+        }
+
+        // Update the paid and pending amounts
+        $payment->paid_amount = $paidAmount;
+        $payment->pending_amount = $payment->total_amount - $paidAmount;
+        $payment->save();
+
+        return redirect()->route('payments.show', $paymentId)->with('success', 'Payment item added successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Payment $payment)
+    // Show form to edit payment item
+    public function edit($id)
     {
-        $payment->delete();
-        return redirect()->route('payments.index')->with('success', 'Payment deleted successfully.');
+        $item = PaymentItem::findOrFail($id);
+        return view('payments.edit', compact('item'));
+    }
+
+    // Update payment item in the database
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'payment_date' => 'required|date',
+            'reference_number' => 'nullable|string',
+            'payment_method' => 'required|in:cash,cheque,upi,bank_transfer',
+        ]);
+
+        $item = PaymentItem::findOrFail($id);
+        $item->update([
+            'amount' => $request->amount,
+            'payment_date' => $request->payment_date,
+            'reference_number' => $request->reference_number,
+            'payment_method' => $request->payment_method,
+        ]);
+
+        // Recalculate the total paid amount for the payment
+        $payment = $item->payment;
+        $paidAmount = $payment->items()->sum('amount');
+        $payment->paid_amount = $paidAmount;
+        $payment->pending_amount = $payment->total_amount - $paidAmount;
+
+        // Recalculate payment status
+        if ($payment->pending_amount <= 0) {
+            $payment->status = 'paid';
+        } elseif ($payment->paid_amount > 0) {
+            $payment->status = 'partial';
+        } else {
+            $payment->status = 'unpaid';
+        }
+        $payment->save();
+
+        return redirect()->route('payments.show', $payment->id)->with('success', 'Payment item updated successfully.');
+    }
+
+    // Delete payment item
+    public function destroy($id)
+    {
+        $item = PaymentItem::findOrFail($id);
+        $payment = $item->payment;
+
+        // Delete the payment item
+        $item->delete();
+
+        // Recalculate the total paid amount for the payment
+        $paidAmount = $payment->items()->sum('amount');
+        $payment->paid_amount = $paidAmount;
+        $payment->pending_amount = $payment->total_amount - $paidAmount;
+
+        // Recalculate payment status
+        if ($payment->pending_amount <= 0) {
+            $payment->status = 'paid';
+        } elseif ($payment->paid_amount > 0) {
+            $payment->status = 'partial';
+        } else {
+            $payment->status = 'unpaid';
+        }
+        $payment->save();
+
+        return redirect()->route('payments.show', $payment->id)->with('success', 'Payment item deleted successfully.');
     }
 }

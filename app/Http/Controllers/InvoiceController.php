@@ -162,7 +162,7 @@ class InvoiceController extends Controller
         // Store payment record
         DB::table('payments')->insert([
             'invoice_id' => $invoice->id,
-            'amount' => $request->grand_total,
+            'total_amount' => $request->grand_total,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
