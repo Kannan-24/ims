@@ -33,7 +33,7 @@
 
                     <div class="mb-4">
                         <label for="amount" class="block text-sm font-semibold text-gray-100">Amount</label>
-                        <input type="number" name="amount" id="amount"
+                        <input type="number" name="amount" id="amount" step="0.01"
                             class="mt-1 w-full p-2 bg-gray-700 border-gray-600 text-gray-300 rounded-md" required>
                     </div>
 

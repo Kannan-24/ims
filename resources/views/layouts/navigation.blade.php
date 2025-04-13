@@ -79,7 +79,7 @@
                     </div>
                 </div>
                 <!-- Notification Bell -->
-                <div class="relative">
+                {{-- <div class="relative">
                     <!-- Bell Icon -->
                     <button @click="showNotifications = !showNotifications"
                         class="relative p-2 text-gray-300 rounded-full hover:bg-gray-700 hover:text-white focus:outline-none">
@@ -137,7 +137,7 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </nav>

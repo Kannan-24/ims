@@ -16,7 +16,8 @@
                             Edit
                         </a>
                         <form action="{{ route('quotations.destroy', $quotation->id) }}" method="POST"
-                            onsubmit="return confirm('Are you sure you want to delete this quotation?');" class="inline">
+                            onsubmit="return confirm('Are you sure you want to delete this quotation?');"
+                            class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
@@ -32,7 +33,12 @@
                 <div class="space-y-4 text-gray-300">
                     <p><strong>Quotation Code:</strong> {{ $quotation->quotation_code }}</p>
                     <p><strong>Quotation Date:</strong> {{ $quotation->quotation_date }}</p>
-                    <p><strong>Terms & Conditions:</strong> {{ $quotation->terms_condition ?? 'N/A' }}</p>
+                    <p><strong>Terms & Conditions:</strong></p>
+                    <ul class="list-decimal list-inside text-gray-300">
+                        @foreach (explode('#', $quotation->terms_condition ?? 'N/A') as $index => $term)
+                            <li> {{ $term }}</li>
+                        @endforeach
+                    </ul>
                 </div>
 
                 <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Customer Details</h3>
@@ -46,7 +52,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @foreach ($quotation->customer->contactPersons as $contactPerson)
                             @if ($contactPerson->id == $quotation->contactperson_id)
-                                <div class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
+                                <div
+                                    class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
                                     <p class="text-lg font-semibold">{{ $contactPerson->name }}</p>
                                     <p class="text-sm mt-1"><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
                                     <p class="text-sm"><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
@@ -153,9 +160,17 @@
                                 <td class="px-4 py-2 font-bold text-xl">Grand Total:</td>
                                 <td class="px-4 py-2 font-bold text-xl">₹{{ number_format($quotation->total, 2) }}</td>
                             </tr>
+                            <tr class="border-t border-gray-700">
+                                <td class="px-4 py-2 font-semibold">Amount in Words:</td>
+                                <td class="px-4 py-2 italic">
+                                    {{ \App\Helpers\NumberToWords::convert($quotation->total) }}
+                                </td>
+                            </tr>
+
                         </tbody>
                     </table>
                 </div>
+
             </div>
         </div>
     </div>

@@ -61,8 +61,14 @@ class QuotationController extends Controller
         ]);
 
         // Generate the quotation code automatically
-        $lastQuotation = Quotation::latest('id')->first();
-        $quotationCode = 'QUO-' . str_pad(($lastQuotation ? $lastQuotation->id + 1 : 1), 3, '0', STR_PAD_LEFT);
+        $currentYear = date('Y');
+        $nextYear = date('y', strtotime('+1 year'));
+        $previousYear = date('y', strtotime('-1 year'));
+        $financialYear = (date('m') >= 4) ? $currentYear . '-' . $nextYear : $previousYear . '-' . date('y');
+
+        $lastQuotation = Quotation::where('quotation_code', 'like', 'QUO/' . $financialYear . '/%')->latest('id')->first();
+        $lastQuotationNumber = $lastQuotation ? (int)explode('/', $lastQuotation->quotation_code)[2] : 0;
+        $quotationCode = 'QUO/' . $financialYear . '/' . ($lastQuotationNumber + 1);
 
         $totalServiceGst = 0;
 
