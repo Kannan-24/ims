@@ -11,56 +11,78 @@
             <!-- Breadcrumb Navigation -->
             <x-bread-crumb-navigation />
 
-            <!-- Table Section -->
             <div class="overflow-hidden bg-gray-800 rounded-lg shadow-xl">
-                <div class="p-6 overflow-x-auto">
-                    <table class="min-w-full text-left border-collapse table-auto">
-                        <thead>
-                            <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
-                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">Employee ID</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(2)">Name</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600">Email</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600">Phone</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600">Role</th>
-                                <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-sm text-gray-300 divide-y divide-gray-700" id="userTable">
-                            @foreach ($users as $user)
-                                <tr class="hover:bg-gray-700 transition duration-200">
-                                    <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                                    <td class="px-6 py-4">{{ $user->employee_id }}</td>
-                                    <td class="px-6 py-4">{{ $user->name }}</td>
-                                    <td class="px-6 py-4">{{ $user->email }}</td>
-                                    <td class="px-6 py-4">{{ $user->phone }}</td>
-                                    <td class="px-6 py-4">{{ $user->role }}</td>
-                                    <td class="px-6 py-4 flex justify-center gap-3">
-                                        <a href="{{ route('users.show', $user) }}"
-                                            class="text-blue-400 hover:text-blue-600 transition duration-300"
-                                            title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('users.edit', $user) }}"
-                                            class="text-yellow-400 hover:text-yellow-600 transition duration-300"
-                                            title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('users.destroy', $user) }}" method="POST"
-                                            class="inline">
-                                            @csrf @method('DELETE')
-                                            <button type="submit"
-                                                class="text-red-400 hover:text-red-600 transition duration-300"
-                                                title="Delete"
-                                                onclick="return confirm('Are you sure you want to delete this user?')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
+                <div class="bg-gray-800 p-4 rounded-lg shadow-md">
+                    <form method="GET" action="{{ route('users.index') }}"
+                        class="flex flex-wrap items-center gap-4">
+
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Search Employee ID, Name, Email, or Role"
+                            class="flex-1 min-w-[200px] px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+
+                        <button type="submit"
+                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-semibold">Filter</button>
+                        <a href="{{ route('users.index') }}"
+                            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded font-semibold">Reset</a>
+                    </form>
+                </div>
+                <div class="p-4 overflow-x-auto">
+                    @if ($users->isEmpty())
+                        <div class="text-center text-gray-300">
+                            {{ __('No users found.') }}
+                        </div>
+                    @else
+                        <table class="min-w-full text-left border-collapse table-auto">
+                            <thead>
+                                <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#
+                                    </th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">
+                                        Employee ID</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(2)">
+                                        Name</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600">Email</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600">Phone</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600">Role</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="text-sm text-gray-300 divide-y divide-gray-700" id="userTable">
+                                @foreach ($users as $user)
+                                    <tr class="hover:bg-gray-700 transition duration-200">
+                                        <td class="px-6 py-4">{{ $loop->iteration }}</td>
+                                        <td class="px-6 py-4">{{ $user->employee_id }}</td>
+                                        <td class="px-6 py-4">{{ $user->name }}</td>
+                                        <td class="px-6 py-4">{{ $user->email }}</td>
+                                        <td class="px-6 py-4">{{ $user->phone }}</td>
+                                        <td class="px-6 py-4">{{ $user->role }}</td>
+                                        <td class="px-6 py-4 flex justify-center gap-3">
+                                            <a href="{{ route('users.show', $user) }}"
+                                                class="text-blue-400 hover:text-blue-600 transition duration-300"
+                                                title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('users.edit', $user) }}"
+                                                class="text-yellow-400 hover:text-yellow-600 transition duration-300"
+                                                title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('users.destroy', $user) }}" method="POST"
+                                                class="inline">
+                                                @csrf @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-red-400 hover:text-red-600 transition duration-300"
+                                                    title="Delete"
+                                                    onclick="return confirm('Are you sure you want to delete this user?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
                 </div>
             </div>
         </div>

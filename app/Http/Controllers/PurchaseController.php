@@ -18,7 +18,25 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-        $purchases = Purchase::all();
+        $query = Purchase::query();
+
+        if ($search = request('search')) {
+            $query->where('invoice_no', 'like', "%{$search}%")
+              ->orWhereHas('supplier', function ($q) use ($search) {
+                  $q->where('name', 'like', "%{$search}%");
+              });
+        }
+
+        if ($from = request('from')) {
+            $query->whereDate('invoice_date', '>=', $from);
+        }
+
+        if ($to = request('to')) {
+            $query->whereDate('invoice_date', '<=', $to);
+        }
+
+        $purchases = $query->get();
+
         return view('purchases.index', compact('purchases'));
     }
 

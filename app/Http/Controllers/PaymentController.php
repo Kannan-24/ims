@@ -11,7 +11,34 @@ class PaymentController extends Controller
     // Show all payments
     public function index()
     {
-        $payments = Payment::with('invoice')->latest()->get();
+        $query = Payment::with('invoice');
+
+        if ($search = request('search')) {
+            $query->whereHas('invoice', function ($q) use ($search) {
+                $q->where('invoice_no', 'like', "%{$search}%");
+            });
+        }
+
+        if ($from = request('from')) {
+            $query->whereHas('invoice', function ($q) use ($from) {
+                $q->whereDate('invoice_date', '>=', $from);
+            });
+        }
+
+        if ($to = request('to')) {
+            $query->whereHas('invoice', function ($q) use ($to) {
+                $q->whereDate('invoice_date', '<=', $to);
+            });
+        }
+
+        $payments = $query->latest()->get();
+
+        if (request()->ajax()) {
+            return response()->json([
+                'html' => view('payments.partials.list', compact('payments'))->render(),
+            ]);
+        }
+
         return view('payments.index', compact('payments'));
     }
 

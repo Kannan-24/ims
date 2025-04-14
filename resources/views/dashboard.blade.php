@@ -4,7 +4,7 @@
     <div class="mt-20 py-6 px-4 sm:ml-64 bg-gray-900 text-white min-h-screen">
         <!-- Welcome -->
         <div class="text-center bg-gradient-to-r from-indigo-500 to-purple-600 p-6 rounded-lg shadow-lg mb-6">
-            <h1 class="text-3xl font-bold">Welcome Back, Admin 👋</h1>
+            <h1 class="text-3xl font-bold">Welcome Back, {{ Auth::user()->name ?? 'User' }} 👋</h1>
             <p class="text-sm mt-2">Here's a quick look at today’s system performance.</p>
         </div>
 

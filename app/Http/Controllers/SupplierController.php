@@ -14,9 +14,18 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        // Retrieve all suppliers from the database and return them.
-        $suppliers = Supplier::all();
-        return view('suppliers.index', compact('suppliers')); // Update this to your desired view.
+        // Retrieve all suppliers from the database with optional search filtering.
+        $query = Supplier::query();
+
+        if ($search = request('search')) {
+            $query->where('supplier_id', 'like', "%{$search}%")
+              ->orWhere('name', 'like', "%{$search}%")
+              ->orWhere('contact_person', 'like', "%{$search}%");
+        }
+
+        $suppliers = $query->get();
+
+        return view('suppliers.index', compact('suppliers'));
     }
 
     /**

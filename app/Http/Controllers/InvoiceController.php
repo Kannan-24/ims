@@ -17,11 +17,34 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the invoices.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = Invoice::with('customer')->latest()->get();
+        $query = Invoice::with('customer');
+
+        if ($request->search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_no', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function ($q) use ($search) {
+                        $q->where('company_name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($request->from) {
+            $query->whereDate('invoice_date', '>=', $request->from);
+        }
+
+        if ($request->to) {
+            $query->whereDate('invoice_date', '<=', $request->to);
+        }
+
+        $invoices = $query->latest()->get();
+
         return view('invoices.index', compact('invoices'));
     }
+
+
 
     /**
      * Show the form for creating a new invoice.
@@ -70,7 +93,7 @@ class InvoiceController extends Controller
         $nextYear = date('y', strtotime('+1 year'));
         $previousYear = date('y', strtotime('-1 year'));
         $financialYear = (date('m') >= 4) ? $currentYear . '-' . $nextYear : $previousYear . '-' . date('y');
-        
+
         $lastInvoice = Invoice::where('invoice_no', 'like', 'INV/' . $financialYear . '/%')->latest('id')->first();
         $lastInvoiceNumber = $lastInvoice ? (int)explode('/', $lastInvoice->invoice_no)[2] : 0;
         $newInvoiceNo = 'INV/' . $financialYear . '/' . ($lastInvoiceNumber + 1);
@@ -90,10 +113,10 @@ class InvoiceController extends Controller
             $stock = Stock::where('product_id', $product['product_id'])->get();
 
             if ($stock->isEmpty() || $stock->sum('quantity') - $stock->sum('sold') < $product['quantity']) {
-            $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
-            return redirect()->back()->withErrors([
-                'products' => "Product '{$productName}' is out of stock."
-            ])->withInput();
+                $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
+                return redirect()->back()->withErrors([
+                    'products' => "Product '{$productName}' is out of stock."
+                ])->withInput();
             }
         }
 

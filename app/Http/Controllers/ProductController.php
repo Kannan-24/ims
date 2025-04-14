@@ -11,7 +11,15 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
+        $query = Product::query();
+
+        if ($search = request('search')) {
+            $query->where('name', 'like', "%{$search}%")
+              ->orWhere('hsn_code', 'like', "%{$search}%");
+        }
+
+        $products = $query->get();
+
         return view('products.index', compact('products'));
     }
 

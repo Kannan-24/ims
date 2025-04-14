@@ -14,7 +14,20 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::with('contactPersons')->get(); // Eager load contacts
+        $query = Customer::with('contactPersons'); // Eager load contacts
+
+        if ($search = request('search')) {
+            $query->where(function ($q) use ($search) {
+            $q->where('company_name', 'like', "%{$search}%")
+              ->orWhere('city', 'like', "%{$search}%")
+              ->orWhere('cid', 'like', "%{$search}%") // Add search for CID
+              ->orWhereHas('contactPersons', function ($q) use ($search) {
+              $q->where('name', 'like', "%{$search}%");
+              });
+            });
+        }
+
+        $customers = $query->get();
         return view('customers.index', compact('customers'));
     }
 

@@ -19,7 +19,27 @@ class QuotationController extends Controller
      */
     public function index()
     {
-        $quotations = Quotation::with('customer')->latest()->get();
+        $query = Quotation::with('customer');
+
+        if ($search = request('search')) {
+            $query->where(function ($q) use ($search) {
+            $q->where('quotation_code', 'like', "%{$search}%")
+              ->orWhereHas('customer', function ($q) use ($search) {
+                  $q->where('company_name', 'like', "%{$search}%");
+              });
+            });
+        }
+
+        if ($from = request('from')) {
+            $query->whereDate('quotation_date', '>=', $from);
+        }
+
+        if ($to = request('to')) {
+            $query->whereDate('quotation_date', '<=', $to);
+        }
+
+        $quotations = $query->latest()->get();
+
         return view('quotations.index', compact('quotations'));
     }
 

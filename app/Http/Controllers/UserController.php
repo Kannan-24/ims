@@ -12,9 +12,19 @@ class UserController extends Controller
      */
     public function index()
     {
-        // Retrieve all users from the database and return them.
-        $users = User::all();
-        return view('users.index', compact('users')); // Update this to your desired view.
+        // Retrieve all users from the database with optional search filtering.
+        $query = User::query();
+
+        if ($search = request('search')) {
+            $query->where('employee_id', 'like', "%{$search}%")
+              ->orWhere('name', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('role', 'like', "%{$search}%");
+        }
+
+        $users = $query->get();
+
+        return view('users.index', compact('users'));
     }
 
     /**

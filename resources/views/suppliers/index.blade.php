@@ -11,7 +11,21 @@
             <x-bread-crumb-navigation />
 
             <div class="overflow-hidden bg-gray-800 rounded-lg shadow-xl">
-                <div class="p-6 overflow-x-auto">
+                <div class="bg-gray-800 p-4 rounded-lg shadow-md">
+                    <form method="GET" action="{{ route('suppliers.index') }}"
+                        class="flex flex-wrap items-center gap-4">
+
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Search Supplier ID, Company Name, or Contact Person"
+                            class="flex-1 min-w-[200px] px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+
+                        <button type="submit"
+                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-semibold">Filter</button>
+                        <a href="{{ route('suppliers.index') }}"
+                            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded font-semibold">Reset</a>
+                    </form>
+                </div>
+                <div class="p-4 overflow-x-auto">
                     @if ($suppliers->isEmpty())
                         <div class="text-center text-gray-300">
                             {{ __('No suppliers found.') }}
@@ -20,9 +34,12 @@
                         <table class="min-w-full text-left border-collapse table-auto">
                             <thead>
                                 <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">Supplier ID</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(2)">Name</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#
+                                    </th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">
+                                        Supplier ID</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(2)">
+                                        Name</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Contact Person</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Phone</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">City</th>

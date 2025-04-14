@@ -60,23 +60,54 @@
                     </button>
 
                     <div x-show="userDropdown" @click.away="userDropdown = false"
-                        class="absolute right-0 z-50 w-48 mt-2 overflow-hidden bg-gray-800 rounded-lg shadow-lg">
-                        <a href="{{ route('profile.show') }}"
-                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">
-                            Profile
-                        </a>
-                        <a href="{{ route('account.settings') }}"
-                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">
-                            Account Settings
-                        </a>
+                        class="absolute right-0 z-50 w-64 mt-3 bg-gray-800 text-gray-200 shadow-lg rounded-b-xl overflow-hidden">
+
+                        <!-- Profile Header -->
+                        <div class="px-4 py-3 border-b border-gray-700">
+                            <div class="font-semibold text-white">{{ Auth::user()->name }}</div>
+                            <div class="text-sm text-gray-400">{{ Auth::user()->email }}</div>
+                        </div>
+
+                        <!-- Menu Options -->
+                        <div class="py-2">
+                            <a href="{{ route('profile.show') }}"
+                                class="flex items-center px-4 py-2 text-sm hover:bg-gray-700 transition">
+                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M5.121 17.804A4 4 0 0112 14a4 4 0 016.879 3.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Edit Profile
+                            </a>
+                            <a href="{{ route('account.settings') }}"
+                                class="flex items-center px-4 py-2 text-sm hover:bg-gray-700 transition">
+                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 4v1m0 14v1m8-9h1M4 12H3m15.364-6.364l.707.707M6.343 17.657l-.707.707M17.657 17.657l.707-.707M6.343 6.343l-.707-.707" />
+                                </svg>
+                                Account Settings
+                            </a>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="border-t border-gray-700"></div>
+
+                        <!-- Sign Out -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
-                                class="block w-full px-4 py-2 text-sm text-left text-gray-300 hover:bg-gray-700 hover:text-white">
-                                Log Out
+                                class="flex items-center w-full px-4 py-3 text-sm hover:bg-gray-700 text-left transition">
+                                <svg class="w-5 h-5 mr-2 text-red-400" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5" />
+                                </svg>
+                                Sign out
                             </button>
                         </form>
                     </div>
+
                 </div>
                 <!-- Notification Bell -->
                 {{-- <div class="relative">

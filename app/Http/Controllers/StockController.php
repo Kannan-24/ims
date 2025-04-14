@@ -11,16 +11,26 @@ class StockController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
         $products = Product::all();
-        // Fetch stocks grouped by product_id and sum quantity and sold
-        $stocks = Stock::selectRaw('product_id, supplier_id, unit_type, SUM(quantity) as total_quantity, SUM(sold) as total_sold')
-            ->groupBy('product_id', 'supplier_id', 'unit_type')
-            ->with(['product', 'supplier'])
-            ->get();
 
-        return view('stocks.index', compact('stocks', 'products'));
+        // Fetch stocks grouped by product_id and sum quantity and sold
+        $stocksQuery = Stock::selectRaw('product_id, supplier_id, unit_type, SUM(quantity) as total_quantity, SUM(sold) as total_sold')
+            ->groupBy('product_id', 'supplier_id', 'unit_type')
+            ->with(['product', 'supplier']);
+
+        // Apply search filter if provided
+        if ($search) {
+            $stocksQuery->whereHas('product', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            });
+        }
+
+        $stocks = $stocksQuery->get();
+
+        return view('stocks.index', compact('stocks', 'products', 'search'));
     }
 
     /**

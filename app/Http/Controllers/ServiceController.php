@@ -12,9 +12,15 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        // Retrieve all services from the database and return them.
-        $services = Service::all();
-        return view('services.index', compact('services')); // Update this to your desired view.
+        $query = Service::query();
+
+        if ($search = request('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('hsn_code', 'like', "%{$search}%");
+        }
+
+        $services = $query->get();
+        return view('services.index', compact('services'));
     }
 
     /**
