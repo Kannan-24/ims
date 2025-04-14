@@ -13,6 +13,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\EmailController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -50,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('quotations', QuotationController::class);
     Route::resource('invoices', InvoiceController::class);
     Route::resource('payments', PaymentController::class);
+    Route::resource('emails', EmailController::class);
 
     Route::get('payments/{paymentId}/create', [PaymentController::class, 'create'])->name('payments.create');
     Route::post('payments/{paymentId}/store', [PaymentController::class, 'store'])->name('payments.store');
