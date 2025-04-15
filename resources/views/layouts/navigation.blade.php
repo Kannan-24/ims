@@ -271,6 +271,13 @@
                         <span class="ms-3">Mails</span>
                     </a>
                 </li>
+
+                <!-- Reports Link -->
+                <li>
+                    <a href="{{ route('reports.index') }}"
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('reports.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Reports</span>
+                    </a>
             </ul>
         </div>
     </aside>

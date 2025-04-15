@@ -14,8 +14,9 @@ use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
-
+use SebastianBergmann\CodeCoverage\Report\Xml\Report;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -62,7 +63,39 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/suppliers/assign/{supplier}', [SupplierController::class, 'supplierAssign'])->name('suppliers.assignSupplier');
     Route::delete('/products/{product}/suppliers/{supplier}/remove', [ProductController::class, 'removeAssignedSupplier'])->name('suppliers.remove');
     Route::get('/purchases/get-products/{supplier}', [PurchaseController::class, 'getProductsBySupplier']);
+
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{id}', [ReportController::class, 'show']);
+
+
+
+    // Customer Reports
+    Route::get('/reports/customers', [ReportController::class, 'customers'])->name('reports.customers');
+    Route::get('/reports/customers/pdf', [ReportController::class, 'customersPdf'])->name('reports.customer.pdf');
+    Route::get('/reports/customers/excel', [ReportController::class, 'customersExcel'])->name('reports.customer.excel');
+
+
+    // Supplier Reports
+    Route::get('reports/suppliers', [ReportController::class, 'supplier'])->name('reports.suppliers');
+    Route::get('reports/suppliers/pdf', [ReportController::class, 'suppliersPdf'])->name('reports.supplier.pdf');
+    Route::get('reports/suppliers/excel', [ReportController::class, 'suppliersExcel'])->name('reports.supplier.excel');
+
+    // Invoice Reports
+    Route::get('reports/invoices', [ReportController::class, 'invoice'])->name('reports.invoices');
+    Route::get('reports/invoices/excel', [ReportController::class, 'invoicesExcel'])->name('reports.invoices.excel');
+    Route::get('reports/invoices/pdf', [ReportController::class, 'invoicesPdf'])->name('reports.invoices.pdf');
+    
+    // Quotation Reports
+    Route::get('reports/quotations', [ReportController::class, 'quotation'])->name('reports.quotations');
+    Route::get('reports/quotations/pdf', [ReportController::class, 'quotationsPdf'])->name('reports.quotations.pdf');
+    Route::get('reports/quotations/excel', [ReportController::class, 'quotationsExcel'])->name('reports.quotations.excel');
+
+    // Stock Reports
+    Route::get('reports/stocks', [ReportController::class, 'stock'])->name('reports.stocks');
+    Route::get('reports/stocks/pdf', [ReportController::class, 'stockPdf'])->name('reports.stock.pdf');
+    Route::get('reports/stocks/excel', [ReportController::class, 'stockExcel'])->name('reports.stock.excel');
 });
+
 
 
 require __DIR__ . '/auth.php';

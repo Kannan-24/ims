@@ -52,8 +52,8 @@ class Invoice extends Model
     /**
      * Get the payments associated with the invoice.
      */
-    public function payment()
+    public function payments()
     {
-        return $this->hasOne(Payment::class);
+        return $this->hasMany(Payment::class);
     }
 }

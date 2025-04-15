@@ -47,13 +47,13 @@
                     <textarea name="body" id="body"
                         class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                         placeholder="Write your email message here" required>
-<p>Dear Sir,</p>
-<p>Good afternoon,</p>
-<p>As discussed, please find the attached quotation for your requirements.</p>
-<p>We kindly request you to confirm your valuable order with us at your earliest convenience.</p>
-<p>We assure you of our best service and support at all times.</p>
-<p>Thank you and regards,</p>
-<p>R. Radhika<br>Partner<br>SKM and Company<br>8870820449<br>skmandcompany@yahoo.in</p>
+                            <p>Dear Sir,</p>
+                            <p>Good afternoon,</p>
+                            <p>As discussed, please find the attached quotation for your requirements.</p>
+                            <p>We kindly request you to confirm your valuable order with us at your earliest convenience.</p>
+                            <p>We assure you of our best service and support at all times.</p>
+                            <p>Thank you and regards,</p>
+                            <p>R. Radhika<br>Partner<br>SKM and Company<br>8870820449<br>skmandcompany@yahoo.in</p>
                     </textarea>
                 </div>
 
@@ -77,8 +77,6 @@
 <style>
     textarea#body {
         min-height: 300px;
-        /* Set a minimum height for the textarea */
         resize: vertical;
-        /* Allow vertical resizing only */
     }
 </style>

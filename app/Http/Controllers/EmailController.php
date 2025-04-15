@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Mail\SendEmail;
 use App\Models\Email;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,26 +12,23 @@ class EmailController extends Controller
 {
     public function index()
     {
-        // Fetch and display all emails
         $emails = Email::latest()->get();
         return view('emails.index', compact('emails'));
     }
 
     public function show($id)
     {
-        // Show details of a specific email
         $email = Email::findOrFail($id);
         return view('emails.show', compact('email'));
     }
 
     public function create()
     {
-        // Show the create email form
         return view('emails.create');
     }
+
     public function store(Request $request)
     {
-        // Validate required fields
         $request->validate([
             'to' => 'required|string',
             'cc' => 'nullable|string',
@@ -42,12 +38,10 @@ class EmailController extends Controller
             'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xlsx,xls|max:2048',
         ]);
 
-        // Convert comma-separated emails to arrays
         $to = array_filter(array_map('trim', explode(',', $request->to)));
         $cc = $request->cc ? array_filter(array_map('trim', explode(',', $request->cc))) : [];
         $bcc = $request->bcc ? array_filter(array_map('trim', explode(',', $request->bcc))) : [];
 
-        // Validate each email address
         $allEmails = array_merge($to, $cc, $bcc);
         foreach ($allEmails as $email) {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -55,7 +49,6 @@ class EmailController extends Controller
             }
         }
 
-        // Save attachments
         $attachments = [];
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
@@ -63,7 +56,6 @@ class EmailController extends Controller
             }
         }
 
-        // Store email in DB
         $email = Email::create([
             'to' => implode(',', $to),
             'cc' => implode(',', $cc),
@@ -74,7 +66,6 @@ class EmailController extends Controller
         ]);
 
         try {
-            // Send email
             Mail::to($to)
                 ->cc($cc)
                 ->bcc($bcc)
@@ -85,5 +76,21 @@ class EmailController extends Controller
             \Log::error('Mail send error: ' . $e->getMessage());
             return back()->with('error', 'Failed to send email: ' . $e->getMessage());
         }
+    }
+
+    public function destroy($id)
+    {
+        $email = Email::findOrFail($id);
+
+        if ($email->attachments) {
+            $attachments = json_decode($email->attachments, true);
+            foreach ($attachments as $attachment) {
+                Storage::disk('public')->delete($attachment);
+            }
+        }
+
+        $email->delete();
+
+        return redirect()->route('emails.index')->with('success', 'Email deleted successfully.');
     }
 }
