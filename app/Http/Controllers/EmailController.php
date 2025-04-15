@@ -76,6 +76,25 @@ class EmailController extends Controller
             \Log::error('Mail send error: ' . $e->getMessage());
             return back()->with('error', 'Failed to send email: ' . $e->getMessage());
         }
+
+        return redirect()->route('emails.index')->with('success', 'Email saved successfully.');
+    }
+
+    public function destroy($id)
+    {
+        // Delete email from DB
+        $email = Email::findOrFail($id);
+        $email->delete();
+
+        // Delete attachments from storage
+        if ($email->attachments) {
+            $attachments = json_decode($email->attachments, true);
+            foreach ($attachments as $attachment) {
+                Storage::disk('public')->delete($attachment);
+            }
+        }
+
+        return redirect()->route('emails.index')->with('success', 'Email deleted successfully.');
     }
 
     public function destroy($id)

@@ -87,7 +87,8 @@
                     <!-- Product Table -->
                     <div class="mt-6">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Quotation Items</h3>
-                        <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                        <table
+                            class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                             <thead>
                                 <tr class="text-sm text-gray-400 bg-gray-700">
                                     <th class="px-3 py-3 border-b border-gray-600">Product</th>
@@ -104,39 +105,9 @@
 
                             </tbody>
                         </table>
-                        <button type="button" id="addRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Product</button>
-                    </div>
-                    
-                    <!-- Product Summary Section -->
-                    <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Product Summary</h3>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Product Subtotal:</label>
-                                <input type="text" id="productSubtotal" name="product_subtotal" value="{{ old('product_subtotal') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Product CGST Total:</label>
-                                <input type="text" id="productTotalCgst" name="product_total_cgst" value="{{ old('product_total_cgst') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Product SGST Total:</label>
-                                <input type="text" id="productTotalSgst" name="product_total_sgst" value="{{ old('product_total_sgst') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Product IGST Total:</label>
-                                <input type="text" id="productTotalIgst" name="product_total_igst" value="{{ old('product_total_igst') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Product Total:</label>
-                                <input type="text" id="productTotal" name="product_total" value="{{ old('product_total') }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                        </div>
+                        <button type="button" id="addRow"
+                            class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+
+                            Add Product</button>
                     </div>
 
                     <!-- Services Table -->
@@ -164,38 +135,146 @@
                                 </tbody>
                             </table>
                             <button type="button" id="addServiceRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Service</button>
+                        </div>
+                    </div>
 
-                            <!-- Service Summary Section -->
-                            <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
-                                <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Summary</h3>
-                                <div class="grid grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-gray-300 font-semibold mb-2">Service Subtotal:</label>
-                                        <input type="text" id="serviceSubtotal" name="service_subtotal" value="{{ old('service_subtotal') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-300 font-semibold mb-2">Service CGST Total:</label>
-                                        <input type="text" id="serviceTotalCgst" name="service_total_cgst" value="{{ old('service_total_cgst') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-300 font-semibold mb-2">Service SGST Total:</label>
-                                        <input type="text" id="serviceTotalSgst" name="service_total_sgst" value="{{ old('service_total_sgst') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                                    </div>
-                                    <div>
-                                        <label class="block text-gray-300 font-semibold mb-2">Service Total:</label>
-                                        <input type="text" id="serviceTotal" name="service_total" value="{{ old('service_total') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                                    </div>
-                                </div>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const toggleServiceCheckbox = document.getElementById("toggleServiceSelection");
+                            const serviceSection = document.getElementById("serviceSection");
+                            const serviceSummary = document.getElementById("serviceSummary");
+
+                            toggleServiceCheckbox.addEventListener("change", function() {
+                                if (this.checked) {
+                                    serviceSection.classList.remove("hidden");
+                                    serviceSummary.classList.remove("hidden");
+                                } else {
+                                    serviceSection.classList.add("hidden");
+                                    serviceSummary.classList.add("hidden");
+                                }
+                            });
+                        });
+                    </script>
+
+                    <!-- Product Summary Section -->
+                    <div class="mt-6 bg-gray-800 p-6 rounded-2xl shadow-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Product Summary -->
+                            <div>
+                                <h4 class="text-xl font-semibold text-blue-400 mb-4">Product Summary</h4>
+                                <table class="w-full text-sm text-left text-gray-300">
+                                    <tbody class="divide-y divide-gray-700">
+                                        <tr>
+                                            <td class="py-2 font-medium w-1/2">Product Subtotal</td>
+                                            <td class="py-2"><input type="text" id="productSubtotal" name="product_subtotal"
+                                                value="{{ old('product_subtotal') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Product CGST Total</td>
+                                            <td class="py-2"><input type="text" id="productTotalCgst" name="product_total_cgst"
+                                                value="{{ old('product_total_cgst') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Product SGST Total</td>
+                                            <td class="py-2"><input type="text" id="productTotalSgst" name="product_total_sgst"
+                                                value="{{ old('product_total_sgst') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Product IGST Total</td>
+                                            <td class="py-2"><input type="text" id="productTotalIgst" name="product_total_igst"
+                                                value="{{ old('product_total_igst') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                        </tr>
+                                        <tr class="border-t border-gray-700 font-bold text-white">
+                                            <td class="py-3">Product Total</td>
+                                            <td class="py-3"><input type="text" id="productTotal" name="product_total"
+                                                value="{{ old('product_total') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
+
+                            <!-- Service Summary -->
+                            <div id="serviceSummary" class="hidden">
+                                <h4 class="text-xl font-semibold text-green-400 mb-4">Service Summary</h4>
+                                <table class="w-full text-sm text-left text-gray-300">
+                                    <tbody class="divide-y divide-gray-700">
+                                        <tr>
+                                            <td class="py-2 font-medium w-1/2">Service Subtotal</td>
+                                            <td class="py-2"><input type="text" id="serviceSubtotal" name="service_subtotal"
+                                                value="{{ old('service_subtotal') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Service CGST Total</td>
+                                            <td class="py-2"><input type="text" id="serviceTotalCgst" name="service_total_cgst"
+                                                value="{{ old('service_total_cgst') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Service SGST Total</td>
+                                            <td class="py-2"><input type="text" id="serviceTotalSgst" name="service_total_sgst"
+                                                value="{{ old('service_total_sgst') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                        </tr>
+                                        <tr class="border-t border-gray-700 font-bold text-white">
+                                            <td class="py-3">Service Total</td>
+                                            <td class="py-3"><input type="text" id="serviceTotal" name="service_total"
+                                                value="{{ old('service_total') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Grand Totals -->
+                        <div class="mt-10">
+                            <h4 class="text-xl font-semibold text-yellow-400 mb-4">Grand Totals</h4>
+                            <table class="w-full text-sm text-left text-gray-300">
+                                <tbody class="divide-y divide-gray-700">
+                                    <tr>
+                                        <td class="py-2 font-medium w-1/4">Grand Sub Total</td>
+                                        <td class="py-2"><input type="text" id="grandSubTotal" name="grand_sub_total"
+                                            value="{{ old('grand_sub_total') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                            readonly></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Grand GST Total</td>
+                                        <td class="py-2"><input type="text" id="grandGstTotal" name="grand_gst_total"
+                                            value="{{ old('grand_gst_total') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                            readonly></td>
+                                    </tr>
+                                    <tr class="border-t border-gray-700 font-bold text-white text-lg">
+                                        <td class="py-3">Grand Total</td>
+                                        <td class="py-3"><input type="text" id="grandTotal" name="grand_total"
+                                            value="{{ old('grand_total') }}"
+                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                            readonly></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
                     <!-- Service Selection Modal -->
-                    <div id="serviceModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center">
+                    <div id="serviceModal"
+                        class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center">
                         <div class="bg-gray-800 p-6 rounded-lg shadow-md w-1/2">
                             <h2 class="text-2xl font-bold text-gray-200 mb-6">Select Service</h2>
 
@@ -203,7 +282,8 @@
                             <input type="text" id="serviceSearch" placeholder="Search Service..."
                                 class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
 
-                            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                            <table
+                                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                                 <thead>
                                     <tr class="text-sm text-gray-400 bg-gray-700">
                                         <th class="px-6 py-4 border-b border-gray-600">Service Name</th>
@@ -215,9 +295,11 @@
                                     @foreach ($services as $service)
                                         <tr data-id="{{ $service->id }}" class="service-row">
                                             <td class="px-6 py-4 border-b border-gray-600">{{ $service->name }}</td>
-                                            <td class="px-6 py-4 border-b border-gray-600">{{ $service->gst_percentage }}%</td>
                                             <td class="px-6 py-4 border-b border-gray-600">
-                                                <button type="button" class="select-service px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                                {{ $service->gst_percentage }}%</td>
+                                            <td class="px-6 py-4 border-b border-gray-600">
+                                                <button type="button"
+                                                    class="select-service px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
                                                     data-id="{{ $service->id }}" data-name="{{ $service->name }}"
                                                     data-gst="{{ $service->gst_percentage }}">
                                                     Select
@@ -233,43 +315,10 @@
                         </div>
                     </div>
 
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            const toggleServiceCheckbox = document.getElementById("toggleServiceSelection");
-                            const serviceSection = document.getElementById("serviceSection");
-
-                            toggleServiceCheckbox.addEventListener("change", function () {
-                                if (this.checked) {
-                                    serviceSection.classList.remove("hidden");
-                                } else {
-                                    serviceSection.classList.add("hidden");
-                                }
-                            });
-                        });
-                    </script>
-
-                    <!-- Grand Total Section -->
-                    <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Grand Total</h3>
-                        <div>
-                            <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
-                            <input type="text" id="grandTotal" name="grand_total" value="{{ old('grand_total') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                        </div>
-                        <div>
-                            <label class="block text-gray-300 font-semibold mb-2">Grand Sub Total:</label>
-                            <input type="text" id="grandSubTotal" name="grand_sub_total" value="{{ old('grand_sub_total') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>        
-                        </div>
-                        <div>
-                            <label class="block text-gray-300 font-semibold mb-2">Grand GST Total:</label>
-                            <input type="text" id="grandGstTotal" name="grand_gst_total" value="{{ old('grand_gst_total') }}"
-                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                        </div>
-                    </div>
-
                     <div class="mt-6">
-                        <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Submit Quotation</button>
+                        <button type="submit"
+                            class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Submit
+                            Quotation</button>
                     </div>
                 </form>
             </div>
@@ -285,11 +334,11 @@
             <input type="text" id="productSearch" placeholder="Search Product..."
                 class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
 
-            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+            <table
+                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                 <thead>
                     <tr class="text-sm text-gray-400 bg-gray-700">
-                        <th class="px-6 py-4 border-b border-gray-600">Product Name</th>    
-                        <th class="px-6 py-4 border-b border-gray-600">Description</th>
+                        <th class="px-6 py-4 border-b border-gray-600">Product Name</th>
                         <th class="px-6 py-4 border-b border-gray-600">HSN Code</th>
                         <th class="px-6 py-4 border-b border-gray-600">Stock</th>
                         <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
@@ -300,12 +349,12 @@
                     @foreach ($products as $product)
                         <tr data-id="{{ $product->id }}" class="product-row">
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
-                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->description }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->stock->sum('quantity') - $product->stock->sum('sold') }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
                             <td class="px-6 py-4 border-b border-gray-600">
-                                <button type="button" class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                <button type="button"
+                                    class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
                                     data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                                     data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
                                     Select
@@ -320,7 +369,6 @@
                 class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>
         </div>
     </div>
-</x-app-layout>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -622,4 +670,4 @@
             addServiceRowBtn.addEventListener("click", addServiceRow);
         });
     </script>
-
+</x-app-layout>
