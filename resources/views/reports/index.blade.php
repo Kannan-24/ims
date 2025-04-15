@@ -46,6 +46,15 @@
                     </a>
                 </div>
 
+                <!-- Purchase -->
+                <div class="bg-gray-800 p-6 rounded-xl shadow hover:bg-gray-700 transition duration-300">
+                    <h3 class="text-xl text-white font-bold mb-3">Purchase Reports</h3>
+                    <p class="text-gray-300 text-sm mb-4">View and export purchase report data.</p>
+                    <a href="{{ route('reports.purchases') }}" class="text-indigo-400 hover:text-indigo-600 font-medium">
+                        Generate Report
+                    </a>
+                </div>
+
                 <!-- Stock -->
                 <div class="bg-gray-800 p-6 rounded-xl shadow hover:bg-gray-700 transition duration-300">
                     <h3 class="text-xl text-white font-bold mb-3">Stock Reports</h3>

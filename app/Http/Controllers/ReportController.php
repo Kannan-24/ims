@@ -7,18 +7,58 @@ use App\Models\Supplier;
 use App\Models\Invoice;
 use App\Models\Quotation;
 use App\Models\Product;
-use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Purchase;
+use App\Models\Stock;
 use App\Exports\CustomerExport;
 use App\Exports\SupplierExport;
 use App\Exports\InvoiceExport;
 use App\Exports\QuotationExport;
-use Carbon\Carbon;
 use App\Exports\StockExport;
+use App\Exports\PurchaseExport;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Helpers\ActivityLogger;
 
 class ReportController extends Controller
 {
+
+    public function show($type)
+    {
+        switch ($type) {
+            case 'customers':
+                $customers = Customer::all();
+                return view('reports.customers', compact('customers'));
+
+            case 'suppliers':
+                $suppliers = Supplier::all();
+                return view('reports.suppliers', compact('suppliers'));
+
+            case 'invoices':
+                $invoices = Invoice::with('customer')->get();
+                return view('reports.invoices', compact('invoices'));
+
+            case 'quotations':
+                $quotations = Quotation::with('customer')->get();
+                return view('reports.quotations', compact('quotations'));
+
+            case 'purchases':
+                $purchases = Purchase::with('supplier')->get();
+                return view('reports.purchases', compact('purchases'));
+
+            case 'stocks':
+                $stocks = Stock::all();
+                $suppliers = Supplier::all();
+                $products = Product::all();
+                return view('reports.stocks', compact('stocks', 'suppliers', 'products'));
+
+            default:
+                abort(404);
+        }
+    }
+
+    // ---------- Index ----------
     public function index()
     {
         return view('reports.index');
@@ -31,20 +71,30 @@ class ReportController extends Controller
         return view('reports.customers', compact('customers'));
     }
 
-
     public function customersPdf()
     {
         $customers = Customer::all();
         $pdf = Pdf::loadView('reports.customers_pdf', compact('customers'));
+
+        ActivityLogger::log(
+            'PDF Generated',
+            'Customers',
+            'Customer PDF report generated'
+        );
+
         return $pdf->stream('customers-report.pdf');
     }
 
-
     public function customersExcel()
     {
+        ActivityLogger::log(
+            'Excel Generated',
+            'Customers',
+            'Customer Excel report generated'
+        );
+
         return Excel::download(new CustomerExport, 'customers-report.xlsx');
     }
-
 
     // ---------- Supplier ----------
     public function suppliers()
@@ -57,11 +107,24 @@ class ReportController extends Controller
     {
         $suppliers = \App\Models\Supplier::all();
         $pdf = Pdf::loadView('reports.suppliers_pdf', compact('suppliers'))->setPaper('a4', 'landscape');
+
+        ActivityLogger::log(
+            'PDF Generated',
+            'Suppliers',
+            'Supplier PDF report generated'
+        );
+
         return $pdf->stream('suppliers-report.pdf');
     }
 
     public function suppliersExcel()
     {
+        ActivityLogger::log(
+            'Excel Generated',
+            'Suppliers',
+            'Supplier Excel report generated'
+        );
+
         return Excel::download(new SupplierExport, 'suppliers-report.xlsx');
     }
 
@@ -77,7 +140,6 @@ class ReportController extends Controller
     {
         $invoices = $this->filterInvoices($request)->get();
 
-        // Generate readable range
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $range = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
         } elseif ($request->range === 'last_7_days') {
@@ -86,13 +148,17 @@ class ReportController extends Controller
             $range = 'Last 15 Days';
         } elseif ($request->range === 'last_30_days') {
             $range = 'Last 30 days';
-        } elseif ($request->filled('start_date') && $request->filled('end_date')) {
-            $range = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
         } else {
-            $range = 'All Time';
+            $range = 'All Data';
         }
 
         $generatedAt = Carbon::now()->format('d-m-Y h:i A');
+
+        ActivityLogger::log(
+            'Excel Generated',
+            'Invoices',
+            'Invoice Excel report generated'
+        );
 
         return Excel::download(
             new InvoiceExport($invoices, $generatedAt, $range),
@@ -104,7 +170,6 @@ class ReportController extends Controller
     {
         $invoices = $this->filterInvoices($request)->get();
 
-        // Generate readable range
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $dateRange = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
         } elseif ($request->range === 'last_7_days') {
@@ -113,19 +178,21 @@ class ReportController extends Controller
             $dateRange = 'Last 15 Days';
         } elseif ($request->range === 'last_30_days') {
             $dateRange = 'Last 30 Days';
-        } elseif ($request->filled('start_date') && $request->filled('end_date')) {
-            $dateRange = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
         } else {
-            $dateRange = 'All Time';
+            $dateRange = 'All Data';
         }
 
-        // Generate PDF with the date range
         $pdf = Pdf::loadView('reports.invoices_pdf', compact('invoices', 'dateRange'))
             ->setPaper('a4', 'landscape');
 
+        ActivityLogger::log(
+            'PDF Generated',
+            'Invoices',
+            'Invoice PDF report generated'
+        );
+
         return $pdf->stream('invoices_report.pdf');
     }
-
 
     private function filterInvoices(Request $request)
     {
@@ -154,6 +221,7 @@ class ReportController extends Controller
 
         return $query;
     }
+
     // ---------- Quotation ----------
     public function quotations(Request $request)
     {
@@ -166,8 +234,7 @@ class ReportController extends Controller
     {
         $quotations = $this->filterQuotations($request)->get();
 
-        // Generate readable range
-        if ($request->filled('start_date') && $request->filled('end_date')) {
+        if ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
             $range = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
         } elseif ($request->range === 'last_7_days') {
             $range = 'Last 7 Days';
@@ -175,13 +242,17 @@ class ReportController extends Controller
             $range = 'Last 15 Days';
         } elseif ($request->range === 'last_30_days') {
             $range = 'Last 30 Days';
-        } elseif ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
-            $range = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
         } else {
-            $range = 'All Time';
+            $range = 'All Data';
         }
 
         $generatedAt = Carbon::now()->format('d-m-Y h:i A');
+
+        ActivityLogger::log(
+            'Excel Generated',
+            'Quotations',
+            'Quotation Excel report generated'
+        );
 
         return Excel::download(
             new QuotationExport($quotations, $generatedAt, $range),
@@ -193,8 +264,7 @@ class ReportController extends Controller
     {
         $quotations = $this->filterQuotations($request)->get();
 
-        // Generate readable range
-        if ($request->filled('start_date') && $request->filled('end_date')) {
+        if ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
             $dateRange = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
         } elseif ($request->range === 'last_7_days') {
             $dateRange = 'Last 7 Days';
@@ -202,15 +272,18 @@ class ReportController extends Controller
             $dateRange = 'Last 15 Days';
         } elseif ($request->range === 'last_30_days') {
             $dateRange = 'Last 30 Days';
-        } elseif ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
-            $dateRange = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
         } else {
-            $dateRange = 'All Time';
+            $dateRange = 'All Data';
         }
 
-        // Generate PDF with the date range
         $pdf = Pdf::loadView('reports.quotations_pdf', compact('quotations', 'dateRange'))
             ->setPaper('a4', 'landscape');
+
+        ActivityLogger::log(
+            'PDF Generated',
+            'Quotations',
+            'Quotation PDF report generated'
+        );
 
         return $pdf->stream('quotations_report.pdf');
     }
@@ -242,50 +315,215 @@ class ReportController extends Controller
 
         return $query;
     }
-    // ---------- Stock ----------
-    public function stocks()
+
+    // ---------- Purchase ----------
+    public function purchases(Request $request)
     {
-        $products = Product::all();
-        return view('reports.stocks', compact('products'));
+        $purchases = $this->filterPurchases($request)->latest()->get();
+
+        return view('reports.purchases', compact('purchases'));
     }
 
-    public function stocksPdf()
+    public function purchasesExcel(Request $request)
     {
-        $products = Product::all();
-        $pdf = Pdf::loadView('reports.stocks_pdf', compact('products'));
-        return $pdf->download('stocks-report.pdf');
-    }
+        $purchases = $this->filterPurchases($request)->get();
 
-    public function stocksExcel()
-    {
-        return Excel::download(new StockExport, 'stocks-report.xlsx');
-    }
-
-    public function show($type)
-    {
-        switch ($type) {
-            case 'customers':
-                $customers = Customer::all();
-                return view('reports.customers', compact('customers'));
-
-            case 'suppliers':
-                $suppliers = Supplier::all();
-                return view('reports.suppliers', compact('suppliers'));
-
-            case 'invoices':
-                $invoices = Invoice::with('customer')->get();
-                return view('reports.invoices', compact('invoices'));
-
-            case 'quotations':
-                $quotations = Quotation::with('customer')->get();
-                return view('reports.quotations', compact('quotations'));
-
-            case 'stocks':
-                $products = Product::with('category')->get();
-                return view('reports.stocks', compact('products'));
-
-            default:
-                abort(404);
+        if ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
+            $range = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
+        } elseif ($request->range === 'last_7_days') {
+            $range = 'Last 7 Days';
+        } elseif ($request->range === 'last_15_days') {
+            $range = 'Last 15 Days';
+        } elseif ($request->range === 'last_30_days') {
+            $range = 'Last 30 Days';
+        } else {
+            $range = 'All Data';
         }
+
+        $generatedAt = Carbon::now()->format('d-m-Y h:i A');
+
+        ActivityLogger::log(
+            'Excel Generated',
+            'Purchases',
+            'Purchase Excel report generated'
+        );
+
+        return Excel::download(
+            new PurchaseExport($purchases, $generatedAt, $range),
+            'purchases_report.xlsx'
+        );
+    }
+
+    public function purchasesPdf(Request $request)
+    {
+        $purchases = $this->filterPurchases($request)->get();
+
+        if ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
+            $dateRange = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
+        } elseif ($request->range === 'last_7_days') {
+            $dateRange = 'Last 7 Days';
+        } elseif ($request->range === 'last_15_days') {
+            $dateRange = 'Last 15 Days';
+        } elseif ($request->range === 'last_30_days') {
+            $dateRange = 'Last 30 Days';
+        } else {
+            $dateRange = 'All Data';
+        }
+
+        $pdf = Pdf::loadView('reports.purchases_pdf', compact('purchases', 'dateRange'))
+            ->setPaper('a4', 'landscape');
+
+        ActivityLogger::log(
+            'PDF Generated',
+            'Purchases',
+            'Purchase PDF report generated'
+        );
+
+        return $pdf->stream('purchases_report.pdf');
+    }
+
+    private function filterPurchases(Request $request)
+    {
+        $query = \App\Models\Purchase::with('supplier');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_no', 'like', "%$search%")
+                    ->orWhereHas('supplier', fn($q2) => $q2->where('name', 'like', "%$search%"));
+            });
+        }
+
+        if ($request->range === 'last_7_days') {
+            $query->whereDate('invoice_date', '>=', Carbon::now()->subDays(7));
+        } elseif ($request->range === 'last_15_days') {
+            $query->whereDate('invoice_date', '>=', Carbon::now()->subDays(15));
+        } elseif ($request->range === 'last_30_days') {
+            $query->whereDate('invoice_date', '>=', Carbon::now()->subDays(30));
+        } elseif ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('invoice_date', [
+                Carbon::parse($request->start_date),
+                Carbon::parse($request->end_date)->endOfDay()
+            ]);
+        }
+
+        return $query;
+    }
+
+    // ---------- Stock ----------
+    public function stocks(Request $request)
+    {
+        $stocks = $this->filterStocks($request)->latest()->get();
+
+        return view('reports.stocks', compact('stocks'));
+    }
+
+    public function stocksExcel(Request $request)
+    {
+        $stocks = $this->filterStocks($request)->get();
+
+        if ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
+            $range = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
+        } elseif ($request->range === 'last_7_days') {
+            $range = 'Last 7 Days';
+        } elseif ($request->range === 'last_15_days') {
+            $range = 'Last 15 Days';
+        } elseif ($request->range === 'last_30_days') {
+            $range = 'Last 30 Days';
+        } else {
+            $range = 'All Data';
+        }
+
+        $generatedAt = Carbon::now()->format('d-m-Y h:i A');
+
+        ActivityLogger::log(
+            'Excel Generated',
+            'Stocks',
+            'Stock Excel report generated'
+        );
+
+        return Excel::download(
+            new StockExport($stocks, $generatedAt, $range),
+            'stocks_report.xlsx'
+        );
+    }
+
+    public function stocksPdf(Request $request)
+    {
+        $stocks = $this->filterStocks($request)->get();
+
+        if ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
+            $dateRange = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
+        } elseif ($request->range === 'last_7_days') {
+            $dateRange = 'Last 7 Days';
+        } elseif ($request->range === 'last_15_days') {
+            $dateRange = 'Last 15 Days';
+        } elseif ($request->range === 'last_30_days') {
+            $dateRange = 'Last 30 Days';
+        } else {
+            $dateRange = 'All Data';
+        }
+
+        $pdf = Pdf::loadView('reports.stocks_pdf', compact('stocks', 'dateRange'))
+            ->setPaper('a4', 'landscape');
+
+        ActivityLogger::log(
+            'PDF Generated',
+            'Stocks',
+            'Stock PDF report generated'
+        );
+
+        return $pdf->stream('stocks_report.pdf');
+    }
+
+    private function filterStocks(Request $request)
+    {
+        $query = Stock::with(['product', 'supplier']);
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('batch_code', 'like', "%$search%")
+                    ->orWhereHas('product', fn($q2) => $q2->where('name', 'like', "%$search%"))
+                    ->orWhereHas('supplier', fn($q3) => $q3->where('name', 'like', "%$search%"));
+            });
+        }
+
+        // Filter by suppliers
+        if ($request->filled('supplier_ids')) {
+            $query->whereIn('supplier_id', $request->supplier_ids);
+        }
+
+        // Filter by products
+        if ($request->filled('product_ids')) {
+            $query->whereIn('product_id', $request->product_ids);
+        }
+
+        // Filter by date range
+        if ($request->range) {
+            $now = now();
+
+            switch ($request->range) {
+                case 'last_7_days':
+                    $query->where('created_at', '>=', $now->copy()->subDays(7));
+                    break;
+                case 'last_15_days':
+                    $query->where('created_at', '>=', $now->copy()->subDays(15));
+                    break;
+                case 'last_30_days':
+                    $query->where('created_at', '>=', $now->copy()->subDays(30));
+                    break;
+                case 'custom':
+                    if ($request->filled('start_date') && $request->filled('end_date')) {
+                        $startDate = Carbon::parse($request->start_date)->startOfDay();
+                        $endDate = Carbon::parse($request->end_date)->endOfDay();
+                        $query->whereBetween('created_at', [$startDate, $endDate]);
+                    }
+                    break;
+            }
+        }
+
+        return $query;
     }
 }

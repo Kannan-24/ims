@@ -1,7 +1,7 @@
 <x-app-layout>
 
     <x-slot name="title">
-        {{ __('Quotation Reports') }} - {{ config('app.name', 'IMS') }}
+        {{ __('Purchase Reports') }} - {{ config('app.name', 'IMS') }}
     </x-slot>
 
     <div class="py-6 mt-20 ml-4 sm:ml-64">
@@ -10,7 +10,7 @@
 
             <!-- Filters -->
             <div class="bg-gray-800 p-4 rounded-lg shadow-md mb-6">
-                <form method="GET" action="{{ route('reports.quotations') }}" class="flex flex-wrap items-center gap-4">
+                <form method="GET" action="{{ route('reports.purchases') }}" class="flex flex-wrap items-center gap-4">
                     <input type="text" name="search" placeholder="Search...."
                         class="flex-1 min-w-[200px] px-3 py-2 bg-gray-700 text-white rounded border border-gray-600"
                         oninput="filterTable()" />
@@ -22,32 +22,32 @@
                 </form>
             </div>
 
-            <!-- Quotation Table -->
+            <!-- Purchase Table -->
             <div class="overflow-hidden bg-gray-800 rounded-lg shadow-xl">
                 <div class="p-4 overflow-x-auto">
-                    @if ($quotations->isEmpty())
+                    @if ($purchases->isEmpty())
                         <div class="text-center text-gray-300">
-                            {{ __('No quotations found.') }}
+                            {{ __('No purchases found.') }}
                         </div>
                     @else
                         <table class="min-w-full text-left border-collapse table-auto">
                             <thead>
                                 <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
                                     <th class="px-6 py-4 border-b-2 border-gray-600">#</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600">Quotation Code</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600">Customer</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600">Quotation Date</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600">Invoice No</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600">Supplier</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600">Invoice Date</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Total</th>
                                 </tr>
                             </thead>
                             <tbody class="text-sm text-gray-300 divide-y divide-gray-700">
-                                @foreach ($quotations as $index => $quotation)
+                                @foreach ($purchases as $index => $purchase)
                                     <tr class="hover:bg-gray-700 transition duration-200">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                                        <td class="px-6 py-4">{{ $quotation->quotation_code }}</td>
-                                        <td class="px-6 py-4">{{ $quotation->customer->company_name }}</td>
-                                        <td class="px-6 py-4">{{ $quotation->quotation_date }}</td>
-                                        <td class="px-6 py-4">{{ number_format($quotation->total, 2) }}</td>
+                                        <td class="px-6 py-4">{{ $purchase->invoice_no }}</td>
+                                        <td class="px-6 py-4">{{ $purchase->supplier->name }}</td>
+                                        <td class="px-6 py-4">{{ $purchase->invoice_date }}</td>
+                                        <td class="px-6 py-4">{{ number_format($purchase->total, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -120,7 +120,8 @@
 
         function submitDownload(type) {
             const form = document.getElementById("downloadForm");
-            let action = type === 'pdf' ? "{{ route('reports.quotations.pdf') }}" : "{{ route('reports.quotations.excel') }}";
+            let action = type === 'pdf' ? "{{ route('reports.purchases.pdf') }}" :
+                "{{ route('reports.purchases.excel') }}";
             form.action = action;
             form.target = "_blank";
             form.submit();

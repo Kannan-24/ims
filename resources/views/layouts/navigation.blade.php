@@ -278,6 +278,15 @@
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('reports.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Reports</span>
                     </a>
+                </li>
+
+                <!-- Activity Logs Link -->
+                <li>
+                    <a href="{{ route('activity-logs.index') }}"
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('activity-logs.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Activity Logs</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </aside>

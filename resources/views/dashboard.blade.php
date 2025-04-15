@@ -123,18 +123,19 @@
                                 <td class="px-4 py-2">₹ {{ number_format($invoice->total, 2) }}</td>
                                 <td class="px-4 py-2">{{ $invoice->invoice_date }}</td>
                                 <td class="px-4 py-2">
-                                    @if ($invoice->payment)
+                                    @if ($invoice->payment && $invoice->payment->first())
                                         @php
-                                            $statusClass = match ($invoice->payment->status) {
+                                            $payment = $invoice->payment->first();
+                                            $statusClass = match ($payment->status) {
                                                 'paid' => 'bg-green-600',
                                                 'partial' => 'bg-yellow-500',
                                                 'unpaid' => 'bg-red-600',
                                                 default => 'bg-gray-500',
                                             };
                                         @endphp
-                                        <a href="{{ route('payments.show', $invoice->payment->id) }}"
+                                        <a href="{{ route('payments.show', $payment->id) }}"
                                             class="text-white px-2 py-1 rounded text-xs {{ $statusClass }}">
-                                            {{ ucfirst($invoice->payment->status) }}
+                                            {{ ucfirst($payment->status) }}
                                         </a>
                                     @else
                                         <span class="bg-gray-500 text-white px-2 py-1 rounded text-xs">Not

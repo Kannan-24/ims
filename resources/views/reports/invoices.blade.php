@@ -122,6 +122,7 @@
             const form = document.getElementById("downloadForm");
             let action = type === 'pdf' ? "{{ route('reports.invoices.pdf') }}" : "{{ route('reports.invoices.excel') }}";
             form.action = action;
+            form.target = "_blank";
             form.submit();
             closeDownloadModal();
         }

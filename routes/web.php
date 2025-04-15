@@ -15,6 +15,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ActivityLogController;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Xml\Report;
 
@@ -42,17 +43,7 @@ Route::middleware('auth')->group(function () {
 
 // Authentication Routes
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('users', UserController::class);
-    Route::resource('customers', CustomerController::class);
-    Route::resource('suppliers', SupplierController::class);
-    Route::resource('products', ProductController::class);
-    Route::resource('services', ServiceController::class);
-    Route::resource('purchases', PurchaseController::class);
-    Route::resource('stocks', StockController::class);
-    Route::resource('quotations', QuotationController::class);
-    Route::resource('invoices', InvoiceController::class);
-    Route::resource('payments', PaymentController::class);
-    Route::resource('emails', EmailController::class);
+
 
     Route::get('payments/{paymentId}/create', [PaymentController::class, 'create'])->name('payments.create');
     Route::post('payments/{paymentId}/store', [PaymentController::class, 'store'])->name('payments.store');
@@ -84,7 +75,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports/invoices', [ReportController::class, 'invoice'])->name('reports.invoices');
     Route::get('reports/invoices/excel', [ReportController::class, 'invoicesExcel'])->name('reports.invoices.excel');
     Route::get('reports/invoices/pdf', [ReportController::class, 'invoicesPdf'])->name('reports.invoices.pdf');
-    
+
     // Quotation Reports
     Route::get('reports/quotations', [ReportController::class, 'quotation'])->name('reports.quotations');
     Route::get('reports/quotations/pdf', [ReportController::class, 'quotationsPdf'])->name('reports.quotations.pdf');
@@ -92,8 +83,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Stock Reports
     Route::get('reports/stocks', [ReportController::class, 'stock'])->name('reports.stocks');
-    Route::get('reports/stocks/pdf', [ReportController::class, 'stockPdf'])->name('reports.stock.pdf');
-    Route::get('reports/stocks/excel', [ReportController::class, 'stockExcel'])->name('reports.stock.excel');
+    Route::get('reports/stocks/pdf', [ReportController::class, 'stocksPdf'])->name('reports.stocks.pdf');
+    Route::get('reports/stocks/excel', [ReportController::class, 'stocksExcel'])->name('reports.stocks.excel');
+
+    //Purchase Reports
+    // Purchase Reports
+    Route::get('reports/purchases', [ReportController::class, 'purchases'])->name('reports.purchases');
+    Route::get('reports/purchases/pdf', [ReportController::class, 'purchasesPdf'])->name('reports.purchases.pdf');
+    Route::get('reports/purchases/excel', [ReportController::class, 'purchasesExcel'])->name('reports.purchases.excel');
+
+    Route::resource('users', UserController::class);
+    Route::resource('customers', CustomerController::class);
+    Route::resource('suppliers', SupplierController::class);
+    Route::resource('products', ProductController::class);
+    Route::resource('services', ServiceController::class);
+    Route::resource('purchases', PurchaseController::class);
+    Route::resource('stocks', StockController::class);
+    Route::resource('quotations', QuotationController::class);
+    Route::resource('invoices', InvoiceController::class);
+    Route::resource('payments', PaymentController::class);
+    Route::resource('emails', EmailController::class);
+    Route::resource('activity-logs', ActivityLogController::class);
 });
 
 
