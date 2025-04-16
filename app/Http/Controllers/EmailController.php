@@ -53,7 +53,15 @@ class EmailController extends Controller
         $attachments = [];
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
-                $attachments[] = $file->store('attachments', 'public');
+            $path = 'attachments/' . $file->getClientOriginalName();
+            
+            // Ensure the directory exists
+            if (!Storage::disk('public')->exists('attachments')) {
+                Storage::disk('public')->makeDirectory('attachments');
+            }
+            
+            Storage::disk('public')->put($path, file_get_contents($file));
+            $attachments[] = $path;
             }
         }
 

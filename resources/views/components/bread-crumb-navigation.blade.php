@@ -34,7 +34,7 @@
         </ol>
 
         <!-- Show "Create" Button Only on Index Pages -->
-        @if (count($segments) == 1 && !in_array($lastSegment, ['profile', 'account-settings', 'stocks', 'payments','activity_logs', 'reports']))
+        @if (count($segments) == 1 && !in_array($lastSegment, ['profile', 'account-settings', 'stocks', 'payments','activity-logs', 'reports']))
             <a href="{{ url($url . '/create') }}"
                 class="px-5 py-2 ml-4 text-sm text-white transition duration-300 rounded-sm shadow-md bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700">
                 Create {{ ucfirst(str_replace('-', ' ', $lastSegment)) }}

@@ -91,6 +91,7 @@ class DashboardController extends Controller
             'districtsCount',
             'statesCount',
             'countriesCount',
+            'totalCustomers',
             'districtData',
             'stateData',
             'countryData',

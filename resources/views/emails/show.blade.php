@@ -11,16 +11,16 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-3xl font-bold text-gray-200">Email Details</h2>
                     <div class="flex gap-2">
-                        <a href="{{ route('emails.create') }}"
-                            class="flex items-center px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition">
-                            Compose New Email
+                        <a href="{{ route('emails.index') }}"
+                            class="flex items-center px-4 py-2 text-white bg-gray-500 rounded-lg hover:bg-gray-600 transition">
+                            Back
                         </a>
                         <form action="{{ route('emails.destroy', $email->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
                                 class="flex items-center px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition">
-                                Delete Email
+                                Delete
                             </button>
                         </form>
                     </div>
@@ -29,14 +29,28 @@
                 <hr class="my-6 border-gray-600">
 
                 <div class="space-y-4 text-gray-300">
-                    <p><strong>Subject:</strong> {{ $email->subject }}</p>
-                    <p><strong>To:</strong> {{ $email->to }}</p>
-                    <p><strong>CC:</strong> {{ $email->cc ?? 'N/A' }}</p>
-                    <p><strong>BCC:</strong> {{ $email->bcc ?? 'N/A' }}</p>
-                    <p><strong>Body:</strong></p>
-                    <div>{!! $email->body !!}</div> <!-- This will render the HTML content properly -->
+                    @if($email->subject)
+                        <p><strong>Subject:</strong> {{ $email->subject }}</p>
+                    @endif
 
-                    @if($email->attachments)
+                    @if($email->to)
+                        <p><strong>To:</strong> {{ $email->to }}</p>
+                    @endif
+
+                    @if($email->cc)
+                        <p><strong>CC:</strong> {{ $email->cc }}</p>
+                    @endif
+
+                    @if($email->bcc)
+                        <p><strong>BCC:</strong> {{ $email->bcc }}</p>
+                    @endif
+
+                    @if($email->body)
+                        <p><strong>Body:</strong></p>
+                        <div>{!! $email->body !!}</div> <!-- This will render the HTML content properly -->
+                    @endif
+
+                    @if($email->attachments && count(json_decode($email->attachments)) > 0)
                         <p><strong>Attachments:</strong></p>
                         <ul class="list-disc pl-5">
                             @foreach(json_decode($email->attachments) as $attachment)
@@ -48,8 +62,6 @@
                                 </li>
                             @endforeach
                         </ul>
-                    @else
-                        <p><strong>Attachments:</strong> None</p>
                     @endif
                 </div>
             </div>

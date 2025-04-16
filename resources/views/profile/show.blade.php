@@ -41,11 +41,6 @@
 
                             <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full opacity-0 hover:opacity-100 transition">
                                 <label for="profile_photo" class="cursor-pointer flex flex-col items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke="white" class="w-8 h-8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 15l4-4m0 0l-4-4m4 4H8" />
-                                    </svg>
                                     <span class="text-sm text-white mt-1">Change</span>
                                 </label>
                             </div>

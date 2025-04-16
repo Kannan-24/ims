@@ -45,7 +45,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
 
 
-    Route::get('payments/{paymentId}/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::get('/payments/{paymentId}/create', [PaymentController::class, 'create'])->name('payments.create');
     Route::post('payments/{paymentId}/store', [PaymentController::class, 'store'])->name('payments.store');
 
     Route::get('/quotations/{id}/pdf', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');

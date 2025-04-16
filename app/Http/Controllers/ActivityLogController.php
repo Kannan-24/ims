@@ -9,43 +9,38 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ActivityLog::with('user'); // Eager load user
+        // Fetch distinct modules and their log count
+        $modules = ActivityLog::selectRaw('module, COUNT(*) as count')
+            ->groupBy('module')
+            ->get();
 
-        if ($request->has('search') && !empty($request->search)) {
-            $query->where(function ($q) use ($request) {
-                $q->where('action_type', 'like', '%' . $request->search . '%')
-                    ->orWhere('module', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%')
-                    ->orWhere('user_type', 'like', '%' . $request->search . '%')
-                    ->orWhere('ip_address', 'like', '%' . $request->search . '%');
-            });
-        }
+        // If module filter is applied
+        $logs = ActivityLog::with('user')
+            ->when($request->filled('module'), function ($query) use ($request) {
+                $query->where('module', $request->module);
+            })
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('action_type', 'like', '%' . $request->search . '%')
+                        ->orWhere('user_type', 'like', '%' . $request->search . '%');
+                });
+            })
+            ->latest()
+            ->paginate(10);
 
-        $logs = $query->latest()->paginate(15);
-
-        return view('activity_logs.index', compact('logs'));
+        return view('activity_logs.index', compact('modules', 'logs'));
     }
-
 
     public function show($id)
     {
-        $log = ActivityLog::findOrFail($id);
+        $log = ActivityLog::with('user')->findOrFail($id);
         return view('activity_logs.show', compact('log'));
     }
-
 
     public function destroy($id)
     {
         $log = ActivityLog::findOrFail($id);
         $log->delete();
-
-        return redirect()->route('activity-logs.index')->with('success', 'Log deleted successfully.');
-    }
-
-    public function clearAll()
-    {
-        ActivityLog::truncate();
-
-        return redirect()->route('activity-logs.index')->with('success', 'All logs cleared successfully.');
+        return redirect()->route('activity_logs.index')->with('success', 'Log deleted successfully.');
     }
 }

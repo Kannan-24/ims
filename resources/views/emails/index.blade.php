@@ -38,12 +38,15 @@
                                     <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
                                         onclick="sortTable(0)">#
                                     </th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
-                                        onclick="sortTable(1)">
-                                        Subject</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">
+                                        To
+                                    </th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
                                         onclick="sortTable(2)">
-                                        Sender</th>
+                                        Subject</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
+                                        onclick="sortTable(4)">
+                                        Date</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -51,24 +54,26 @@
                                 @foreach ($emails as $email)
                                     <tr class="hover:bg-gray-700 transition duration-200">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
+                                        <td class="px-6 py-4">
+                                            @if ($email->to)
+                                                @php
+                                                    $recipients = explode(',', $email->to);
+                                                @endphp
+                                                @foreach ($recipients as $index => $recipient)
+                                                    <span>{{ $index + 1 }}. {{ $recipient }}</span><br>
+                                                @endforeach
+                                            @else
+                                                <span class="text-red-500">No recipient</span>
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4">{{ $email->subject }}</td>
-                                        <td class="px-6 py-4">{{ $email->sender }}</td>
+                                        <td class="px-6 py-4">{{ $email->created_at->format('d-m-Y') }}</td>
                                         <td class="px-6 py-4 flex justify-center gap-3">
                                             <a href="{{ route('emails.show', $email) }}"
                                                 class="text-blue-400 hover:text-blue-600 transition duration-300"
                                                 title="View">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <form action="{{ route('emails.destroy', $email) }}" method="POST"
-                                                class="inline">
-                                                @csrf @method('DELETE')
-                                                <button type="submit"
-                                                    class="text-red-400 hover:text-red-600 transition duration-300"
-                                                    title="Delete"
-                                                    onclick="return confirm('Are you sure you want to delete this email?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach
