@@ -86,7 +86,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports/stocks/pdf', [ReportController::class, 'stocksPdf'])->name('reports.stocks.pdf');
     Route::get('reports/stocks/excel', [ReportController::class, 'stocksExcel'])->name('reports.stocks.excel');
 
-    //Purchase Reports
     // Purchase Reports
     Route::get('reports/purchases', [ReportController::class, 'purchases'])->name('reports.purchases');
     Route::get('reports/purchases/pdf', [ReportController::class, 'purchasesPdf'])->name('reports.purchases.pdf');
