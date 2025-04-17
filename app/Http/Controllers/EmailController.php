@@ -53,15 +53,15 @@ class EmailController extends Controller
         $attachments = [];
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
-            $path = 'attachments/' . $file->getClientOriginalName();
-            
-            // Ensure the directory exists
-            if (!Storage::disk('public')->exists('attachments')) {
-                Storage::disk('public')->makeDirectory('attachments');
-            }
-            
-            Storage::disk('public')->put($path, file_get_contents($file));
-            $attachments[] = $path;
+                $path = 'attachments/' . $file->getClientOriginalName();
+
+                // Ensure the directory exists
+                if (!Storage::disk('public')->exists('attachments')) {
+                    Storage::disk('public')->makeDirectory('attachments');
+                }
+
+                Storage::disk('public')->put($path, file_get_contents($file));
+                $attachments[] = $path;
             }
         }
 
@@ -89,7 +89,6 @@ class EmailController extends Controller
 
             return redirect()->route('emails.index')->with('success', 'Email sent successfully.');
         } catch (\Exception $e) {
-            \Log::error('Mail send error: ' . $e->getMessage());
             return back()->with('error', 'Failed to send email: ' . $e->getMessage());
         }
     }
