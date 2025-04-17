@@ -23,10 +23,10 @@ class QuotationController extends Controller
 
         if ($search = request('search')) {
             $query->where(function ($q) use ($search) {
-            $q->where('quotation_code', 'like', "%{$search}%")
-              ->orWhereHas('customer', function ($q) use ($search) {
-                  $q->where('company_name', 'like', "%{$search}%");
-              });
+                $q->where('quotation_code', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function ($q) use ($search) {
+                        $q->where('company_name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -293,13 +293,10 @@ class QuotationController extends Controller
 
     public function generatePDF($id)
     {
-        $quotation = Quotation::with('customer', 'items.product')->findOrFail($id);
+        $quotation = Quotation::with('items')->findOrFail($id);
 
-        $pdf = PDF::loadView('quotations.pdf', compact('quotation'));
+        $pdf = Pdf::loadView('quotations.pdf', compact('quotation'))->setPaper('a4', 'portrait');
 
-        // Show the PDF in the browser
-        return $pdf->stream('quotation_' . $quotation->quotation_code . '.pdf');
+        return $pdf->stream('Quotation_' . $quotation->quotation_no . '.pdf');
     }
-
-
 }
