@@ -14,6 +14,16 @@
             color: #333;
         }
 
+        img#quotation-template {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            object-fit: contain;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -66,14 +76,16 @@
 
 <body>
 
-    <div class="header">
+    <img src="{{ public_path('assets/quotation.png') }}" alt="Quotation Template" id="quotation-template">
+
+    {{-- <div class="header">
         <img src="{{ public_path('assets/logo.png') }}" alt="Company Logo" class="logo">
         <div class="header-text">
             <div>SKM AND COMPANY</div>
             <div>32/1, Adhi Selvan Street, Ammapet, <b>Salem - 636 003</b></div>
             <div>E-Mail: skmandcompany@yahoo.in | Mobile: 99650 66729, 88708 20449</div>
         </div>
-    </div>
+    </div> --}}
 
     <div class="additional-info">
         <p><b>GSTIN No:</b> 33ABSFS3535K1ZQ</p>
