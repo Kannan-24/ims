@@ -17,9 +17,9 @@ class UserController extends Controller
 
         if ($search = request('search')) {
             $query->where('employee_id', 'like', "%{$search}%")
-              ->orWhere('name', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%")
-              ->orWhere('role', 'like', "%{$search}%");
+                ->orWhere('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('role', 'like', "%{$search}%");
         }
 
         $users = $query->get();
@@ -66,7 +66,7 @@ class UserController extends Controller
             'employee_id' => $newEmployeeId,
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => bcrypt('SKM@123'),
             'address' => $request->address,
             'blood_group' => $request->blood_group,
             'state' => $request->state,

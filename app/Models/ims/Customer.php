@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models\ims;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Customer extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'cid',
+        'company_name',
+        'address',
+        'city',
+        'state',
+        'zip_code',
+        'country',
+        'gst_number'
+    ];
+
+    public function contactPersons()
+    {
+        return $this->hasMany(ContactPerson::class);
+    }
+}
+    

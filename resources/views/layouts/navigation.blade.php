@@ -32,8 +32,6 @@
 
             <!-- Right: Notifications & User Profile -->
             <div class="flex items-center space-x-4">
-
-
                 <!-- User Dropdown -->
                 <div class="relative">
                     <button @click="userDropdown = !userDropdown" type="button"
@@ -58,6 +56,8 @@
                             </path>
                         </svg>
                     </button>
+
+
 
                     <div x-show="userDropdown" @click.away="userDropdown = false"
                         class="absolute right-0 z-50 w-64 mt-3 bg-gray-800 text-gray-200 shadow-lg rounded-b-xl overflow-hidden">

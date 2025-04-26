@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Supplier;
+use App\Models\ims\Supplier;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithHeadings;

@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Models\ActivityLog;
+use App\Models\ims\ActivityLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 

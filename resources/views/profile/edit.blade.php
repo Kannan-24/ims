@@ -40,7 +40,8 @@
 
                         <div>
                             <label class="block mb-2 font-bold text-gray-200">Blood Group:</label>
-                            <select name="blood_group" class="w-full border-gray-600 bg-gray-700 text-gray-200 rounded-lg">
+                            <select name="blood_group"
+                                class="w-full border-gray-600 bg-gray-700 text-gray-200 rounded-lg">
                                 <option value="">Select Blood Group</option>
                                 @php
                                     $bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'A1+'];
@@ -131,12 +132,6 @@
                         <div>
                             <label class="block mb-2 font-bold text-gray-200">Date of Joining:</label>
                             <input type="date" name="doj" value="{{ old('doj', $user->doj) }}"
-                                class="w-full border-gray-600 bg-gray-700 text-gray-200 rounded-lg">
-                        </div>
-
-                        <div>
-                            <label class="block mb-2 font-bold text-gray-200">Designation:</label>
-                            <input type="text" name="designation" value="{{ old('designation', $user->designation) }}"
                                 class="w-full border-gray-600 bg-gray-700 text-gray-200 rounded-lg">
                         </div>
 

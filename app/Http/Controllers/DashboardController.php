@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
-use App\Models\Purchase;
-use App\Models\Customer;
+use App\Models\ims\Invoice;
+use App\Models\ims\Purchase;
+use App\Models\ims\Customer;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
