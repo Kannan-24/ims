@@ -74,6 +74,16 @@
                                                 title="View">
                                                 <i class="fas fa-eye"></i>
                                             </a>
+                                            <form action="{{ route('emails.destroy', $email) }}" method="POST"
+                                                class="inline">
+                                                @csrf @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-red-400 hover:text-red-600 transition duration-300"
+                                                    title="Delete"
+                                                    onclick="return confirm('Are you sure you want to delete this email?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach
