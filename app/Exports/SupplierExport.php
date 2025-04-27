@@ -6,8 +6,9 @@ use App\Models\ims\Supplier;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class SupplierExport implements FromCollection, WithHeadings
+class SupplierExport implements FromCollection, WithHeadings, ShouldAutoSize
 {
     public function collection()
     {

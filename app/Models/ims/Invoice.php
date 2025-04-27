@@ -32,7 +32,6 @@ class Invoice extends Model
         return $this->belongsTo(Customer::class);
     }
 
-
     /**
      * Get the items associated with the invoice.
      */

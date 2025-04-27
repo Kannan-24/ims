@@ -71,6 +71,11 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::get('reports/purchases/pdf', [ReportController::class, 'purchasesPdf'])->name('reports.purchases.pdf');
     Route::get('reports/purchases/excel', [ReportController::class, 'purchasesExcel'])->name('reports.purchases.excel');
 
+    // Payment Reports Routes
+    Route::get('reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
+    Route::get('reports/payments/pdf', [ReportController::class, 'paymentsPdf'])->name('reports.payments.pdf');
+    Route::get('reports/payments/excel', [ReportController::class, 'paymentsExcel'])->name('reports.payments.excel');
+
     // User Routes
     Route::resource('users', UserController::class);
 
@@ -98,7 +103,7 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     // Invoice Routes
     Route::resource('invoices', InvoiceController::class);
 
-   
+
 
     // Email Routes
     Route::resource('emails', EmailController::class);
@@ -108,7 +113,6 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::delete('/activity-logs/module/{module}', [ActivityLogController::class, 'destroyModule'])->name('activity-logs.destroyModule');
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     Route::get('/activity-logs/{id}', [ActivityLogController::class, 'show'])->name('activity-logs.show');
-    Route::delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])->name('activity-logs.destroy'); 
+    Route::delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])->name('activity-logs.destroy');
     Route::get('/activity-logs/{id}/delete', [ActivityLogController::class, 'destroy'])->name('activity-logs.delete');
-    
 });

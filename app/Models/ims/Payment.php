@@ -13,8 +13,19 @@ class Payment extends Model
         return $this->belongsTo(Invoice::class);
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
     public function items()
     {
         return $this->hasMany(PaymentItem::class);
+    }
+
+    // In Payment model
+    public function paymentItems()
+    {
+        return $this->hasMany(PaymentItem::class);  // Adjust with correct class name if needed
     }
 }

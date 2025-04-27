@@ -9,8 +9,7 @@
 
             <div class="overflow-hidden bg-gray-800 rounded-lg shadow-xl">
                 <div class=" bg-gray-800 p-4 rounded-lg shadow-md">
-                    <form method="GET" action="{{ route('payments.index') }}"
-                        class="flex flex-wrap items-center gap-4">
+                    <form method="GET" action="{{ route('payments.index') }}" class="flex flex-wrap items-center gap-4">
 
                         <input type="text" name="search" value="{{ request('search') }}"
                             placeholder="Search Invoice No or Company Name"
@@ -37,33 +36,37 @@
                         <table class="min-w-full text-left border-collapse table-auto">
                             <thead>
                                 <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
-                                    <th class="px-6 py-4 border-b-2 border-gray-600">#</th>
+                                    <th class="px-4 py-4 border-b-2 border-gray-600">#</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Invoice No</th>
+                                    <th class="px-6 py-4 border-b-2 border-gray-600">Invoice Date</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Customer</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Total Amount</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Paid Amount</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Pending Amount</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600">Payment Status</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
+                                    <th class="px-2 py-4 border-b-2 border-gray-600">Payment Status</th>
+                                    <th class="px-2 py-4 border-b-2 border-gray-600 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="text-sm text-gray-300 divide-y divide-gray-700">
                                 @foreach ($payments as $payment)
                                     <tr class="hover:bg-gray-700 transition duration-200">
-                                        <td class="px-6 py-4">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-4">{{ $loop->iteration }}</td>
                                         <td class="px-6 py-4">{{ $payment->invoice->invoice_no ?? 'N/A' }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($payment->invoice->invoice_date)->format('d-m-Y') ?? 'N/A' }}
+                                        </td>
+
                                         <td class="px-6 py-4">{{ $payment->invoice->customer->company_name ?? 'N/A' }}
                                         </td>
                                         <td class="px-6 py-4">₹{{ number_format($payment->total_amount, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($payment->paid_amount, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($payment->pending_amount, 2) }}</td>
-                                        <td class="px-6 py-4">
+                                        <td class="px-2 py-4">
                                             <span
                                                 class="{{ $payment->status === 'paid' ? 'text-green-400' : ($payment->status === 'unpaid' ? 'text-red-400' : 'text-yellow-400') }}">
                                                 {{ $payment->status }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 flex justify-center gap-3">
+                                        <td class="px-2 py-4 text-center">
                                             <a href="{{ route('payments.show', $payment) }}"
                                                 class="text-blue-400 hover:text-blue-600 transition duration-300"
                                                 title="View">

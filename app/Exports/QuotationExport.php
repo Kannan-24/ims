@@ -6,9 +6,10 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class QuotationExport implements FromCollection, WithHeadings, WithEvents
+class QuotationExport implements FromCollection, WithHeadings, WithEvents, ShouldAutoSize
 {
     protected $quotations;
     protected $generatedAt;

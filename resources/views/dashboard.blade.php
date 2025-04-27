@@ -113,12 +113,7 @@
                         @foreach ($recentInvoicesFiltered as $invoice)
                             <tr class="border-b border-gray-700">
                                 <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                                <td class="px-4 py-2 font-semibold">
-                                    <a href="{{ route('invoices.show', $invoice->id) }}"
-                                        class="text-blue-400 hover:underline">
-                                        #{{ $invoice->invoice_no }}
-                                    </a>
-                                </td>
+                                 
                                 <td class="px-4 py-2">{{ $invoice->Customer->company_name }}</td>
                                 <td class="px-4 py-2">₹ {{ number_format($invoice->total, 2) }}</td>
                                 <td class="px-4 py-2">{{ $invoice->invoice_date }}</td>

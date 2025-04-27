@@ -11,12 +11,14 @@ use App\Models\ims\Quotation;
 use App\Models\ims\Product;
 use App\Models\ims\Purchase;
 use App\Models\ims\Stock;
+use App\Models\ims\Payment;
 use App\Exports\CustomerExport;
 use App\Exports\SupplierExport;
 use App\Exports\InvoiceExport;
 use App\Exports\QuotationExport;
 use App\Exports\StockExport;
 use App\Exports\PurchaseExport;
+use App\Exports\PaymentExport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -54,6 +56,10 @@ class ReportController extends Controller
                 $suppliers = Supplier::all();
                 $products = Product::all();
                 return view('ims.reports.stocks', compact('stocks', 'suppliers', 'products'));
+
+            case 'payments':
+                $payments = Payment::with('customer')->get();
+                return view('ims.reports.payments', compact('payments'));
 
             default:
                 abort(404);
@@ -525,6 +531,102 @@ class ReportController extends Controller
                     break;
             }
         }
+        return $query;
+    }
+
+    // ---------- Payment ----------
+    public function payments(Request $request)
+    {
+        $payments = $this->filterPayments($request)->latest()->get();
+
+        return view('reports.payments', compact('payments'));
+    }
+
+    public function paymentsExcel(Request $request)
+    {
+        $payments = $this->filterPayments($request)->get();
+
+        if ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
+            $range = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
+        } elseif ($request->range === 'last_7_days') {
+            $range = 'Last 7 Days';
+        } elseif ($request->range === 'last_15_days') {
+            $range = 'Last 15 Days';
+        } elseif ($request->range === 'last_30_days') {
+            $range = 'Last 30 Days';
+        } else {
+            $range = 'All Data';
+        }
+
+        $generatedAt = Carbon::now()->format('d-m-Y h:i A');
+
+        ActivityLogger::log(
+            'Excel Generated',
+            'Payments',
+            'Payment Excel report generated'
+        );
+
+        return Excel::download(
+            new PaymentExport($payments, $generatedAt, $range),
+            'payments_report.xlsx'
+        );
+    }
+    public function paymentsPdf(Request $request)
+    {
+        // Get the filtered payments along with their paymentItems
+        $payments = $this->filterPayments($request)->with('paymentItems')->get();
+
+        // Date range logic for report
+        if ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
+            $dateRange = Carbon::parse($request->start_date)->format('d-m-Y') . ' to ' . Carbon::parse($request->end_date)->format('d-m-Y');
+        } elseif ($request->range === 'last_7_days') {
+            $dateRange = 'Last 7 Days';
+        } elseif ($request->range === 'last_15_days') {
+            $dateRange = 'Last 15 Days';
+        } elseif ($request->range === 'last_30_days') {
+            $dateRange = 'Last 30 Days';
+        } else {
+            $dateRange = 'All Data';
+        }
+
+        $pdf = Pdf::loadView('ims.reports.payments_pdf', compact('payments', 'dateRange'))
+            ->setPaper('a4', 'landscape');
+
+        ActivityLogger::log(
+            'PDF Generated',
+            'Payments',
+            'Payment PDF report generated'
+        );
+
+        return $pdf->stream('payments_report.pdf');
+    }
+
+
+    private function filterPayments(Request $request)
+    {
+        $query = Payment::with('customer');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('payment_number', 'like', "%$search%")
+                    ->orWhereHas('customer', fn($q2) => $q2->where('name', 'like', "%$search%"));
+            });
+        }
+
+        if ($request->range === 'last_7_days') {
+            $query->whereDate('payment_date', '>=', Carbon::now()->subDays(7));
+        } elseif ($request->range === 'last_15_days') {
+            $query->whereDate('payment_date', '>=', Carbon::now()->subDays(15));
+        } elseif ($request->range === 'last_30_days') {
+            $query->whereDate('payment_date', '>=', Carbon::now()->subDays(30));
+        } elseif ($request->range === 'custom' && $request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('payment_date', [
+                Carbon::parse($request->start_date),
+                Carbon::parse($request->end_date)->endOfDay()
+            ]);
+        }
+
         return $query;
     }
 }

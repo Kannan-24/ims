@@ -1,6 +1,8 @@
 <div class="mb-6">
     <nav class="flex items-center justify-between h-16 px-3 bg-gray-800 border border-gray-700 rounded-sm shadow-md"
         aria-label="Breadcrumb">
+
+        <!-- Breadcrumb -->
         <ol class="inline-flex items-center space-x-2 text-gray-300">
             <li>
                 <a href="{{ route('dashboard') }}"
@@ -8,14 +10,16 @@
                     Dashboard
                 </a>
             </li>
+
             @php
                 $segments = request()->segments(); // Get URL segments
                 $url = '';
                 $lastSegment = end($segments); // Get last segment
             @endphp
+
             @foreach ($segments as $index => $segment)
                 @php
-                    $url .= '/' . $segment; // Build dynamic URL
+                    $url .= '/' . $segment;
                 @endphp
                 <li class="flex items-center">
                     <span class="text-gray-500">/</span>&nbsp;
@@ -33,16 +37,27 @@
             @endforeach
         </ol>
 
-        <!-- Show "Create" Button Smartly -->
+        <!-- Create Button -->
         @php
             $nonCreatePages = ['profile', 'account-settings', 'stocks', 'payments', 'activity-logs', 'reports'];
-            $isIndexPage = !in_array($lastSegment, $nonCreatePages) && !str_contains($lastSegment, 'create') && !is_numeric($lastSegment);
+
+            // If ANY segment contains 'reports' → block create button
+            $hasBlockedSegment = collect($segments)->contains(function($seg) {
+                return in_array($seg, ['reports', 'profile', 'account-settings', 'stocks', 'payments', 'activity-logs']);
+            });
+
+            $isIndexPage = !$hasBlockedSegment
+                && !str_contains($lastSegment, 'create')
+                && !str_contains($lastSegment, 'edit')
+                && !is_numeric($lastSegment);
         @endphp
+
         @if ($isIndexPage)
             <a href="{{ url($url . '/create') }}"
                 class="px-5 py-2 ml-4 text-sm text-white transition duration-300 rounded-sm shadow-md bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700">
                 Create {{ ucfirst(str_replace('-', ' ', $lastSegment)) }}
             </a>
         @endif
+
     </nav>
 </div>

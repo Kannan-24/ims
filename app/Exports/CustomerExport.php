@@ -6,8 +6,9 @@ use App\Models\ims\Customer;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class CustomerExport implements FromArray, WithHeadings
+class CustomerExport implements FromArray, WithHeadings, ShouldAutoSize
 {
     public function array(): array
     {

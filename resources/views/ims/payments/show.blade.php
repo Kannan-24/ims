@@ -37,6 +37,12 @@
                         </td>
                     </tr>
                     <tr>
+                        <th class="py-2">Invoice Date</th>
+                        <td class="px-4 py-2">
+                            {{ \Carbon\Carbon::parse($payment->invoice->invoice_date)->format('d-m-Y') ?? 'N/A' }}
+                        </td>
+                    </tr>
+                    <tr>
                         <th class="  py-2">Customer Name</th>
                         <td class="px-4 py-2">{{ $payment->invoice->customer->company_name ?? 'N/A' }}</td>
                     </tr>

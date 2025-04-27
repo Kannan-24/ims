@@ -4,11 +4,12 @@ namespace App\Exports;
 
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class StockExport implements FromCollection, WithHeadings, WithEvents
+class StockExport implements FromCollection, WithHeadings, WithEvents, ShouldAutoSize
 {
     protected $stocks;
     protected $generatedAt;
