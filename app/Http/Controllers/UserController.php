@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Mail\UserCreatedMail;
+use Illuminate\Support\Facades\Mail;
+
 
 class UserController extends Controller
 {
@@ -24,7 +27,7 @@ class UserController extends Controller
 
         $users = $query->get();
 
-        return view('users.index', compact('users'));
+        return view('ims/users.index', compact('users'));
     }
 
     /**
@@ -33,7 +36,7 @@ class UserController extends Controller
     public function create()
     {
         // Return the view to create a new user.
-        return view('users.create');
+        return view('ims/users.create');
     }
 
     /**
@@ -41,7 +44,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the incoming request.
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -56,17 +58,17 @@ class UserController extends Controller
             'role' => 'required|string|max:255',
         ]);
 
-        // Generate a unique employee ID
         $lastUser = User::latest('id')->first();
         $lastEmployeeId = $lastUser ? intval(substr($lastUser->employee_id, 4)) : 0;
         $newEmployeeId = 'SKME' . str_pad($lastEmployeeId + 1, 3, '0', STR_PAD_LEFT);
 
-        // Create a new user
-        User::create([
+        $defaultPassword = 'SKM@123';
+
+        $user = User::create([
             'employee_id' => $newEmployeeId,
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt('SKM@123'),
+            'password' => bcrypt($defaultPassword),
             'address' => $request->address,
             'blood_group' => $request->blood_group,
             'state' => $request->state,
@@ -75,11 +77,16 @@ class UserController extends Controller
             'phone' => $request->phone,
             'doj' => $request->doj,
             'role' => $request->role,
+            'must_change_password' => true,
+
         ]);
 
-        // Redirect back with a success message
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        // Send email to the new user
+        Mail::to($user->email)->send(new UserCreatedMail($user, $defaultPassword));
+
+        return redirect()->route('users.index')->with('success', 'User created successfully and email sent.');
     }
+
 
     /**
      * Display the specified resource.
@@ -87,7 +94,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         // Return the view with the specific user data.
-        return view('users.show', compact('user'));
+        return view('ims/users.show', compact('user'));
     }
 
     /**
@@ -96,7 +103,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         // Return the edit form for the selected user.
-        return view('users.edit', compact('user'));
+        return view('ims/susers.edit', compact('user'));
     }
 
     /**

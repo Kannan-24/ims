@@ -41,15 +41,22 @@
         @php
             $nonCreatePages = ['profile', 'account-settings', 'stocks', 'payments', 'activity-logs', 'reports'];
 
-            // If ANY segment contains 'reports' → block create button
-            $hasBlockedSegment = collect($segments)->contains(function($seg) {
-                return in_array($seg, ['reports', 'profile', 'account-settings', 'stocks', 'payments', 'activity-logs']);
+            $hasBlockedSegment = collect($segments)->contains(function ($seg) {
+                return in_array($seg, [
+                    'reports',
+                    'profile',
+                    'account-settings',
+                    'stocks',
+                    'payments',
+                    'activity-logs',
+                ]);
             });
 
-            $isIndexPage = !$hasBlockedSegment
-                && !str_contains($lastSegment, 'create')
-                && !str_contains($lastSegment, 'edit')
-                && !is_numeric($lastSegment);
+            $isIndexPage =
+                !$hasBlockedSegment &&
+                !str_contains($lastSegment, 'create') &&
+                !str_contains($lastSegment, 'edit') &&
+                !is_numeric($lastSegment);
         @endphp
 
         @if ($isIndexPage)
