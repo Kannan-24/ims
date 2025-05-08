@@ -29,13 +29,13 @@
 
                 <!-- Password -->
                 <div class="relative mt-4" x-data="{ show: false }">
-                    <label class="block text-sm font-medium text-gray-200" for="password">Password</label>
+                    <label class="block text-sm mb-2 font-medium text-gray-200" for="password">Password</label>
                     <input
                         class="w-full py-3 pl-4 pr-10 text-sm text-gray-200 bg-gray-800 border border-gray-700 rounded-lg outline-blue-500 placeholder-gray-500"
                         id="password" x-bind:type="show ? 'text' : 'password'" name="password" required="required"
                         autocomplete="current-password" placeholder="Enter your password">
                     <span class="absolute w-5 h-5" id="password-toggle" @click="show = !show"
-                        style="top: 50%; right: 15px;">
+                        style="top: 55%; right: 15px;">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                             :class="{ 'hidden': show }">
                             <path

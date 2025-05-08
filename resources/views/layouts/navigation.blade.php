@@ -57,8 +57,6 @@
                         </svg>
                     </button>
 
-
-
                     <div x-show="userDropdown" @click.away="userDropdown = false"
                         class="absolute right-0 z-50 w-64 mt-3 bg-gray-800 text-gray-200 shadow-lg rounded-b-xl overflow-hidden">
 
@@ -69,23 +67,15 @@
                         </div>
 
                         <!-- Menu Options -->
-                        <div class="py-2">
+                        <div class="">
                             <a href="{{ route('profile.show') }}"
-                                class="flex items-center px-4 py-2 text-sm hover:bg-gray-700 transition">
-                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor"
-                                    stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M5.121 17.804A4 4 0 0112 14a4 4 0 016.879 3.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                Edit Profile
+                                class="flex items-center px-4 py-3 gap-3 text-sm hover:bg-gray-700 transition">
+                                <i class="fa-solid fa-user"></i>
+                                Profile
                             </a>
                             <a href="{{ route('account.settings') }}"
-                                class="flex items-center px-4 py-2 text-sm hover:bg-gray-700 transition">
-                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor"
-                                    stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 4v1m0 14v1m8-9h1M4 12H3m15.364-6.364l.707.707M6.343 17.657l-.707.707M17.657 17.657l.707-.707M6.343 6.343l-.707-.707" />
-                                </svg>
+                                class="flex items-center px-4 py-3 gap-3 text-sm hover:bg-gray-700 transition">
+                                <i class="fa-solid fa-gear"></i>
                                 Account Settings
                             </a>
                         </div>
@@ -97,12 +87,8 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
-                                class="flex items-center w-full px-4 py-3 text-sm hover:bg-gray-700 text-left transition">
-                                <svg class="w-5 h-5 mr-2 text-red-400" fill="none" stroke="currentColor"
-                                    stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5" />
-                                </svg>
+                                class="flex items-center w-full px-4 py-3 text-sm gap-3 text-white bg-red-600 hover:bg-red-700 hover:shadow-lg text-left transition">
+                                <i class="fa-solid fa-arrow-right-from-bracket text-white"></i>
                                 Sign out
                             </button>
                         </form>
@@ -174,7 +160,7 @@
     </nav>
     <aside id="logo-sidebar" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
         class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-gray-900 border-r border-gray-800 shadow-xl sm:translate-x-0">
-        <div class="h-full px-4 py-4 overflow-y-auto">
+        <div class="h-full px-4 py-4 overflow-y-auto scrollbar-hidden">
             <ul class="space-y-2 font-medium">
                 <!-- Dashboard Link -->
                 <li>

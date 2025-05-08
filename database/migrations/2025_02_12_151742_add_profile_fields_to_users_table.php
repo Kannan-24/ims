@@ -20,7 +20,6 @@ return new class extends Migration
             $table->enum('gender', ['Male', 'Female', 'Other'])->nullable();
             $table->date('dob')->nullable();
             $table->date('doj')->nullable();
-            $table->string('designation')->nullable();
             $table->string('role')->nullable();
         });
     }
@@ -31,7 +30,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['phone', 'address', 'photo', 'blood_group', 'state', 'gender', 'dob', 'doj', 'designation', 'role', 'employee_id']);
+            $table->dropColumn(['phone', 'address', 'photo', 'blood_group', 'state', 'gender', 'dob', 'doj', 'role', 'employee_id']);
         });
     }
 };

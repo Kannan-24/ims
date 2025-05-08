@@ -64,7 +64,6 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-300 text-sm">
                             <p><strong class="text-gray-400">Employee ID:</strong> {{ $user->employee_id }}</p>
                             <p><strong class="text-gray-400">Role:</strong> {{ $user->role }}</p>
-                            <p><strong class="text-gray-400">Designation:</strong> {{ $user->designation }}</p>
                             <p><strong class="text-gray-400">Phone:</strong> {{ $user->phone }}</p>
                             <p><strong class="text-gray-400">Date of Joining:</strong> {{ $user->doj }}</p>
                             <p><strong class="text-gray-400">Date of Birth:</strong> {{ $user->dob }}</p>
