@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Mail\UserCreatedMail;
 use Illuminate\Support\Facades\Mail;
@@ -35,8 +36,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        // Return the view to create a new user.
-        return view('ims/users.create');
+        // Get all roles for the dropdown
+        $roles = Role::all();
+        return view('ims/users.create', compact('roles'));
     }
 
     /**
@@ -55,7 +57,7 @@ class UserController extends Controller
             'dob' => 'required|date',
             'phone' => 'required|string|max:15',
             'doj' => 'required|date',
-            'role' => 'required|string|max:255',
+            'role_id' => 'required|exists:roles,id',
         ]);
 
         $lastUser = User::latest('id')->first();
@@ -76,10 +78,15 @@ class UserController extends Controller
             'dob' => $request->dob,
             'phone' => $request->phone,
             'doj' => $request->doj,
-            'role' => $request->role,
+            'role' => $request->role ?? 'Employee', // Keep for backward compatibility
             'must_change_password' => true,
-
         ]);
+
+        // Assign role using RBAC system
+        $role = Role::find($request->role_id);
+        if ($role) {
+            $user->assignRole($role);
+        }
 
         // Send email to the new user
         Mail::to($user->email)->send(new UserCreatedMail($user, $defaultPassword));
@@ -102,8 +109,9 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        // Return the edit form for the selected user.
-        return view('ims/susers.edit', compact('user'));
+        // Get all roles for the dropdown
+        $roles = Role::all();
+        return view('ims/users.edit', compact('user', 'roles'));
     }
 
     /**
@@ -123,7 +131,7 @@ class UserController extends Controller
             'dob' => 'required|date',
             'phone' => 'required|string|max:15',
             'doj' => 'required|date',
-            'role' => 'required|string|max:255',
+            'role_id' => 'required|exists:roles,id',
         ]);
 
         // Update the user with the new data.
@@ -139,8 +147,16 @@ class UserController extends Controller
             'dob' => $request->dob,
             'phone' => $request->phone,
             'doj' => $request->doj,
-            'role' => $request->role,
+            'role' => $request->role ?? 'Employee', // Keep for backward compatibility
         ]);
+
+        // Update role using RBAC system
+        $role = Role::find($request->role_id);
+        if ($role) {
+            // Remove all current roles and assign the new one
+            $user->roles()->detach();
+            $user->assignRole($role);
+        }
 
         // Redirect back with a success message.
         return redirect()->route('users.index')->with('success', 'User updated successfully.');

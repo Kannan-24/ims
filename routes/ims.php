@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ims\CustomerController;
 use App\Http\Controllers\ims\SupplierController;
 use App\Http\Controllers\ims\ProductController;
@@ -78,6 +80,12 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
 
     // User Routes
     Route::resource('users', UserController::class);
+
+    // Role and Permission Routes (Admin only)
+    Route::middleware(['role:Super Admin,Admin'])->group(function () {
+        Route::resource('roles', RoleController::class);
+        Route::resource('permissions', PermissionController::class);
+    });
 
     // Customer Routes
     Route::resource('customers', CustomerController::class);
