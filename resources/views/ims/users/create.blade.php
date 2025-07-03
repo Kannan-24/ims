@@ -20,11 +20,16 @@
 
                 <div class="mb-6">
                     <label class="block text-gray-300 font-semibold mb-2">Role:</label>
-                    <select name="role" id="role" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                    <select name="role_id" id="role_id" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
                         <option value="">Select Role</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Employee">Employee</option>
+                        @foreach($roles as $role)
+                            <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
+                                {{ $role->name }}
+                                @if($role->description)
+                                    - {{ $role->description }}
+                                @endif
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 

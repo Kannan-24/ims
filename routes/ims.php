@@ -78,8 +78,10 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::get('reports/payments/pdf', [ReportController::class, 'paymentsPdf'])->name('reports.payments.pdf');
     Route::get('reports/payments/excel', [ReportController::class, 'paymentsExcel'])->name('reports.payments.excel');
 
-    // User Routes
-    Route::resource('users', UserController::class);
+    // User Routes (Admin and Super Admin only)
+    Route::middleware(['permission:view-users'])->group(function () {
+        Route::resource('users', UserController::class);
+    });
 
     // Role and Permission Routes (Admin only)
     Route::middleware(['role:Super Admin,Admin'])->group(function () {
@@ -88,28 +90,116 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     });
 
     // Customer Routes
-    Route::resource('customers', CustomerController::class);
+    Route::middleware(['permission:view-customers'])->group(function () {
+        Route::resource('customers', CustomerController::class)->except(['store', 'update', 'destroy']);
+    });
+    Route::middleware(['permission:create-customers'])->group(function () {
+        Route::post('customers', [CustomerController::class, 'store'])->name('customers.store');
+    });
+    Route::middleware(['permission:edit-customers'])->group(function () {
+        Route::put('customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+    });
+    Route::middleware(['permission:delete-customers'])->group(function () {
+        Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+    });
 
     // Supplier Routes
-    Route::resource('suppliers', SupplierController::class);
+    Route::middleware(['permission:view-suppliers'])->group(function () {
+        Route::resource('suppliers', SupplierController::class)->except(['store', 'update', 'destroy']);
+    });
+    Route::middleware(['permission:create-suppliers'])->group(function () {
+        Route::post('suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+    });
+    Route::middleware(['permission:edit-suppliers'])->group(function () {
+        Route::put('suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
+    });
+    Route::middleware(['permission:delete-suppliers'])->group(function () {
+        Route::delete('suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+    });
 
     // Product Routes
-    Route::resource('products', ProductController::class);
+    Route::middleware(['permission:view-products'])->group(function () {
+        Route::resource('products', ProductController::class)->except(['store', 'update', 'destroy']);
+    });
+    Route::middleware(['permission:create-products'])->group(function () {
+        Route::post('products', [ProductController::class, 'store'])->name('products.store');
+    });
+    Route::middleware(['permission:edit-products'])->group(function () {
+        Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+    });
+    Route::middleware(['permission:delete-products'])->group(function () {
+        Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    });
 
     // Service Routes
-    Route::resource('services', ServiceController::class);
+    Route::middleware(['permission:view-services'])->group(function () {
+        Route::resource('services', ServiceController::class)->except(['store', 'update', 'destroy']);
+    });
+    Route::middleware(['permission:create-services'])->group(function () {
+        Route::post('services', [ServiceController::class, 'store'])->name('services.store');
+    });
+    Route::middleware(['permission:edit-services'])->group(function () {
+        Route::put('services/{service}', [ServiceController::class, 'update'])->name('services.update');
+    });
+    Route::middleware(['permission:delete-services'])->group(function () {
+        Route::delete('services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+    });
 
     // Purchase Routes
-    Route::resource('purchases', PurchaseController::class);
+    Route::middleware(['permission:view-purchases'])->group(function () {
+        Route::resource('purchases', PurchaseController::class)->except(['store', 'update', 'destroy']);
+    });
+    Route::middleware(['permission:create-purchases'])->group(function () {
+        Route::post('purchases', [PurchaseController::class, 'store'])->name('purchases.store');
+    });
+    Route::middleware(['permission:edit-purchases'])->group(function () {
+        Route::put('purchases/{purchase}', [PurchaseController::class, 'update'])->name('purchases.update');
+    });
+    Route::middleware(['permission:delete-purchases'])->group(function () {
+        Route::delete('purchases/{purchase}', [PurchaseController::class, 'destroy'])->name('purchases.destroy');
+    });
 
     // Stock Routes
-    Route::resource('stocks', StockController::class);
+    Route::middleware(['permission:view-stocks'])->group(function () {
+        Route::resource('stocks', StockController::class)->except(['store', 'update', 'destroy']);
+    });
+    Route::middleware(['permission:create-stocks'])->group(function () {
+        Route::post('stocks', [StockController::class, 'store'])->name('stocks.store');
+    });
+    Route::middleware(['permission:edit-stocks'])->group(function () {
+        Route::put('stocks/{stock}', [StockController::class, 'update'])->name('stocks.update');
+    });
+    Route::middleware(['permission:delete-stocks'])->group(function () {
+        Route::delete('stocks/{stock}', [StockController::class, 'destroy'])->name('stocks.destroy');
+    });
 
     // Quotation Routes
-    Route::resource('quotations', QuotationController::class);
+    Route::middleware(['permission:view-quotations'])->group(function () {
+        Route::resource('quotations', QuotationController::class)->except(['store', 'update', 'destroy']);
+    });
+    Route::middleware(['permission:create-quotations'])->group(function () {
+        Route::post('quotations', [QuotationController::class, 'store'])->name('quotations.store');
+    });
+    Route::middleware(['permission:edit-quotations'])->group(function () {
+        Route::put('quotations/{quotation}', [QuotationController::class, 'update'])->name('quotations.update');
+    });
+    Route::middleware(['permission:delete-quotations'])->group(function () {
+        Route::delete('quotations/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.destroy');
+    });
 
     // Invoice Routes
-    Route::resource('invoices', InvoiceController::class);
+    Route::middleware(['permission:view-invoices'])->group(function () {
+        Route::resource('invoices', InvoiceController::class)->except(['store', 'update', 'destroy']);
+    });
+    Route::middleware(['permission:create-invoices'])->group(function () {
+        Route::post('invoices', [InvoiceController::class, 'store'])->name('invoices.store');
+    });
+    Route::middleware(['permission:edit-invoices'])->group(function () {
+        Route::put('invoices/{invoice}', [InvoiceController::class, 'update'])->name('invoices.update');
+    });
+    Route::middleware(['permission:delete-invoices'])->group(function () {
+        Route::delete('invoices/{invoice}', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    });
 
 
 
