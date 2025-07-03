@@ -81,6 +81,8 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
 
     // Customer Routes
     Route::resource('customers', CustomerController::class);
+    Route::post('/customers/validate-gst', [CustomerController::class, 'validateGst'])->name('customers.validateGst');
+    Route::post('/customers/get-gst-details', [CustomerController::class, 'getGstDetails'])->name('customers.getGstDetails');
 
     // Supplier Routes
     Route::resource('suppliers', SupplierController::class);

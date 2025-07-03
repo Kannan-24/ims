@@ -17,7 +17,12 @@ class Customer extends Model
         'state',
         'zip_code',
         'country',
-        'gst_number'
+        'gst_number',
+        'pan_number',
+        'gst_status',
+        'gst_verification_date',
+        'business_type',
+        'gst_registration_date'
     ];
 
     public function contactPersons()

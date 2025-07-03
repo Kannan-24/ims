@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ims;
 
 use App\Models\ims\Customer;
 use App\Models\ims\ContactPerson;
+use App\Services\GstService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -80,6 +81,11 @@ class CustomerController extends Controller
                 'zip_code' => $request->zip_code,
                 'country' => $request->country,
                 'gst_number' => $request->gst_number,
+                'pan_number' => $request->pan_number,
+                'gst_status' => $request->gst_status ?? 'Active',
+                'business_type' => $request->business_type,
+                'gst_registration_date' => $request->gst_registration_date,
+                'gst_verification_date' => now(),
             ]);
 
             // Store multiple contact persons
@@ -150,6 +156,11 @@ class CustomerController extends Controller
                 'zip_code' => $request->zip_code,
                 'country' => $request->country,
                 'gst_number' => $request->gst_number,
+                'pan_number' => $request->pan_number,
+                'gst_status' => $request->gst_status ?? 'Active',
+                'business_type' => $request->business_type,
+                'gst_registration_date' => $request->gst_registration_date,
+                'gst_verification_date' => now(),
             ]);
 
             // Delete existing contact persons and insert new ones
@@ -174,5 +185,81 @@ class CustomerController extends Controller
     {
         $customer->delete();
         return redirect()->route('customers.index')->with('success', 'Customer deleted successfully.');
+    }
+
+    /**
+     * Validate GST number via AJAX
+     */
+    public function validateGst(Request $request)
+    {
+        $gstService = new GstService();
+        $gstNumber = $request->input('gst_number');
+        $customerId = $request->input('customer_id'); // For edit mode
+        
+        if (empty($gstNumber)) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'GST number is required.'
+            ]);
+        }
+
+        // Check for duplicate GST number
+        if ($gstService->checkDuplicateGst($gstNumber, $customerId)) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'This GST number is already registered with another customer.'
+            ]);
+        }
+
+        // Validate format first
+        $formatValidation = $gstService->validateGstFormat($gstNumber);
+        if (!$formatValidation['valid']) {
+            return response()->json($formatValidation);
+        }
+
+        // Validate with API
+        $apiValidation = $gstService->validateGstWithApi($gstNumber);
+        
+        return response()->json($apiValidation);
+    }
+
+    /**
+     * Get customer data from GST number via AJAX
+     */
+    public function getGstDetails(Request $request)
+    {
+        $gstService = new GstService();
+        $gstNumber = $request->input('gst_number');
+        
+        if (empty($gstNumber)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'GST number is required.'
+            ]);
+        }
+
+        // Validate and get details from API
+        $gstDetails = $gstService->validateGstWithApi($gstNumber);
+        
+        if ($gstDetails['valid']) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'company_name' => $gstDetails['company_name'] ?? '',
+                    'address' => $gstDetails['address'] ?? '',
+                    'city' => $gstDetails['city'] ?? '',
+                    'state' => $gstDetails['state'] ?? '',
+                    'pan_number' => $gstDetails['pan_number'] ?? '',
+                    'business_type' => $gstDetails['business_type'] ?? '',
+                    'gst_status' => $gstDetails['status'] ?? 'Active',
+                    'gst_registration_date' => $gstDetails['registration_date'] ?? null
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => $gstDetails['message'] ?? 'Unable to fetch GST details.'
+            ]);
+        }
     }
 }
