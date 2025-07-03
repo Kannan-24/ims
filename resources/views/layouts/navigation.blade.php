@@ -47,7 +47,9 @@
                         @endif
                         <div class="text-left">
                             <p class="text-sm font-medium">{{ Auth::user()->name }}</p>
-                            <p class="text-xs text-gray-400">{{ Auth::user()->role }}</p>
+                            <p class="text-xs text-gray-400">
+                                {{ Auth::user()->getPrimaryRole() ? Auth::user()->getPrimaryRole()->name : (Auth::user()->role ?? 'No Role') }}
+                            </p>
                         </div>
                         <svg class="w-4 h-4 text-gray-400 transition-transform transform"
                             :class="userDropdown ? 'rotate-180' : 'rotate-0'" fill="none" stroke="currentColor"
@@ -171,108 +173,177 @@
                 </li>
 
                 <!-- Users Link -->
+                @can('view-users')
                 <li>
                     <a href="{{ route('users.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('users.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Users</span>
                     </a>
                 </li>
+                @endcan
+
+                <!-- Role Management Links -->
+                @canany(['view-roles', 'view-permissions'])
+                <li class="pt-2">
+                    <div class="text-gray-400 text-xs uppercase tracking-wider px-2 pb-2">Access Control</div>
+                </li>
+                @endcanany
+
+                @can('view-roles')
+                <li>
+                    <a href="{{ route('roles.index') }}"
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('roles.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Roles</span>
+                    </a>
+                </li>
+                @endcan
+
+                @can('view-permissions')
+                <li>
+                    <a href="{{ route('permissions.index') }}"
+                        class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('permissions.*') ? 'bg-gray-700' : '' }}">
+                        <span class="ms-3">Permissions</span>
+                    </a>
+                </li>
+                @endcan
+
+                @canany(['view-customers', 'view-suppliers', 'view-products'])
+                <li class="pt-2">
+                    <div class="text-gray-400 text-xs uppercase tracking-wider px-2 pb-2">Inventory</div>
+                </li>
+                @endcanany
 
                 <!-- Customers Link -->
+                @can('view-customers')
                 <li>
                     <a href="{{ route('customers.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('customers.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Customers</span>
                     </a>
                 </li>
+                @endcan
 
                 <!-- Suppliers Link -->
+                @can('view-suppliers')
                 <li>
                     <a href="{{ route('suppliers.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('suppliers.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Suppliers</span>
                     </a>
                 </li>
+                @endcan
 
                 <!-- Products Link -->
+                @can('view-products')
                 <li>
                     <a href="{{ route('products.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('products.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Products</span>
                     </a>
                 </li>
+                @endcan
 
                 <!-- Services Link -->
+                @can('view-services')
                 <li>
                     <a href="{{ route('services.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('services.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Services</span>
                     </a>
                 </li>
+                @endcan
+
+                @canany(['view-purchases', 'view-stocks', 'view-quotations'])
+                <li class="pt-2">
+                    <div class="text-gray-400 text-xs uppercase tracking-wider px-2 pb-2">Operations</div>
+                </li>
+                @endcanany
 
                 <!-- Purchases Link -->
+                @can('view-purchases')
                 <li>
                     <a href="{{ route('purchases.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('purchases.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Purchases</span>
                     </a>
                 </li>
+                @endcan
 
                 <!-- Stocks Link -->
+                @can('view-stocks')
                 <li>
                     <a href="{{ route('stocks.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('stocks.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Stocks</span>
                     </a>
                 </li>
+                @endcan
 
                 <!-- Quotations Link -->
+                @can('view-quotations')
                 <li>
                     <a href="{{ route('quotations.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('quotations.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Quotations</span>
                     </a>
                 </li>
+                @endcan
 
                 <!-- Invoices Link -->
+                @can('view-invoices')
                 <li>
                     <a href="{{ route('invoices.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('invoices.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Invoices</span>
                     </a>
                 </li>
+                @endcan
 
                 <!-- Payments Link -->
+                @can('view-payments')
                 <li>
                     <a href="{{ route('payments.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('payments.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Payments</span>
                     </a>
                 </li>
+                @endcan
+
+                @canany(['view-reports', 'view-emails'])
+                <li class="pt-2">
+                    <div class="text-gray-400 text-xs uppercase tracking-wider px-2 pb-2">Reports & Communication</div>
+                </li>
+                @endcanany
 
                 <!-- Mails Link -->
+                @can('view-emails')
                 <li>
                     <a href="{{ route('emails.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('mails.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Mails</span>
                     </a>
                 </li>
+                @endcan
 
                 <!-- Reports Link -->
+                @can('view-reports')
                 <li>
                     <a href="{{ route('reports.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('reports.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Reports</span>
                     </a>
                 </li>
+                @endcan
 
                 <!-- Activity Logs Link -->
+                @can('view-activity-logs')
                 <li>
                     <a href="{{ route('activity-logs.index') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-gray-700 {{ request()->routeIs('activity-logs.*') ? 'bg-gray-700' : '' }}">
                         <span class="ms-3">Activity Logs</span>
                     </a>
                 </li>
+                @endcan
             </ul>
         </div>
     </aside>
