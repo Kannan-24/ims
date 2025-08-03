@@ -11,25 +11,46 @@
             <div class="bg-gray-800 p-6 rounded-lg shadow-md">
                 <h2 class="text-3xl font-bold text-gray-200 mb-6">Edit Invoice</h2>
 
+                @if ($errors->any())
+                    <div class="bg-red-500 text-white p-4 rounded-lg mb-6">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form action="{{ route('invoices.update', $invoice->id) }}" method="POST">
                     @csrf
                     @method('PUT')
+
+                    <!-- Invoice No -->
+                    <div class="mb-6">
+                        <label for="invoice_no" class="block text-gray-300 font-semibold mb-2">Invoice No:</label>
+                        <input type="text" name="invoice_no" id="invoice_no"
+                            value="{{ old('invoice_no', $invoice->invoice_no) }}"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            required>
+                    </div>
 
                     <!-- Order No -->
                     <div class="mb-6">
                         <label for="order_no" class="block text-gray-300 font-semibold mb-2">Order No:</label>
                         <input type="text" name="order_no" id="order_no"
                             value="{{ old('order_no', $invoice->order_no) }}"
-                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            required>
                     </div>
 
                     <!-- Customer -->
                     <div class="mb-6">
                         <label for="customer" class="block text-gray-300 font-semibold mb-2">Customer:</label>
-                        <select id="customer" name="customer" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <select id="customer" name="customer"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             <option value="">Select Customer</option>
                             @foreach ($customers as $customer)
-                                <option value="{{ $customer->id }}" 
+                                <option value="{{ $customer->id }}"
                                     {{ old('customer', $invoice->customer_id) == $customer->id ? 'selected' : '' }}>
                                     {{ $customer->company_name }}
                                 </option>
@@ -39,14 +60,21 @@
 
                     <!-- Contact Person -->
                     <div class="mb-6">
-                        <label for="contact_person" class="block text-gray-300 font-semibold mb-2">Contact Person:</label>
-                        <select id="contact_person" name="contact_person" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" 
-                            {{ old('customer', $invoice->customer_id) ? '' : 'disabled' }}>
+                        <label for="contact_person" class="block text-gray-300 font-semibold mb-2">Contact
+                            Person:</label>
+                        <select id="contact_person" name="contact_person"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             <option value="">Select Contact Person</option>
-                            @if (old('customer', $invoice->customer_id))
-                                @foreach ($customers->firstWhere('id', old('customer', $invoice->customer_id))->contactPersons as $contactPerson)
-                                    <option value="{{ $contactPerson->id }}" 
-                                        {{ old('contact_person', $invoice->contact_person_id) == $contactPerson->id ? 'selected' : '' }}>
+                            @php
+                                $selectedCustomer = $customers->firstWhere(
+                                    'id',
+                                    old('customer', $invoice->customer_id),
+                                );
+                            @endphp
+                            @if ($selectedCustomer)
+                                @foreach ($selectedCustomer->contactPersons ?? [] as $contactPerson)
+                                    <option value="{{ $contactPerson->id }}"
+                                        {{ old('contact_person', $invoice->contactperson_id) == $contactPerson->id ? 'selected' : '' }}>
                                         {{ $contactPerson->name }}
                                     </option>
                                 @endforeach
@@ -54,33 +82,58 @@
                         </select>
                     </div>
 
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const customerSelect = document.getElementById("customer");
+                            const contactPersonSelect = document.getElementById("contact_person");
+
+                            customerSelect.addEventListener("change", function() {
+                                const customerId = this.value;
+
+                                // Clear existing options in contact person dropdown
+                                contactPersonSelect.innerHTML = '<option value="">Select Contact Person</option>';
+
+                                if (customerId) {
+                                    // Fetch contact persons for the selected customer
+                                    const contactPersons = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
+
+                                    if (contactPersons[customerId]) {
+                                        contactPersons[customerId].forEach(contactPerson => {
+                                            const option = document.createElement("option");
+                                            option.value = contactPerson.id;
+                                            option.textContent = contactPerson.name;
+                                            contactPersonSelect.appendChild(option);
+                                        });
+                                    }
+                                }
+                            });
+                        });
+                    </script>
 
                     <!-- Invoice Date & Invoice No -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="invoice_no" class="block text-gray-300 font-semibold mb-2">Invoice No:</label>
-                            <input type="text" name="invoice_no" id="invoice_no"
-                                value="{{ old('invoice_no', $invoice->invoice_no) }}"
-                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
-                        </div>
-                        <div>
-                            <label for="invoice_date" class="block text-gray-300 font-semibold mb-2">Invoice Date:</label>
+                            <label for="invoice_date" class="block text-gray-300 font-semibold mb-2">Invoice
+                                Date:</label>
                             <input type="date" name="invoice_date" id="invoice_date"
                                 value="{{ old('invoice_date', $invoice->invoice_date) }}"
-                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
                         </div>
                         <div>
                             <label for="order_date" class="block text-gray-300 font-semibold mb-2">Order Date:</label>
                             <input type="date" name="order_date" id="order_date"
                                 value="{{ old('order_date', $invoice->order_date) }}"
-                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
                         </div>
                     </div>
 
                     <!-- Product Table -->
                     <div class="mt-6">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Invoice Items</h3>
-                        <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                        <table
+                            class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                             <thead>
                                 <tr class="text-sm text-gray-400 bg-gray-700">
                                     <th class="px-3 py-3 border-b border-gray-600">Product</th>
@@ -94,60 +147,69 @@
                                 </tr>
                             </thead>
                             <tbody class="text-sm text-gray-300" id="productTable">
-                                @foreach ($invoice->items as $index => $item)
+                                @foreach ($invoice->items->where('type', 'product') as $index => $item)
                                     <tr>
-                                        <td>
+                                        <td class="p-2">
                                             <button type="button"
-                                                class="open-modal bg-blue-500 text-white px-4 py-2 rounded hidden">Select
+                                                class="open-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Change
                                                 Product</button>
                                             <input type="hidden" name="products[{{ $index }}][product_id]"
                                                 class="product-id" value="{{ $item->product_id }}">
                                             <input type="hidden" name="products[{{ $index }}][gst_percentage]"
-                                                class="gst-percentage" value="{{ $item->gst_percentage }}">
-                                            <span class="product-name">{{ $item->product->name }}</span>
+                                                class="gst-percentage"
+                                                value="{{ $item->product ? $item->product->gst_percentage : 0 }}">
+                                            <span
+                                                class="product-name">{{ $item->product ? $item->product->name : 'N/A' }}</span>
                                         </td>
-                                        <td class="p-1"><input type="number"
-                                                name="products[{{ $index }}][quantity]"
+                                        <td class="p-2">
+                                            <input type="number" name="products[{{ $index }}][quantity]"
                                                 class="quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                value="{{ $item->quantity }}" min="1"></td>
-                                        <td class="p-1"><input type="number"
-                                                name="products[{{ $index }}][unit_price]"
+                                                value="{{ $item->quantity }}" min="1">
+                                        </td>
+                                        <td class="p-2">
+                                            <input type="number" name="products[{{ $index }}][unit_price]"
                                                 class="unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                value="{{ $item->unit_price }}" min="0"></td>
+                                                value="{{ $item->unit_price }}" min="0" step="0.01">
+                                        </td>
                                         <td class="p-2">
                                             <div class="flex items-center gap-2">
                                                 <input type="text" name="products[{{ $index }}][cgst]"
                                                     class="cgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->cgst }}" readonly>
+                                                    value="{{ $item->product ? $item->product->gst_percentage / 2 : 0 }}"
+                                                    readonly>
                                                 <input type="text" name="products[{{ $index }}][cgst_value]"
                                                     class="cgst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->cgst_value }}" readonly>
+                                                    value="{{ number_format($item->cgst, 2) }}" readonly>
                                             </div>
                                         </td>
                                         <td class="p-2">
                                             <div class="flex items-center gap-2">
                                                 <input type="text" name="products[{{ $index }}][sgst]"
                                                     class="sgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->sgst }}" readonly>
-                                                <input type="text" name="products[{{ $index }}][sgst_value]"
+                                                    value="{{ $item->product ? $item->product->gst_percentage / 2 : 0 }}"
+                                                    readonly>
+                                                <input type="text"
+                                                    name="products[{{ $index }}][sgst_value]"
                                                     class="sgst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->sgst_value }}" readonly>
+                                                    value="{{ number_format($item->sgst, 2) }}" readonly>
                                             </div>
                                         </td>
                                         <td class="p-2">
                                             <div class="flex items-center gap-2">
                                                 <input type="text" name="products[{{ $index }}][igst]"
                                                     class="igst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->igst }}" readonly>
-                                                <input type="text" name="products[{{ $index }}][igst_value]"
+                                                    value="0" readonly>
+                                                <input type="text"
+                                                    name="products[{{ $index }}][igst_value]"
                                                     class="igst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->igst_value }}" readonly>
+                                                    value="{{ number_format($item->igst, 2) }}" readonly>
                                             </div>
                                         </td>
-                                        <td class="p-2"><input type="text"
-                                                name="products[{{ $index }}][total]"
+                                        <td class="p-2">
+                                            <input type="text" name="products[{{ $index }}][total]"
                                                 class="total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                value="{{ $item->total }}" readonly></td>
+                                                value="{{ number_format($item->total, 2) }}" readonly>
+                                        </td>
                                         <td class="p-2">
                                             <button type="button"
                                                 class="remove-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
@@ -156,48 +218,294 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <button type="button" id="addRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Product</button>
+                        <button type="button" id="addRow"
+                            class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+
+                            Add Product</button>
                     </div>
 
-                    <!-- Summary Section -->
-                    <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
-                        <div class="grid grid-cols-3 gap-4">
+                    <!-- Services Table -->
+                    <div class="mt-6">
+                        <label class="flex items-center text-gray-300 font-semibold mb-4">
+                            <input type="checkbox" id="toggleServiceSelection" class="mr-2"
+                                {{ $invoice->items->where('type', 'service')->count() > 0 ? 'checked' : '' }}>
+                            Include Services
+                        </label>
+                        <div id="serviceSection"
+                            class="{{ $invoice->items->where('type', 'service')->count() > 0 ? '' : 'hidden' }}">
+                            <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Items</h3>
+                            <table
+                                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                                <thead>
+                                    <tr class="text-sm text-gray-400 bg-gray-700">
+                                        <th class="px-3 py-3 border-b border-gray-600">Service</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Quantity</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Unit Price</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">GST %</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">GST Total</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Total</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm text-gray-300" id="serviceTable">
+                                    @foreach ($invoice->items->where('type', 'service') as $index => $item)
+                                        <tr>
+                                            <td class="p-2">
+                                                <button type="button"
+                                                    class="open-service-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Change
+                                                    Service</button>
+                                                <input type="hidden"
+                                                    name="services[{{ $index }}][service_id]"
+                                                    class="service-id" value="{{ $item->service_id }}">
+                                                <span
+                                                    class="service-name">{{ $item->service ? $item->service->name : 'N/A' }}</span>
+                                            </td>
+                                            <td class="p-2">
+                                                <input type="number" name="services[{{ $index }}][quantity]"
+                                                    class="service-quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ $item->quantity }}" min="1">
+                                            </td>
+                                            <td class="p-2">
+                                                <input type="number"
+                                                    name="services[{{ $index }}][unit_price]"
+                                                    class="service-unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ $item->unit_price }}" min="0" step="0.01">
+                                            </td>
+                                            <td class="p-2">
+                                                <input type="text"
+                                                    name="services[{{ $index }}][gst_percentage]"
+                                                    class="service-gst-percentage w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ $item->service ? $item->service->gst_percentage : 0 }}"
+                                                    readonly>
+                                            </td>
+                                            <td class="p-2">
+                                                <input type="text" name="services[{{ $index }}][gst_total]"
+                                                    class="service-gst-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ number_format($item->gst, 2) }}" readonly>
+                                            </td>
+                                            <td class="p-2">
+                                                <input type="text" name="services[{{ $index }}][total]"
+                                                    class="service-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ number_format($item->total, 2) }}" readonly>
+                                            </td>
+                                            <td class="p-2">
+                                                <button type="button"
+                                                    class="remove-service-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <button type="button" id="addServiceRow"
+                                class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+
+                                Add Service</button>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const toggleServiceCheckbox = document.getElementById("toggleServiceSelection");
+                            const serviceSection = document.getElementById("serviceSection");
+                            const serviceSummary = document.getElementById("serviceSummary");
+
+                            toggleServiceCheckbox.addEventListener("change", function() {
+                                if (this.checked) {
+                                    serviceSection.classList.remove("hidden");
+                                    serviceSummary.classList.remove("hidden");
+                                } else {
+                                    serviceSection.classList.add("hidden");
+                                    serviceSummary.classList.add("hidden");
+                                }
+                            });
+                        });
+                    </script>
+
+                    <!-- Product Summary Section -->
+                    <div class="mt-6 bg-gray-800 p-6 rounded-2xl shadow-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Product Summary -->
                             <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Subtotal:</label>
-                                <input type="text" id="subtotal" name="subtotal"
-                                    value="{{ old('subtotal', $invoice->sub_total) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                                <h4 class="text-xl font-semibold text-blue-400 mb-4">Product Summary</h4>
+                                <table class="w-full text-sm text-left text-gray-300">
+                                    <tbody class="divide-y divide-gray-700">
+                                        <tr>
+                                            <td class="py-2 font-medium w-1/2">Product Subtotal</td>
+                                            <td class="py-2"><input type="text" id="productSubtotal"
+                                                    name="product_subtotal"
+                                                    value="{{ old('product_subtotal',number_format($invoice->items->where('type', 'product')->sum(function ($item) {return $item->quantity * $item->unit_price;}),2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Product CGST Total</td>
+                                            <td class="py-2"><input type="text" id="productTotalCgst"
+                                                    name="product_total_cgst"
+                                                    value="{{ old('product_total_cgst', number_format($invoice->items->where('type', 'product')->sum('cgst'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Product SGST Total</td>
+                                            <td class="py-2"><input type="text" id="productTotalSgst"
+                                                    name="product_total_sgst"
+                                                    value="{{ old('product_total_sgst', number_format($invoice->items->where('type', 'product')->sum('sgst'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Product IGST Total</td>
+                                            <td class="py-2"><input type="text" id="productTotalIgst"
+                                                    name="product_total_igst"
+                                                    value="{{ old('product_total_igst', number_format($invoice->items->where('type', 'product')->sum('igst'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr class="border-t border-gray-700 font-bold text-white">
+                                            <td class="py-3">Product Total</td>
+                                            <td class="py-3"><input type="text" id="productTotal"
+                                                    name="product_total"
+                                                    value="{{ old('product_total', number_format($invoice->items->where('type', 'product')->sum('total'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">CGST Total:</label>
-                                <input type="text" id="totalCgst" name="total_cgst"
-                                    value="{{ old('total_cgst', $invoice->total_cgst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+
+                            <!-- Service Summary -->
+                            <div id="serviceSummary"
+                                class="{{ $invoice->items->where('type', 'service')->count() > 0 ? '' : 'hidden' }}">
+                                <h4 class="text-xl font-semibold text-green-400 mb-4">Service Summary</h4>
+                                <table class="w-full text-sm text-left text-gray-300">
+                                    <tbody class="divide-y divide-gray-700">
+                                        <tr>
+                                            <td class="py-2 font-medium w-1/2">Service Subtotal</td>
+                                            <td class="py-2"><input type="text" id="serviceSubtotal"
+                                                    name="service_subtotal"
+                                                    value="{{ old('service_subtotal',number_format($invoice->items->where('type', 'service')->sum(function ($item) {return $item->quantity * $item->unit_price;}),2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Service CGST Total</td>
+                                            <td class="py-2"><input type="text" id="serviceTotalCgst"
+                                                    name="service_total_cgst"
+                                                    value="{{ old('service_total_cgst', number_format($invoice->items->where('type', 'service')->sum('cgst'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Service SGST Total</td>
+                                            <td class="py-2"><input type="text" id="serviceTotalSgst"
+                                                    name="service_total_sgst"
+                                                    value="{{ old('service_total_sgst', number_format($invoice->items->where('type', 'service')->sum('sgst'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Service IGST Total</td>
+                                            <td class="py-2"><input type="text" id="serviceTotalIgst"
+                                                    name="service_total_igst"
+                                                    value="{{ old('service_total_igst', number_format($invoice->items->where('type', 'service')->sum('igst'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr class="border-t border-gray-700 font-bold text-white">
+                                            <td class="py-3">Service Total</td>
+                                            <td class="py-3"><input type="text" id="serviceTotal"
+                                                    name="service_total"
+                                                    value="{{ old('service_total', number_format($invoice->items->where('type', 'service')->sum('total'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">SGST Total:</label>
-                                <input type="text" id="totalSgst" name="total_sgst"
-                                    value="{{ old('total_sgst', $invoice->total_sgst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">IGST Total:</label>
-                                <input type="text" id="totalIgst" name="total_igst"
-                                    value="{{ old('total_igst', $invoice->total_igst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
-                                <input type="text" id="grandTotal" name="grand_total"
-                                    value="{{ old('grand_total', $invoice->grand_total) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
+                        </div>
+
+                        <!-- Grand Totals -->
+                        <div class="mt-10">
+                            <h4 class="text-xl font-semibold text-yellow-400 mb-4">Grand Totals</h4>
+                            <table class="w-full text-sm text-left text-gray-300">
+                                <tbody class="divide-y divide-gray-700">
+                                    <tr>
+                                        <td class="py-2 font-medium w-1/4">Grand Sub Total</td>
+                                        <td class="py-2"><input type="text" id="grandSubTotal"
+                                                name="grand_sub_total"
+                                                value="{{ old('grand_sub_total', number_format($invoice->sub_total, 2)) }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Grand GST Total</td>
+                                        <td class="py-2"><input type="text" id="grandGstTotal"
+                                                name="grand_gst_total"
+                                                value="{{ old('grand_gst_total', number_format($invoice->cgst + $invoice->sgst + $invoice->igst, 2)) }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                    </tr>
+                                    <tr class="border-t border-gray-700 font-bold text-white text-lg">
+                                        <td class="py-3">Grand Total</td>
+                                        <td class="py-3"><input type="text" id="grandTotal" name="grand_total"
+                                                value="{{ old('grand_total', number_format($invoice->total, 2)) }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Service Selection Modal -->
+                    <div id="serviceModal"
+                        class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center">
+                        <div class="bg-gray-800 p-6 rounded-lg shadow-md w-1/2">
+                            <h2 class="text-2xl font-bold text-gray-200 mb-6">Select Service</h2>
+
+                            <!-- Search Bar -->
+                            <input type="text" id="serviceSearch" placeholder="Search Service..."
+                                class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+
+                            <table
+                                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                                <thead>
+                                    <tr class="text-sm text-gray-400 bg-gray-700">
+                                        <th class="px-6 py-4 border-b border-gray-600">Service Name</th>
+                                        <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
+                                        <th class="px-6 py-4 border-b border-gray-600">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="serviceTableBody" class="text-sm text-gray-300">
+                                    @foreach ($services as $service)
+                                        <tr data-id="{{ $service->id }}" class="service-row">
+                                            <td class="px-6 py-4 border-b border-gray-600">{{ $service->name }}</td>
+                                            <td class="px-6 py-4 border-b border-gray-600">
+                                                {{ $service->gst_percentage }}%</td>
+                                            <td class="px-6 py-4 border-b border-gray-600">
+                                                <button type="button"
+                                                    class="select-service px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                                    data-id="{{ $service->id }}" data-name="{{ $service->name }}"
+                                                    data-gst="{{ $service->gst_percentage }}">
+                                                    Select
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
+                            <button type="button" id="closeServiceModal"
+                                class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>
                         </div>
                     </div>
 
                     <div class="mt-6">
-                        <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Update Invoice</button>
+                        <button type="submit"
+                            class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Update
+                            Invoice</button>
+                        <a href="{{ route('invoices.index') }}"
+                            class="ml-4 px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition">
+                            Cancel
+                        </a>
                     </div>
                 </form>
             </div>
@@ -213,36 +521,37 @@
             <input type="text" id="productSearch" placeholder="Search Product..."
                 class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
 
-                <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
-                    <thead>
-                        <tr class="text-sm text-gray-400 bg-gray-700">
-                            <th class="px-6 py-4 border-b border-gray-600">Product Name</th>    
-                            <th class="px-6 py-4 border-b border-gray-600">Description</th>
-                            <th class="px-6 py-4 border-b border-gray-600">HSN Code</th>
-                            <th class="px-6 py-4 border-b border-gray-600">Stock</th>
-                            <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
-                            <th class="px-6 py-4 border-b border-gray-600">Action</th>
+            <table
+                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                <thead>
+                    <tr class="text-sm text-gray-400 bg-gray-700">
+                        <th class="px-6 py-4 border-b border-gray-600">Product Name</th>
+                        <th class="px-6 py-4 border-b border-gray-600">HSN Code</th>
+                        <th class="px-6 py-4 border-b border-gray-600">Stock</th>
+                        <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
+                        <th class="px-6 py-4 border-b border-gray-600">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody" class="text-sm text-gray-300">
+                    @foreach ($products as $product)
+                        <tr data-id="{{ $product->id }}" class="product-row">
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">
+                                {{ $product->stock->sum('quantity') - $product->stock->sum('sold') }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
+                            <td class="px-6 py-4 border-b border-gray-600">
+                                <button type="button"
+                                    class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                                    data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
+                                    Select
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody id="productTableBody" class="text-sm text-gray-300">
-                        @foreach ($products as $product)
-                            <tr data-id="{{ $product->id }}" class="product-row">
-                                <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
-                                <td class="px-6 py-4 border-b border-gray-600">{{ $product->description }}</td>
-                                <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
-                                <td class="px-6 py-4 border-b border-gray-600">{{ ($product->stock->first()->quantity ?? 0) - ($product->stock->first()->sold ?? 0) }}</td>
-                                <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
-                                <td class="px-6 py-4 border-b border-gray-600">
-                                    <button type="button" class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
-                                        data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                                        data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
-                                        Select
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                    @endforeach
+                </tbody>
+            </table>
 
             <button type="button" id="closeModal"
                 class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>
@@ -255,15 +564,12 @@
             const addRowBtn = document.getElementById("addRow");
             const productModal = document.getElementById("productModal");
             const closeModalBtn = document.getElementById("closeModal");
+            const serviceTable = document.getElementById("serviceTable");
+            const addServiceRowBtn = document.getElementById("addServiceRow");
+            const serviceModal = document.getElementById("serviceModal");
+            const closeServiceModalBtn = document.getElementById("closeServiceModal");
             let currentRow = null;
-
-            // Add event listeners to existing rows on page load
-            document.querySelectorAll("#productTable tr").forEach(row => {
-                addEventListenersToRow(row);
-            });
-
-            // Calculate summary on page load
-            calculateSummary();
+            let currentServiceRow = null;
 
             function filterProducts() {
                 let searchValue = document.getElementById("productSearch").value.toUpperCase();
@@ -323,6 +629,31 @@
                 productModal.classList.remove("hidden");
             }
 
+            function addServiceRow() {
+                var newIndex = serviceTable.rows.length;
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td class="p-2">
+                    <button type="button" class="open-service-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Select Service</button>
+                    <input type="hidden" name="services[${newIndex}][service_id]" class="service-id">
+                    <span class="service-name"></span>
+                </td>
+                <td class="p-2"><input type="number" name="services[${newIndex}][quantity]" class="service-quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1"></td>
+                <td class="p-2"><input type="number" name="services[${newIndex}][unit_price]" class="service-unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0"></td>
+                <td class="p-2"><input type="text" name="services[${newIndex}][gst_percentage]" class="service-gst-percentage w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2"><input type="text" name="services[${newIndex}][gst_total]" class="service-gst-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2"><input type="text" name="services[${newIndex}][total]" class="service-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2">
+                    <button type="button" class="remove-service-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
+                </td>`;
+
+                serviceTable.appendChild(row);
+                addEventListenersToServiceRow(row);
+                currentServiceRow = row;
+                serviceModal.classList.remove("hidden");
+            }
+
             function addEventListenersToRow(row) {
                 let quantityInput = row.querySelector(".quantity");
                 let unitPriceInput = row.querySelector(".unit-price");
@@ -345,6 +676,42 @@
                     calculateSummary();
                 });
             }
+
+            function addEventListenersToServiceRow(row) {
+                let quantityInput = row.querySelector(".service-quantity");
+                let unitPriceInput = row.querySelector(".service-unit-price");
+
+                row.querySelector(".open-service-modal").addEventListener("click", function() {
+                    currentServiceRow = row;
+                    serviceModal.classList.remove("hidden");
+                });
+
+                quantityInput.addEventListener("input", function() {
+                    calculateServiceRowTotal(row);
+                });
+
+                unitPriceInput.addEventListener("input", function() {
+                    calculateServiceRowTotal(row);
+                });
+
+                row.querySelector(".remove-service-row").addEventListener("click", function() {
+                    row.remove();
+                    calculateSummary();
+                });
+            }
+
+            // Add event listeners to existing product rows
+            document.querySelectorAll("#productTable tr").forEach(row => {
+                addEventListenersToRow(row);
+            });
+
+            // Add event listeners to existing service rows  
+            document.querySelectorAll("#serviceTable tr").forEach(row => {
+                addEventListenersToServiceRow(row);
+            });
+
+            // Initial calculation
+            calculateSummary();
 
             function updateGSTValues(row) {
                 let gstPercentage = parseFloat(row.querySelector(".gst-percentage").value) || 0;
@@ -378,13 +745,35 @@
                 calculateSummary();
             }
 
-            function calculateSummary() {
-                let subtotal = 0,
-                    totalCgst = 0,
-                    totalSgst = 0,
-                    totalIgst = 0,
-                    grandTotal = 0;
+            function calculateServiceRowTotal(row) {
+                let quantity = parseFloat(row.querySelector(".service-quantity").value) || 0;
+                let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
+                let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
 
+                let gstTotal = (quantity * unitPrice * gstPercentage) / 100;
+                row.querySelector(".service-gst-total").value = gstTotal.toFixed(2);
+
+                let total = (quantity * unitPrice) + gstTotal;
+                row.querySelector(".service-total").value = total.toFixed(2);
+
+                calculateSummary();
+            }
+
+            function calculateSummary() {
+                let productSubtotal = 0,
+                    productTotal = 0,
+                    productTotalCgst = 0,
+                    productTotalSgst = 0,
+                    productTotalIgst = 0,
+                    serviceSubtotal = 0,
+                    serviceTotal = 0,
+                    serviceTotalCgst = 0,
+                    serviceTotalSgst = 0,
+                    grandTotal = 0,
+                    grandSubTotal = 0,
+                    grandGstTotal = 0;
+
+                // Calculate product summary
                 document.querySelectorAll("#productTable tr").forEach(row => {
                     let rowTotal = parseFloat(row.querySelector(".total").value) || 0;
                     let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
@@ -392,19 +781,48 @@
                     let igst = parseFloat(row.querySelector(".igst").value) || 0;
 
                     let baseAmount = rowTotal / (1 + (cgst + sgst + igst) / 100);
-                    subtotal += baseAmount;
-                    totalCgst += (baseAmount * cgst) / 100;
-                    totalSgst += (baseAmount * sgst) / 100;
-                    totalIgst += (baseAmount * igst) / 100;
+                    productSubtotal += baseAmount;
+                    productTotal += rowTotal;
+                    productTotalCgst += (baseAmount * cgst) / 100;
+                    productTotalSgst += (baseAmount * sgst) / 100;
+                    productTotalIgst += (baseAmount * igst) / 100;
                 });
 
-                grandTotal = subtotal + totalCgst + totalSgst + totalIgst;
+                // Calculate service summary
+                document.querySelectorAll("#serviceTable tr").forEach(row => {
+                    let rowTotal = parseFloat(row.querySelector(".service-total").value) || 0;
+                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
 
-                document.getElementById("subtotal").value = subtotal.toFixed(2);
-                document.getElementById("totalCgst").value = totalCgst.toFixed(2);
-                document.getElementById("totalSgst").value = totalSgst.toFixed(2);
-                document.getElementById("totalIgst").value = totalIgst.toFixed(2);
+                    let baseAmount = rowTotal / (1 + gstPercentage / 100);
+                    serviceSubtotal += baseAmount;
+                    serviceTotal += rowTotal;
+                    serviceTotalCgst += (baseAmount * gstPercentage) / 200;
+                    serviceTotalSgst += (baseAmount * gstPercentage) / 200;
+                });
+
+                // Calculate grand total
+                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst +
+                    serviceTotalSgst;
+                grandTotal = productTotal + serviceTotal;
+                grandSubTotal = productSubtotal + serviceSubtotal;
+
+                // Update product summary fields
+                document.getElementById("productSubtotal").value = productSubtotal.toFixed(2);
+                document.getElementById("productTotal").value = productTotal.toFixed(2);
+                document.getElementById("productTotalCgst").value = productTotalCgst.toFixed(2);
+                document.getElementById("productTotalSgst").value = productTotalSgst.toFixed(2);
+                document.getElementById("productTotalIgst").value = productTotalIgst.toFixed(2);
+
+                // Update service summary fields
+                document.getElementById("serviceSubtotal").value = serviceSubtotal.toFixed(2);
+                document.getElementById("serviceTotal").value = serviceTotal.toFixed(2);
+                document.getElementById("serviceTotalCgst").value = serviceTotalCgst.toFixed(2);
+                document.getElementById("serviceTotalSgst").value = serviceTotalSgst.toFixed(2);
+
+                // Update grand total fields
                 document.getElementById("grandTotal").value = grandTotal.toFixed(2);
+                document.getElementById("grandSubTotal").value = grandSubTotal.toFixed(2);
+                document.getElementById("grandGstTotal").value = grandGstTotal.toFixed(2);
             }
 
             document.querySelectorAll(".select-product").forEach(button => {
@@ -426,47 +844,33 @@
                 });
             });
 
+            document.querySelectorAll(".select-service").forEach(button => {
+                button.addEventListener("click", function() {
+                    let serviceId = this.getAttribute("data-id");
+                    let serviceName = this.getAttribute("data-name");
+                    let gstPercentage = this.getAttribute("data-gst");
+
+                    currentServiceRow.querySelector(".service-id").value = serviceId;
+                    currentServiceRow.querySelector(".service-name").textContent = serviceName;
+                    currentServiceRow.querySelector(".service-gst-percentage").value =
+                        gstPercentage;
+
+                    calculateServiceRowTotal(currentServiceRow);
+
+                    serviceModal.classList.add("hidden");
+                });
+            });
+
             closeModalBtn.addEventListener("click", function() {
                 productModal.classList.add("hidden");
             });
 
-            addRowBtn.addEventListener("click", addProductRow);
-
-            productTable.addEventListener("click", function(event) {
-                if (event.target.classList.contains("remove-row")) {
-                    event.target.closest("tr").remove();
-                    calculateSummary();
-                }
+            closeServiceModalBtn.addEventListener("click", function() {
+                serviceModal.classList.add("hidden");
             });
+
+            addRowBtn.addEventListener("click", addProductRow);
+            addServiceRowBtn.addEventListener("click", addServiceRow);
         });
     </script>
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            const customerSelect = document.getElementById("customer");
-                            const contactPersonSelect = document.getElementById("contact_person");
-
-                            customerSelect.addEventListener("change", function () {
-                                const customerId = this.value;
-
-                                // Clear existing options in contact person dropdown
-                                contactPersonSelect.innerHTML = '<option value="">Select Contact Person</option>';
-                                contactPersonSelect.disabled = true;
-
-                                if (customerId) {
-                                    // Fetch contact persons for the selected customer
-                                    const contactPersons = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
-
-                                    if (contactPersons[customerId]) {
-                                        contactPersons[customerId].forEach(contactPerson => {
-                                            const option = document.createElement("option");
-                                            option.value = contactPerson.id;
-                                            option.textContent = contactPerson.name;
-                                            contactPersonSelect.appendChild(option);
-                                        });
-                                        contactPersonSelect.disabled = false;
-                                    }
-                                }
-                            });
-                        });
-                    </script>
 </x-app-layout>

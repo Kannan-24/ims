@@ -31,6 +31,7 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
 
     // Quotation Payment Routes
     Route::get('/quotations/{id}/pdf', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');
+
     Route::get('/products/{product}/assign-suppliers', [ProductController::class, 'assignSuppliersForm'])->name('products.assignSuppliersForm');
     Route::post('/products/{product}/assign-suppliers', [ProductController::class, 'assignSupplier'])->name('products.assignSupplier');
     Route::get('/suppliers/assign/{supplier}', [SupplierController::class, 'supplierAssign'])->name('suppliers.assignSupplier');
@@ -99,6 +100,7 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
 
     // Quotation Routes
     Route::resource('quotations', QuotationController::class);
+    Route::post('quotations/{quotation}/convert-to-invoice', [QuotationController::class, 'convertToInvoice'])->name('quotations.convert-to-invoice');
 
     // Invoice Routes
     Route::resource('invoices', InvoiceController::class);

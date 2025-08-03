@@ -11,6 +11,10 @@ use App\Models\ims\Customer;
 use App\Models\ims\ContactPerson;
 use App\Models\ims\Product;
 use App\Models\ims\Service;
+use App\Models\ims\Invoice;
+use App\Models\ims\InvoiceItem;
+use App\Models\ims\Stock;
+use Illuminate\Support\Facades\DB;
 use PDF; // Import PDF class from the package
 
 
@@ -109,12 +113,12 @@ class QuotationController extends Controller
             'quotation_code' => $quotationCode,
             'quotation_date' => $request->quotation_date,
             'terms_condition' => $request->terms_condition,
-            'sub_total' => $request->product_subtotal + $request->service_subtotal,
-            'cgst' => $request->product_total_cgst + ($totalServiceGst / 2),
-            'sgst' => $request->product_total_sgst + ($totalServiceGst / 2),
-            'igst' => $request->product_total_igst,
-            'gst' => $request->product_total_cgst + $request->product_total_sgst + $request->product_total_igst + $totalServiceGst,
-            'total' => $request->grand_total,
+            'sub_total' => (float)str_replace(',', '', $request->product_subtotal ?? 0) + (float)str_replace(',', '', $request->service_subtotal ?? 0),
+            'cgst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0) + ($totalServiceGst / 2),
+            'sgst' => (float)str_replace(',', '', $request->product_total_sgst ?? 0) + ($totalServiceGst / 2),
+            'igst' => (float)str_replace(',', '', $request->product_total_igst ?? 0),
+            'gst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0) + (float)str_replace(',', '', $request->product_total_sgst ?? 0) + (float)str_replace(',', '', $request->product_total_igst ?? 0) + $totalServiceGst,
+            'total' => (float)str_replace(',', '', $request->grand_total ?? 0),
         ]);
 
         // Store products
@@ -126,14 +130,14 @@ class QuotationController extends Controller
                         'quotation_id' => $quotation->id,
                         'product_id' => $product['product_id'],
                         'service_id' => null,
-                        'quantity' => $product['quantity'],
-                        'unit_price' => $product['unit_price'],
+                        'quantity' => (int)$product['quantity'],
+                        'unit_price' => (float)str_replace(',', '', $product['unit_price']),
                         'unit_type' => $productModel->unit_type,
-                        'cgst' => $request->product_total_cgst,
-                        'sgst' => $request->product_total_sgst,
-                        'igst' => $request->product_total_igst,
-                        'gst' => $request->product_total_cgst + $request->product_total_sgst + $request->product_total_igst,
-                        'total' => $product['total'],
+                        'cgst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0),
+                        'sgst' => (float)str_replace(',', '', $request->product_total_sgst ?? 0),
+                        'igst' => (float)str_replace(',', '', $request->product_total_igst ?? 0),
+                        'gst' => (float)str_replace(',', '', ($request->product_total_cgst ?? 0) + ($request->product_total_sgst ?? 0) + ($request->product_total_igst ?? 0)),
+                        'total' => (float)str_replace(',', '', $product['total']),
                         'type' => 'product',
                     ]);
                 }
@@ -144,18 +148,19 @@ class QuotationController extends Controller
         if ($request->has('services')) {
             foreach ($request->services as $service) {
                 if (isset($service['service_id'])) {
+                    $gstTotal = (float)str_replace(',', '', $service['gst_total'] ?? 0);
                     QuotationItem::create([
                         'quotation_id' => $quotation->id,
                         'product_id' => null,
                         'service_id' => $service['service_id'],
-                        'quantity' => $service['quantity'],
-                        'unit_price' => $service['unit_price'],
+                        'quantity' => (int)$service['quantity'],
+                        'unit_price' => (float)str_replace(',', '', $service['unit_price']),
                         'unit_type' => '-',
-                        'cgst' => $service['gst_total'] / 2,
-                        'sgst' => $service['gst_total'] / 2,
+                        'cgst' => $gstTotal / 2,
+                        'sgst' => $gstTotal / 2,
                         'igst' => 0,
-                        'gst' => $service['gst_total'],
-                        'total' => $service['total'],
+                        'gst' => $gstTotal,
+                        'total' => (float)str_replace(',', '', $service['total']),
                         'type' => 'service',
                     ]);
                 }
@@ -192,9 +197,17 @@ class QuotationController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+            'customer' => 'required|exists:customers,id',
+            'contact_person' => 'required|exists:contact_persons,id',
             'quotation_date' => 'required|date',
             'terms_condition' => 'nullable|string',
+            'grand_sub_total' => 'required|numeric|min:0',
+            'grand_total' => 'required|numeric|min:0',
+            'product_total_cgst' => 'nullable|numeric|min:0',
+            'product_total_sgst' => 'nullable|numeric|min:0',
+            'product_total_igst' => 'nullable|numeric|min:0',
+            'service_total_cgst' => 'nullable|numeric|min:0',
+            'service_total_sgst' => 'nullable|numeric|min:0',
             'products' => 'nullable|array',
             'products.*.product_id' => 'nullable|exists:products,id',
             'products.*.quantity' => 'required_with:products.*.product_id|integer|min:1',
@@ -203,41 +216,31 @@ class QuotationController extends Controller
             'services.*.service_id' => 'nullable|exists:services,id',
             'services.*.quantity' => 'required_with:services.*.service_id|integer|min:1',
             'services.*.unit_price' => 'required_with:services.*.service_id|numeric|min:0',
-            'services.*.gst_total' => 'nullable|numeric|min:0',
         ]);
-
-        $totalServiceGst = 0;
-
-        // Calculate total GST from services
-        if ($request->has('services')) {
-            foreach ($request->services as $service) {
-                if (isset($service['gst_total'])) {
-                    $totalServiceGst += $service['gst_total'];
-                }
-            }
-        }
 
         $quotation = Quotation::findOrFail($id);
         $quotation->update([
-            'customer_id' => $request->customer_id,
-            'quotation_code' => $request->quotation_code,
+            'customer_id' => $request->customer,
+            'contactperson_id' => $request->contact_person,
             'quotation_date' => $request->quotation_date,
             'terms_condition' => $request->terms_condition,
-            'sub_total' => $request->sub_total,
-            'cgst' => $request->total_cgst,
-            'sgst' => $request->total_sgst,
-            'igst' => $request->total_igst,
-            'gst' => $request->total_cgst + $request->total_sgst + $request->total_igst + $totalServiceGst,
-            'total' => $request->total,
+            'sub_total' => $request->grand_sub_total,
+            'cgst' => ($request->product_total_cgst ?? 0) + ($request->service_total_cgst ?? 0),
+            'sgst' => ($request->product_total_sgst ?? 0) + ($request->service_total_sgst ?? 0),
+            'igst' => ($request->product_total_igst ?? 0),
+            'gst' => (($request->product_total_cgst ?? 0) + ($request->service_total_cgst ?? 0)) +
+                (($request->product_total_sgst ?? 0) + ($request->service_total_sgst ?? 0)) +
+                ($request->product_total_igst ?? 0),
+            'total' => $request->grand_total,
         ]);
 
         // Delete old items and add new ones
         QuotationItem::where('quotation_id', $quotation->id)->delete();
 
-        // Update products
-        if ($request->has('products')) {
+        // Store products
+        if ($request->has('products') && is_array($request->products)) {
             foreach ($request->products as $product) {
-                if (isset($product['product_id'])) {
+                if (isset($product['product_id']) && !empty($product['product_id'])) {
                     $productModel = Product::findOrFail($product['product_id']);
                     QuotationItem::create([
                         'quotation_id' => $quotation->id,
@@ -246,10 +249,10 @@ class QuotationController extends Controller
                         'quantity' => $product['quantity'],
                         'unit_price' => $product['unit_price'],
                         'unit_type' => $productModel->unit_type,
-                        'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
-                        'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
-                        'igst' => ($product['unit_price'] * $product['igst']) / 100,
-                        'gst' => 0,
+                        'cgst' => $product['cgst'] ?? 0,
+                        'sgst' => $product['sgst'] ?? 0,
+                        'igst' => $product['igst'] ?? 0,
+                        'gst' => ($product['cgst'] ?? 0) + ($product['sgst'] ?? 0) + ($product['igst'] ?? 0),
                         'total' => $product['total'],
                         'type' => 'product',
                     ]);
@@ -257,10 +260,10 @@ class QuotationController extends Controller
             }
         }
 
-        // Update services
-        if ($request->has('services')) {
+        // Store services
+        if ($request->has('services') && is_array($request->services)) {
             foreach ($request->services as $service) {
-                if (isset($service['service_id'])) {
+                if (isset($service['service_id']) && !empty($service['service_id'])) {
                     QuotationItem::create([
                         'quotation_id' => $quotation->id,
                         'product_id' => null,
@@ -268,10 +271,10 @@ class QuotationController extends Controller
                         'quantity' => $service['quantity'],
                         'unit_price' => $service['unit_price'],
                         'unit_type' => '-',
-                        'cgst' => 0,
-                        'sgst' => 0,
+                        'cgst' => ($service['gst_total'] ?? 0) / 2,
+                        'sgst' => ($service['gst_total'] ?? 0) / 2,
                         'igst' => 0,
-                        'gst' => $service['gst_total'],
+                        'gst' => $service['gst_total'] ?? 0,
                         'total' => $service['total'],
                         'type' => 'service',
                     ]);
@@ -300,5 +303,77 @@ class QuotationController extends Controller
         $pdf = Pdf::loadView('ims.quotations.pdf', compact('quotation'))->setPaper('a4', 'portrait');
 
         return $pdf->stream('Quotation_' . $quotation->quotation_no . '.pdf');
+    }
+
+    /**
+     * Convert quotation to invoice.
+     */
+    public function convertToInvoice($id)
+    {
+        $quotation = Quotation::with(['items', 'customer'])->findOrFail($id);
+
+        // Generate the invoice number automatically
+        $currentYear = date('Y');
+        $nextYear = date('y', strtotime('+1 year'));
+        $previousYear = date('y', strtotime('-1 year'));
+        $financialYear = (date('m') >= 4) ? $currentYear . '-' . $nextYear : $previousYear . '-' . date('y');
+
+        $lastInvoice = Invoice::where('invoice_no', 'like', 'INV/' . $financialYear . '/%')->latest('id')->first();
+        $lastInvoiceNumber = $lastInvoice ? (int)explode('/', $lastInvoice->invoice_no)[2] : 0;
+        $newInvoiceNo = 'INV/' . $financialYear . '/' . ($lastInvoiceNumber + 1);
+
+        // Create new invoice
+        $invoice = Invoice::create([
+            'customer_id' => $quotation->customer_id,
+            'contactperson_id' => $quotation->contactperson_id,
+            'invoice_no' => $newInvoiceNo,
+            'invoice_date' => now()->format('Y-m-d'),
+            'order_date' => now()->format('Y-m-d'),
+            'order_no' => 'Converted from Quotation ' . $quotation->quotation_code,
+            'terms_condition' => $quotation->terms_condition,
+            'sub_total' => $quotation->sub_total,
+            'cgst' => $quotation->cgst,
+            'sgst' => $quotation->sgst,
+            'igst' => $quotation->igst,
+            'gst' => $quotation->gst,
+            'total' => $quotation->total,
+        ]);
+
+        // Copy quotation items to invoice items
+        foreach ($quotation->items as $item) {
+            InvoiceItem::create([
+                'invoice_id' => $invoice->id,
+                'product_id' => $item->product_id,
+                'service_id' => $item->service_id,
+                'quantity' => $item->quantity,
+                'unit_price' => $item->unit_price,
+                'unit_type' => $item->unit_type,
+                'cgst' => $item->cgst,
+                'sgst' => $item->sgst,
+                'igst' => $item->igst,
+                'gst' => $item->gst,
+                'total' => $item->total,
+                'type' => $item->type,
+            ]);
+
+            // Update stock for products
+            if ($item->product_id) {
+                $stock = Stock::where('product_id', $item->product_id)->first();
+                if ($stock) {
+                    $stock->increment('sold', $item->quantity);
+                }
+            }
+        }
+
+        // Store payment record
+        DB::table('payments')->insert([
+            'invoice_id' => $invoice->id,
+            'total_amount' => $invoice->total,
+            'pending_amount' => $invoice->total,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('invoices.show', $invoice->id)->with('success', 'Quotation converted to invoice successfully! Invoice Number: ' . $newInvoiceNo);
     }
 }

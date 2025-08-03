@@ -40,11 +40,14 @@
                         <table class="min-w-full text-left border-collapse table-auto">
                             <thead>
                                 <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
+                                        onclick="sortTable(0)">#
                                     </th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
+                                        onclick="sortTable(1)">
                                         Date</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
+                                        onclick="sortTable(1)">
                                         Quotation No</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Company Name</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Sub Total</th>
@@ -67,6 +70,17 @@
                                                 title="Download PDF" target="_blank">
                                                 <i class="fas fa-file-pdf"></i>
                                             </a>
+
+                                            <form action="{{ route('quotations.convert-to-invoice', $quotation->id) }}"
+                                                method="POST" class="inline">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="text-purple-400 hover:text-purple-600 transition duration-300"
+                                                    title="Convert to Invoice"
+                                                    onclick="return confirm('Are you sure you want to convert this quotation to an invoice? This action cannot be undone.')">
+                                                    <i class="fas fa-file-invoice"></i>
+                                                </button>
+                                            </form>
 
                                             <a href="{{ route('quotations.show', $quotation) }}"
                                                 class="text-blue-400 hover:text-blue-600 transition duration-300"

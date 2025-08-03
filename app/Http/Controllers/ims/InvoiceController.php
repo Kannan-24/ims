@@ -131,12 +131,12 @@ class InvoiceController extends Controller
             'order_no' => $orderNo,
             'order_no_text' => $request->order_no_text,
             'terms_condition' => $request->terms_condition,
-            'sub_total' => $request->product_subtotal + $request->service_subtotal,
-            'cgst' => $request->product_total_cgst + ($totalServiceGst / 2),
-            'sgst' => $request->product_total_sgst + ($totalServiceGst / 2),
-            'igst' => $request->product_total_igst,
-            'gst' => $request->product_total_cgst + $request->product_total_sgst + $request->product_total_igst + $totalServiceGst,
-            'total' => $request->grand_total,
+            'sub_total' => (float)str_replace(',', '', $request->product_subtotal ?? 0) + (float)str_replace(',', '', $request->service_subtotal ?? 0),
+            'cgst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0) + ($totalServiceGst / 2),
+            'sgst' => (float)str_replace(',', '', $request->product_total_sgst ?? 0) + ($totalServiceGst / 2),
+            'igst' => (float)str_replace(',', '', $request->product_total_igst ?? 0),
+            'gst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0) + (float)str_replace(',', '', $request->product_total_sgst ?? 0) + (float)str_replace(',', '', $request->product_total_igst ?? 0) + $totalServiceGst,
+            'total' => (float)str_replace(',', '', $request->grand_total ?? 0),
         ]);
 
         // Store products
@@ -148,14 +148,14 @@ class InvoiceController extends Controller
                         'invoice_id' => $invoice->id,
                         'product_id' => $product['product_id'],
                         'service_id' => null,
-                        'quantity' => $product['quantity'],
-                        'unit_price' => $product['unit_price'],
+                        'quantity' => (int)$product['quantity'],
+                        'unit_price' => (float)str_replace(',', '', $product['unit_price']),
                         'unit_type' => $productModel->unit_type,
-                        'cgst' => $request->product_total_cgst,
-                        'sgst' => $request->product_total_sgst,
-                        'igst' => $request->product_total_igst,
-                        'gst' => $request->product_total_cgst + $request->product_total_sgst + $request->product_total_igst,
-                        'total' => $product['total'],
+                        'cgst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0),
+                        'sgst' => (float)str_replace(',', '', $request->product_total_sgst ?? 0),
+                        'igst' => (float)str_replace(',', '', $request->product_total_igst ?? 0),
+                        'gst' => (float)str_replace(',', '', ($request->product_total_cgst ?? 0) + ($request->product_total_sgst ?? 0) + ($request->product_total_igst ?? 0)),
+                        'total' => (float)str_replace(',', '', $product['total']),
                         'type' => 'product',
                     ]);
 
@@ -172,18 +172,19 @@ class InvoiceController extends Controller
         if ($request->has('services')) {
             foreach ($request->services as $service) {
                 if (isset($service['service_id'])) {
+                    $gstTotal = (float)str_replace(',', '', $service['gst_total'] ?? 0);
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
                         'product_id' => null,
                         'service_id' => $service['service_id'],
-                        'quantity' => $service['quantity'],
-                        'unit_price' => $service['unit_price'],
+                        'quantity' => (int)$service['quantity'],
+                        'unit_price' => (float)str_replace(',', '', $service['unit_price']),
                         'unit_type' => '-',
-                        'cgst' => $service['gst_total'] / 2,
-                        'sgst' => $service['gst_total'] / 2,
+                        'cgst' => $gstTotal / 2,
+                        'sgst' => $gstTotal / 2,
                         'igst' => 0,
-                        'gst' => $service['gst_total'],
-                        'total' => $service['total'],
+                        'gst' => $gstTotal,
+                        'total' => (float)str_replace(',', '', $service['total']),
                         'type' => 'service',
                     ]);
                 }
@@ -193,8 +194,8 @@ class InvoiceController extends Controller
         // Store payment record
         DB::table('payments')->insert([
             'invoice_id' => $invoice->id,
-            'total_amount' => $request->grand_total,
-            'pending_amount' => $request->grand_total,
+            'total_amount' => (float)str_replace(',', '', $request->grand_total ?? 0),
+            'pending_amount' => (float)str_replace(',', '', $request->grand_total ?? 0),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -231,35 +232,52 @@ class InvoiceController extends Controller
         $request->validate([
             'customer' => 'required|exists:customers,id',
             'contact_person' => 'required|exists:contact_persons,id',
-            'invoice_no' => 'required|unique:invoices,invoice_no,' . $id,
             'invoice_date' => 'required|date',
             'order_date' => 'required|date',
             'order_no' => 'required|string',
-            'products' => 'required|array',
-            'products.*.product_id' => 'required|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
-            'products.*.unit_price' => 'required|numeric|min:0',
+            'grand_sub_total' => 'required|numeric|min:0',
+            'grand_total' => 'required|numeric|min:0',
+            'product_total_cgst' => 'nullable|numeric|min:0',
+            'product_total_sgst' => 'nullable|numeric|min:0',
+            'product_total_igst' => 'nullable|numeric|min:0',
+            'service_total_cgst' => 'nullable|numeric|min:0',
+            'service_total_sgst' => 'nullable|numeric|min:0',
+            'service_total_igst' => 'nullable|numeric|min:0',
+            'products' => 'nullable|array',
+            'products.*.product_id' => 'nullable|exists:products,id',
+            'products.*.quantity' => 'required_with:products.*.product_id|integer|min:1',
+            'products.*.unit_price' => 'required_with:products.*.product_id|numeric|min:0',
+            'services' => 'nullable|array',
+            'services.*.service_id' => 'nullable|exists:services,id',
+            'services.*.quantity' => 'required_with:services.*.service_id|integer|min:1',
+            'services.*.unit_price' => 'required_with:services.*.service_id|numeric|min:0',
         ]);
 
         $invoice = Invoice::findOrFail($id);
 
         // Revert the sold quantities for the old items
         foreach ($invoice->items as $item) {
-            $stock = Stock::where('product_id', $item->product_id)->first();
-            if ($stock) {
-                $stock->decrement('sold', $item->quantity);
+            if ($item->product_id) { // Only revert stock for products, not services
+                $stock = Stock::where('product_id', $item->product_id)->first();
+                if ($stock) {
+                    $stock->decrement('sold', $item->quantity);
+                }
             }
         }
 
         // Check stock availability for new products
-        foreach ($request->products as $product) {
-            $stock = Stock::where('product_id', $product['product_id'])->first();
+        if ($request->has('products') && is_array($request->products)) {
+            foreach ($request->products as $product) {
+                if (isset($product['product_id']) && !empty($product['product_id'])) {
+                    $stock = Stock::where('product_id', $product['product_id'])->first();
 
-            if (!$stock || ($stock->quantity - $stock->sold) < $product['quantity']) {
-                $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
-                return redirect()->back()->withErrors([
-                    'products' => "Product '{$productName}' is out of stock."
-                ])->withInput();
+                    if (!$stock || ($stock->quantity - $stock->sold) < $product['quantity']) {
+                        $productName = Product::find($product['product_id'])->name ?? 'Unknown Product';
+                        return redirect()->back()->withErrors([
+                            'products' => "Product '{$productName}' is out of stock."
+                        ])->withInput();
+                    }
+                }
             }
         }
 
@@ -270,36 +288,68 @@ class InvoiceController extends Controller
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
             'order_no' => $request->order_no,
-            'sub_total' => $request->subtotal,
-            'cgst' => $request->total_cgst,
-            'sgst' => $request->total_sgst,
-            'igst' => $request->total_igst,
-            'gst' => $request->total_cgst + $request->total_sgst + $request->total_igst,
+            'sub_total' => $request->grand_sub_total,
+            'cgst' => ($request->product_total_cgst ?? 0) + ($request->service_total_cgst ?? 0),
+            'sgst' => ($request->product_total_sgst ?? 0) + ($request->service_total_sgst ?? 0),
+            'igst' => ($request->product_total_igst ?? 0) + ($request->service_total_igst ?? 0),
+            'gst' => (($request->product_total_cgst ?? 0) + ($request->service_total_cgst ?? 0)) +
+                (($request->product_total_sgst ?? 0) + ($request->service_total_sgst ?? 0)) +
+                (($request->product_total_igst ?? 0) + ($request->service_total_igst ?? 0)),
             'total' => $request->grand_total,
         ]);
 
         // Delete old items and add new ones
         InvoiceItem::where('invoice_id', $invoice->id)->delete();
 
-        foreach ($request->products as $product) {
-            $productModel = Product::findOrFail($product['product_id']);
+        // Store products
+        if ($request->has('products') && is_array($request->products)) {
+            foreach ($request->products as $product) {
+                if (isset($product['product_id']) && !empty($product['product_id'])) {
+                    $productModel = Product::findOrFail($product['product_id']);
 
-            InvoiceItem::create([
-                'invoice_id' => $invoice->id,
-                'product_id' => $product['product_id'],
-                'quantity' => $product['quantity'],
-                'unit_price' => $product['unit_price'],
-                'unit_type' => $productModel->unit_type,
-                'cgst' => ($product['unit_price'] * $product['cgst']) / 100,
-                'sgst' => ($product['unit_price'] * $product['sgst']) / 100,
-                'igst' => ($product['unit_price'] * $product['igst']) / 100,
-                'total' => $product['total'],
-            ]);
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'product_id' => $product['product_id'],
+                        'service_id' => null,
+                        'quantity' => $product['quantity'],
+                        'unit_price' => $product['unit_price'],
+                        'unit_type' => $productModel->unit_type,
+                        'cgst' => $product['cgst'] ?? 0,
+                        'sgst' => $product['sgst'] ?? 0,
+                        'igst' => $product['igst'] ?? 0,
+                        'gst' => ($product['cgst'] ?? 0) + ($product['sgst'] ?? 0) + ($product['igst'] ?? 0),
+                        'total' => $product['total'],
+                        'type' => 'product',
+                    ]);
 
-            // Update the sold column in the stock table
-            $stock = Stock::where('product_id', $product['product_id'])->first();
-            if ($stock) {
-                $stock->increment('sold', $product['quantity']);
+                    // Update the sold column in the stock table
+                    $stock = Stock::where('product_id', $product['product_id'])->first();
+                    if ($stock) {
+                        $stock->increment('sold', $product['quantity']);
+                    }
+                }
+            }
+        }
+
+        // Store services
+        if ($request->has('services') && is_array($request->services)) {
+            foreach ($request->services as $service) {
+                if (isset($service['service_id']) && !empty($service['service_id'])) {
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'product_id' => null,
+                        'service_id' => $service['service_id'],
+                        'quantity' => $service['quantity'],
+                        'unit_price' => $service['unit_price'],
+                        'unit_type' => '-',
+                        'cgst' => $service['cgst'] ?? 0,
+                        'sgst' => $service['sgst'] ?? 0,
+                        'igst' => $service['igst'] ?? 0,
+                        'gst' => ($service['cgst'] ?? 0) + ($service['sgst'] ?? 0) + ($service['igst'] ?? 0),
+                        'total' => $service['total'],
+                        'type' => 'service',
+                    ]);
+                }
             }
         }
 

@@ -7,54 +7,113 @@
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
 
             <x-bread-crumb-navigation />
-            
+
             <div class="bg-gray-800 p-6 rounded-lg shadow-md">
                 <h2 class="text-3xl font-bold text-gray-200 mb-6">Edit Quotation</h2>
+
+                @if ($errors->any())
+                    <div class="bg-red-500 text-white p-4 rounded mb-4">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <form action="{{ route('quotations.update', $quotation->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
-                    <!-- Customer Selection -->
+                    <!-- Customer -->
                     <div class="mb-6">
-                        <label for="customer_id" class="block text-gray-300 font-semibold mb-2">Customer:</label>
-                        <select name="customer_id" id="customer_id" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <label for="customer" class="block text-gray-300 font-semibold mb-2">Customer:</label>
+                        <select id="customer" name="customer"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             <option value="">Select Customer</option>
                             @foreach ($customers as $customer)
                                 <option value="{{ $customer->id }}"
-                                    {{ old('customer_id', $quotation->customer_id) == $customer->id ? 'selected' : '' }}>
-                                    {{ $customer->company_name }} - {{ $customer->state }}
+                                    {{ old('customer', $quotation->customer_id) == $customer->id ? 'selected' : '' }}>
+                                    {{ $customer->company_name }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
+                    <!-- Contact Person -->
+                    <div class="mb-6">
+                        <label for="contact_person" class="block text-gray-300 font-semibold mb-2">Contact
+                            Person:</label>
+                        <select id="contact_person" name="contact_person"
+                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            <option value="">Select Contact Person</option>
+                            @if ($quotation->customer)
+                                @foreach ($quotation->customer->contactPersons as $contactPerson)
+                                    <option value="{{ $contactPerson->id }}"
+                                        {{ old('contact_person', $quotation->contactperson_id) == $contactPerson->id ? 'selected' : '' }}>
+                                        {{ $contactPerson->name }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const customerSelect = document.getElementById("customer");
+                            const contactPersonSelect = document.getElementById("contact_person");
+
+                            customerSelect.addEventListener("change", function() {
+                                const customerId = this.value;
+
+                                // Clear existing options in contact person dropdown
+                                contactPersonSelect.innerHTML = '<option value="">Select Contact Person</option>';
+                                contactPersonSelect.disabled = true;
+
+                                if (customerId) {
+                                    // Fetch contact persons for the selected customer
+                                    const contactPersons = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
+
+                                    if (contactPersons[customerId]) {
+                                        contactPersons[customerId].forEach(contactPerson => {
+                                            const option = document.createElement("option");
+                                            option.value = contactPerson.id;
+                                            option.textContent = contactPerson.name;
+                                            contactPersonSelect.appendChild(option);
+                                        });
+                                        contactPersonSelect.disabled = false;
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
                     <!-- Quotation Date & Quotation No -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="quotation_code" class="block text-gray-300 font-semibold mb-2">Quotation No:</label>
-                            <input type="text" name="quotation_code" id="quotation_code" value="{{ old('quotation_code', $quotation->quotation_code) }}"
-                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
-                        </div>
-                        <div>
-                            <label for="quotation_date" class="block text-gray-300 font-semibold mb-2">Quotation Date:</label>
+                            <label for="quotation_date" class="block text-gray-300 font-semibold mb-2">Quotation
+                                Date:</label>
                             <input type="date" name="quotation_date" id="quotation_date"
-                                value="{{ old('quotation_date', $quotation->quotation_date) }}" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                                value="{{ old('quotation_date', $quotation->quotation_date) }}"
+                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
                         </div>
                     </div>
 
                     <!-- Terms and Condition -->
                     <div class="mb-6">
-                        <label for="terms_condition" class="block text-gray-300 font-semibold mb-2">Terms and condition:</label>
+                        <label for="terms_condition" class="block text-gray-300 font-semibold mb-2">Terms and
+                            condition:</label>
                         <textarea id="terms_condition" name="terms_condition" rows="4"
                             class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                             placeholder="Enter terms and condition">{{ old('terms_condition', $quotation->terms_condition) }}</textarea>
                     </div>
-                                        
+
                     <!-- Product Table -->
                     <div class="mt-6">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Quotation Items</h3>
-                        <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                        <table
+                            class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                             <thead>
                                 <tr class="text-sm text-gray-400 bg-gray-700">
                                     <th class="px-3 py-3 border-b border-gray-600">Product</th>
@@ -68,23 +127,25 @@
                                 </tr>
                             </thead>
                             <tbody class="text-sm text-gray-300" id="productTable">
-                                @foreach ($quotation->items as $index => $item)
+                                @foreach ($quotation->items->where('type', 'product') as $index => $item)
                                     <tr>
-                                        <td>
+                                        <td class="p-2">
                                             <button type="button"
-                                                class="open-modal bg-blue-500 text-white px-4 py-2 rounded hidden">Select
+                                                class="open-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Select
                                                 Product</button>
                                             <input type="hidden" name="products[{{ $index }}][product_id]"
                                                 class="product-id" value="{{ $item->product_id }}">
                                             <input type="hidden" name="products[{{ $index }}][gst_percentage]"
-                                                class="gst-percentage" value="{{ $item->gst_percentage }}">
-                                            <span class="product-name">{{ $item->name }}</span>
+                                                class="gst-percentage"
+                                                value="{{ $item->product ? $item->product->gst_percentage : 0 }}">
+                                            <span
+                                                class="product-name">{{ $item->product ? $item->product->name : 'Product not found' }}</span>
                                         </td>
-                                        <td class="p-1"><input type="number"
+                                        <td class="p-2"><input type="number"
                                                 name="products[{{ $index }}][quantity]"
                                                 class="quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                                 value="{{ $item->quantity }}" min="1"></td>
-                                        <td class="p-1"><input type="number"
+                                        <td class="p-2"><input type="number"
                                                 name="products[{{ $index }}][unit_price]"
                                                 class="unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                                 value="{{ $item->unit_price }}" min="0"></td>
@@ -92,36 +153,40 @@
                                             <div class="flex items-center gap-2">
                                                 <input type="text" name="products[{{ $index }}][cgst]"
                                                     class="cgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->cgst }}" readonly>
+                                                    value="{{ $item->product && !$item->product->is_igst ? $item->product->gst_percentage / 2 : 0 }}"
+                                                    readonly>
                                                 <input type="text" name="products[{{ $index }}][cgst_value]"
                                                     class="cgst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->cgst_value }}" readonly>
+                                                    value="{{ number_format($item->cgst, 2) }}" readonly>
                                             </div>
                                         </td>
                                         <td class="p-2">
                                             <div class="flex items-center gap-2">
                                                 <input type="text" name="products[{{ $index }}][sgst]"
                                                     class="sgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->sgst }}" readonly>
+                                                    value="{{ $item->product && !$item->product->is_igst ? $item->product->gst_percentage / 2 : 0 }}"
+                                                    readonly>
                                                 <input type="text" name="products[{{ $index }}][sgst_value]"
                                                     class="sgst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->sgst_value }}" readonly>
+                                                    value="{{ number_format($item->sgst, 2) }}" readonly>
                                             </div>
                                         </td>
                                         <td class="p-2">
                                             <div class="flex items-center gap-2">
                                                 <input type="text" name="products[{{ $index }}][igst]"
                                                     class="igst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->igst }}" readonly>
-                                                <input type="text" name="products[{{ $index }}][igst_value]"
+                                                    value="{{ $item->product && $item->product->is_igst ? $item->product->gst_percentage : 0 }}"
+                                                    readonly>
+                                                <input type="text"
+                                                    name="products[{{ $index }}][igst_value]"
                                                     class="igst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->igst_value }}" readonly>
+                                                    value="{{ number_format($item->igst, 2) }}" readonly>
                                             </div>
                                         </td>
                                         <td class="p-2"><input type="text"
                                                 name="products[{{ $index }}][total]"
                                                 class="total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                value="{{ $item->total }}" readonly></td>
+                                                value="{{ number_format($item->total, 2) }}" readonly></td>
                                         <td class="p-2">
                                             <button type="button"
                                                 class="remove-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
@@ -130,362 +195,656 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <button type="button" id="addRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Product</button>
+                        <button type="button" id="addRow"
+                            class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+
+                            Add Product</button>
                     </div>
 
                     <!-- Services Table -->
                     <div class="mt-6">
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Items</h3>
-                        <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
-                            <thead>
-                                <tr class="text-sm text-gray-400 bg-gray-700">
-                                    <th class="px-3 py-3 border-b border-gray-600">Service</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">Quantity</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">Unit Price</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">GST %</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">GST Total</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">Total</th>
-                                    <th class="px-3 py-3 border-b border-gray-600">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm text-gray-300" id="serviceTable">
-                                @foreach ($quotation->items as $index => $service)
-                                    <tr>
-                                        <td>
-                                            <input type="hidden" name="services[{{ $index }}][service_id]" value="{{ $service->service_id }}">
-                                            <span>{{ $service->name }}</span>
-                                        </td>
-                                        <td><input type="number" name="services[{{ $index }}][quantity]" value="{{ $service->quantity }}" class="quantity"></td>
-                                        <td><input type="number" name="services[{{ $index }}][unit_price]" value="{{ $service->unit_price }}" class="unit-price"></td>
-                                        <td><input type="number" name="services[{{ $index }}][gst_percentage]" value="{{ $service->gst_percentage }}" class="gst-percentage"></td>
-                                        <td><input type="number" name="services[{{ $index }}][gst_total]" value="{{ $service->gst_total }}" class="gst-total"></td>
-                                        <td><input type="number" name="services[{{ $index }}][total]" value="{{ $service->total }}" class="total"></td>
-                                        <td><button type="button" class="remove-row">Remove</button></td>
+                        <label class="flex items-center text-gray-300 font-semibold mb-4">
+                            <input type="checkbox" id="toggleServiceSelection" class="mr-2"
+                                {{ $quotation->items->where('type', 'service')->count() > 0 ? 'checked' : '' }}>
+                            Include Services
+                        </label>
+                        <div id="serviceSection"
+                            class="{{ $quotation->items->where('type', 'service')->count() > 0 ? '' : 'hidden' }}">
+                            <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Items</h3>
+                            <table
+                                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                                <thead>
+                                    <tr class="text-sm text-gray-400 bg-gray-700">
+                                        <th class="px-3 py-3 border-b border-gray-600">Service</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Quantity</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Unit Price</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">GST %</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">GST Total</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Total</th>
+                                        <th class="px-3 py-3 border-b border-gray-600">Action</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        <button type="button" id="addServiceRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Service</button>
-                    </div>
-
-                    <!-- Summary Section -->
-                    <div class="mt-6 bg-gray-700 p-4 rounded-lg shadow-md">
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Subtotal:</label>
-                                <input type="text" id="subtotal" name="sub_total" value="{{ old('subtotal', $quotation->sub_total) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">CGST Total:</label>
-                                <input type="text" id="totalCgst" name="total_cgst" value="{{ old('total_cgst', $quotation->total_cgst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">SGST Total:</label>
-                                <input type="text" id="totalSgst" name="total_sgst" value="{{ old('total_sgst', $quotation->total_sgst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">IGST Total:</label>
-                                <input type="text" id="totalIgst" name="total_igst" value="{{ old('total_igst', $quotation->total_igst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <!-- GST Total -->
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">GST Total:</label>
-                                <input type="text" id="totalGst" name="total_gst" value="{{ old('total_gst', $quotation->total_gst) }}"
-                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-300 font-semibold mb-2">Grand Total:</label>
-                                <input type="text" id="grandTotal" name="total"
-                                    value="{{ old('grand_total', $quotation->grand_total) }}" class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                            </div>
+                                </thead>
+                                <tbody class="text-sm text-gray-300" id="serviceTable">
+                                    @foreach ($quotation->items->where('type', 'service') as $index => $item)
+                                        <tr>
+                                            <td class="p-2">
+                                                <button type="button"
+                                                    class="open-service-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Select
+                                                    Service</button>
+                                                <input type="hidden"
+                                                    name="services[{{ $index }}][service_id]"
+                                                    class="service-id" value="{{ $item->service_id }}">
+                                                <span
+                                                    class="service-name">{{ $item->service ? $item->service->name : 'Service not found' }}</span>
+                                            </td>
+                                            <td class="p-2"><input type="number"
+                                                    name="services[{{ $index }}][quantity]"
+                                                    class="service-quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ $item->quantity }}" min="1"></td>
+                                            <td class="p-2"><input type="number"
+                                                    name="services[{{ $index }}][unit_price]"
+                                                    class="service-unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ $item->unit_price }}" min="0"></td>
+                                            <td class="p-2"><input type="text"
+                                                    name="services[{{ $index }}][gst_percentage]"
+                                                    class="service-gst-percentage w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ $item->service ? $item->service->gst_percentage : 0 }}"
+                                                    readonly></td>
+                                            <td class="p-2"><input type="text"
+                                                    name="services[{{ $index }}][gst_total]"
+                                                    class="service-gst-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ number_format($item->gst, 2) }}" readonly></td>
+                                            <td class="p-2"><input type="text"
+                                                    name="services[{{ $index }}][total]"
+                                                    class="service-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    value="{{ number_format($item->total, 2) }}" readonly></td>
+                                            <td class="p-2">
+                                                <button type="button"
+                                                    class="remove-service-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <button type="button" id="addServiceRow"
+                                class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+
+                                Add Service</button>
                         </div>
                     </div>
 
-                    <div class="mt-6">
-                        <button type="submit" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Update Quotation</button>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const toggleServiceCheckbox = document.getElementById("toggleServiceSelection");
+                            const serviceSection = document.getElementById("serviceSection");
+                            const serviceSummary = document.getElementById("serviceSummary");
+
+                            toggleServiceCheckbox.addEventListener("change", function() {
+                                if (this.checked) {
+                                    serviceSection.classList.remove("hidden");
+                                    serviceSummary.classList.remove("hidden");
+                                } else {
+                                    serviceSection.classList.add("hidden");
+                                    serviceSummary.classList.add("hidden");
+                                }
+                            });
+                        });
+                    </script>
+
+                    <!-- Product Summary Section -->
+                    <div class="mt-6 bg-gray-800 p-6 rounded-2xl shadow-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Product Summary -->
+                            <div>
+                                <h4 class="text-xl font-semibold text-blue-400 mb-4">Product Summary</h4>
+                                <table class="w-full text-sm text-left text-gray-300">
+                                    <tbody class="divide-y divide-gray-700">
+                                        <tr>
+                                            <td class="py-2 font-medium w-1/2">Product Subtotal</td>
+                                            <td class="py-2"><input type="text" id="productSubtotal"
+                                                    name="product_subtotal"
+                                                    value="{{ old('product_subtotal',number_format($quotation->items->where('type', 'product')->sum(function ($item) {return $item->quantity * $item->unit_price;}),2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Product CGST Total</td>
+                                            <td class="py-2"><input type="text" id="productTotalCgst"
+                                                    name="product_total_cgst"
+                                                    value="{{ old('product_total_cgst', number_format($quotation->items->where('type', 'product')->sum('cgst'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Product SGST Total</td>
+                                            <td class="py-2"><input type="text" id="productTotalSgst"
+                                                    name="product_total_sgst"
+                                                    value="{{ old('product_total_sgst', number_format($quotation->items->where('type', 'product')->sum('sgst'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Product IGST Total</td>
+                                            <td class="py-2"><input type="text" id="productTotalIgst"
+                                                    name="product_total_igst"
+                                                    value="{{ old('product_total_igst', number_format($quotation->items->where('type', 'product')->sum('igst'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr class="border-t border-gray-700 font-bold text-white">
+                                            <td class="py-3">Product Total</td>
+                                            <td class="py-3"><input type="text" id="productTotal"
+                                                    name="product_total"
+                                                    value="{{ old('product_total', number_format($quotation->items->where('type', 'product')->sum('total'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Service Summary -->
+                            <div id="serviceSummary"
+                                class="{{ $quotation->items->where('type', 'service')->count() > 0 ? '' : 'hidden' }}">
+                                <h4 class="text-xl font-semibold text-green-400 mb-4">Service Summary</h4>
+                                <table class="w-full text-sm text-left text-gray-300">
+                                    <tbody class="divide-y divide-gray-700">
+                                        <tr>
+                                            <td class="py-2 font-medium w-1/2">Service Subtotal</td>
+                                            <td class="py-2"><input type="text" id="serviceSubtotal"
+                                                    name="service_subtotal"
+                                                    value="{{ old('service_subtotal',number_format($quotation->items->where('type', 'service')->sum(function ($item) {return $item->quantity * $item->unit_price;}),2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Service CGST Total</td>
+                                            <td class="py-2"><input type="text" id="serviceTotalCgst"
+                                                    name="service_total_cgst"
+                                                    value="{{ old('service_total_cgst', number_format($quotation->items->where('type', 'service')->sum('gst') / 2, 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">Service SGST Total</td>
+                                            <td class="py-2"><input type="text" id="serviceTotalSgst"
+                                                    name="service_total_sgst"
+                                                    value="{{ old('service_total_sgst', number_format($quotation->items->where('type', 'service')->sum('gst') / 2, 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                        <tr class="border-t border-gray-700 font-bold text-white">
+                                            <td class="py-3">Service Total</td>
+                                            <td class="py-3"><input type="text" id="serviceTotal"
+                                                    name="service_total"
+                                                    value="{{ old('service_total', number_format($quotation->items->where('type', 'service')->sum('total'), 2)) }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Grand Totals -->
+                        <div class="mt-10">
+                            <h4 class="text-xl font-semibold text-yellow-400 mb-4">Grand Totals</h4>
+                            <table class="w-full text-sm text-left text-gray-300">
+                                <tbody class="divide-y divide-gray-700">
+                                    <tr>
+                                        <td class="py-2 font-medium w-1/4">Grand Sub Total</td>
+                                        <td class="py-2"><input type="text" id="grandSubTotal"
+                                                name="grand_sub_total"
+                                                value="{{ old('grand_sub_total', number_format($quotation->sub_total, 2)) }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Grand GST Total</td>
+                                        <td class="py-2"><input type="text" id="grandGstTotal"
+                                                name="grand_gst_total"
+                                                value="{{ old('grand_gst_total', number_format($quotation->cgst + $quotation->sgst + $quotation->igst + $quotation->gst, 2)) }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                    </tr>
+                                    <tr class="border-t border-gray-700 font-bold text-white text-lg">
+                                        <td class="py-3">Grand Total</td>
+                                        <td class="py-3"><input type="text" id="grandTotal" name="grand_total"
+                                                value="{{ old('grand_total', number_format($quotation->total, 2)) }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+
+                    <!-- Service Selection Modal -->
+                    <div id="serviceModal"
+                        class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center">
+                        <div class="bg-gray-800 p-6 rounded-lg shadow-md w-1/2">
+                            <h2 class="text-2xl font-bold text-gray-200 mb-6">Select Service</h2>
+
+                            <!-- Search Bar -->
+                            <input type="text" id="serviceSearch" placeholder="Search Service..."
+                                class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+
+                            <table
+                                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                                <thead>
+                                    <tr class="text-sm text-gray-400 bg-gray-700">
+                                        <th class="px-6 py-4 border-b border-gray-600">Service Name</th>
+                                        <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
+                                        <th class="px-6 py-4 border-b border-gray-600">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="serviceTableBody" class="text-sm text-gray-300">
+                                    @foreach ($services as $service)
+                                        <tr data-id="{{ $service->id }}" class="service-row">
+                                            <td class="px-6 py-4 border-b border-gray-600">{{ $service->name }}</td>
+                                            <td class="px-6 py-4 border-b border-gray-600">
+                                                {{ $service->gst_percentage }}%</td>
+                                            <td class="px-6 py-4 border-b border-gray-600">
+                                                <button type="button"
+                                                    class="select-service px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                                    data-id="{{ $service->id }}" data-name="{{ $service->name }}"
+                                                    data-gst="{{ $service->gst_percentage }}">
+                                                    Select
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
+                            <button type="button" id="closeServiceModal"
+                                class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex gap-4">
+                        <button type="submit"
+                            class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">Update
+                            Quotation</button>
+                        <a href="{{ route('quotations.index') }}"
+                            class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition">Cancel</a>
+                    </div>
+                </form>
+
+                <!-- Convert to Invoice Form -->
+                <form action="{{ route('quotations.convert-to-invoice', $quotation->id) }}" method="POST"
+                    class="mt-4">
+                    @csrf
+                    <button type="submit"
+                        class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition"
+                        onclick="return confirm('Are you sure you want to convert this quotation to an invoice? This action cannot be undone.')">
+                        🔄 Convert to Invoice
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const productTable = document.getElementById("productTable");
-        const addRowBtn = document.getElementById("addRow");
-        const productModal = document.getElementById("productModal");
-        const closeModalBtn = document.getElementById("closeModal");
-        const serviceTable = document.getElementById("serviceTable");
-        const addServiceRowBtn = document.getElementById("addServiceRow");
-        const serviceModal = document.getElementById("serviceModal");
-        const closeServiceModalBtn = document.getElementById("closeServiceModal");
-        let currentRow = null;
-        let currentServiceRow = null;
+    <!-- Product Selection Modal -->
+    <div id="productModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-md w-1/2">
+            <h2 class="text-2xl font-bold text-gray-200 mb-6">Select Product</h2>
 
-        function filterProducts() {
-            let searchValue = document.getElementById("productSearch").value.toUpperCase();
-            let productRows = document.querySelectorAll(".product-row");
+            <!-- Search Bar -->
+            <input type="text" id="productSearch" placeholder="Search Product..."
+                class="w-full mb-4 px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
 
-            productRows.forEach(row => {
-                let productName = row.querySelector("td").textContent.toUpperCase();
-                if (productName.indexOf(searchValue) > -1) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        }
+            <table
+                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                <thead>
+                    <tr class="text-sm text-gray-400 bg-gray-700">
+                        <th class="px-6 py-4 border-b border-gray-600">Product Name</th>
+                        <th class="px-6 py-4 border-b border-gray-600">HSN Code</th>
+                        <th class="px-6 py-4 border-b border-gray-600">Stock</th>
+                        <th class="px-6 py-4 border-b border-gray-600">GST Percentage</th>
+                        <th class="px-6 py-4 border-b border-gray-600">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody" class="text-sm text-gray-300">
+                    @foreach ($products as $product)
+                        <tr data-id="{{ $product->id }}" class="product-row">
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">
+                                {{ $product->stock->sum('quantity') - $product->stock->sum('sold') }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
+                            <td class="px-6 py-4 border-b border-gray-600">
+                                <button type="button"
+                                    class="select-product px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition"
+                                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                                    data-gst="{{ $product->gst_percentage }}" data-isigst="{{ $product->is_igst }}">
+                                    Select
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-        document.getElementById("productSearch").addEventListener("input", filterProducts);
+            <button type="button" id="closeModal"
+                class="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition">Close</button>
+        </div>
+    </div>
 
-        function addProductRow() {
-            var newIndex = productTable.rows.length;
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const productTable = document.getElementById("productTable");
+            const addRowBtn = document.getElementById("addRow");
+            const productModal = document.getElementById("productModal");
+            const closeModalBtn = document.getElementById("closeModal");
+            const serviceTable = document.getElementById("serviceTable");
+            const addServiceRowBtn = document.getElementById("addServiceRow");
+            const serviceModal = document.getElementById("serviceModal");
+            const closeServiceModalBtn = document.getElementById("closeServiceModal");
+            let currentRow = null;
+            let currentServiceRow = null;
 
-            const row = document.createElement("tr");
-            row.innerHTML = `
-            <td class="p-2">
-                <button type="button" class="open-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Select Product</button>
-                <input type="hidden" name="products[${newIndex}][product_id]" class="product-id">
-                <input type="hidden" name="products[${newIndex}][gst_percentage]" class="gst-percentage" value="0">
-                <span class="product-name"></span>
-            </td>
-            <td class="p-2"><input type="number" name="products[${newIndex}][quantity]" class="quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1"></td>
-            <td class="p-2"><input type="number" name="products[${newIndex}][unit_price]" class="unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0"></td>
-            <td class="p-2">
-                <div class="flex items-center gap-2">
-                    <input type="text" name="products[${newIndex}][cgst]" class="cgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                    <input type="text" name="products[${newIndex}][cgst_value]" class="cgst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                </div>
-            </td>
-            <td class="p-2">
-                <div class="flex items-center gap-2">
-                    <input type="text" name="products[${newIndex}][sgst]" class="sgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                    <input type="text" name="products[${newIndex}][sgst_value]" class="sgst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                </div>
-            </td>
-            <td class="p-2">
-                <div class="flex items-center gap-2">
-                    <input type="text" name="products[${newIndex}][igst]" class="igst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                    <input type="text" name="products[${newIndex}][igst_value]" class="igst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
-                </div>
-            </td>
-            <td class="p-2"><input type="text" name="products[${newIndex}][total]" class="total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
-            <td class="p-2">
-                <button type="button" class="remove-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
-            </td>`;
+            function filterProducts() {
+                let searchValue = document.getElementById("productSearch").value.toUpperCase();
+                let productRows = document.querySelectorAll(".product-row");
 
-            productTable.appendChild(row);
-            addEventListenersToRow(row);
-            currentRow = row;
-            productModal.classList.remove("hidden");
-        }
+                productRows.forEach(row => {
+                    let productName = row.querySelector("td").textContent.toUpperCase();
+                    if (productName.indexOf(searchValue) > -1) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            }
 
-        function addServiceRow() {
-            var newIndex = serviceTable.rows.length;
+            document.getElementById("productSearch").addEventListener("input", filterProducts);
 
-            const row = document.createElement("tr");
-            row.innerHTML = `
-            <td class="p-2">
-                <button type="button" class="open-service-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Select Service</button>
-                <input type="hidden" name="services[${newIndex}][service_id]" class="service-id">
-                <span class="service-name"></span>
-            </td>
-            <td class="p-2"><input type="number" name="services[${newIndex}][quantity]" class="service-quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1"></td>
-            <td class="p-2"><input type="number" name="services[${newIndex}][unit_price]" class="service-unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0"></td>
-            <td class="p-2"><input type="text" name="services[${newIndex}][gst_percentage]" class="service-gst-percentage w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
-            <td class="p-2"><input type="text" name="services[${newIndex}][gst_total]" class="service-gst-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
-            <td class="p-2"><input type="text" name="services[${newIndex}][total]" class="service-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
-            <td class="p-2">
-                <button type="button" class="remove-service-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
-            </td>`;
+            function addProductRow() {
+                var newIndex = productTable.rows.length;
 
-            serviceTable.appendChild(row);
-            addEventListenersToServiceRow(row);
-            currentServiceRow = row;
-            serviceModal.classList.remove("hidden");
-        }
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td class="p-2">
+                    <button type="button" class="open-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Select Product</button>
+                    <input type="hidden" name="products[${newIndex}][product_id]" class="product-id">
+                    <input type="hidden" name="products[${newIndex}][gst_percentage]" class="gst-percentage" value="0">
+                    <span class="product-name"></span>
+                </td>
+                <td class="p-2"><input type="number" name="products[${newIndex}][quantity]" class="quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1"></td>
+                <td class="p-2"><input type="number" name="products[${newIndex}][unit_price]" class="unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0"></td>
+                <td class="p-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="products[${newIndex}][cgst]" class="cgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                        <input type="text" name="products[${newIndex}][cgst_value]" class="cgst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                    </div>
+                </td>
+                <td class="p-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="products[${newIndex}][sgst]" class="sgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                        <input type="text" name="products[${newIndex}][sgst_value]" class="sgst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                    </div>
+                </td>
+                <td class="p-2">
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="products[${newIndex}][igst]" class="igst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                        <input type="text" name="products[${newIndex}][igst_value]" class="igst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
+                    </div>
+                </td>
+                <td class="p-2"><input type="text" name="products[${newIndex}][total]" class="total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2">
+                    <button type="button" class="remove-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
+                </td>`;
 
-        function addEventListenersToRow(row) {
-            let quantityInput = row.querySelector(".quantity");
-            let unitPriceInput = row.querySelector(".unit-price");
-
-            row.querySelector(".open-modal").addEventListener("click", function() {
+                productTable.appendChild(row);
+                addEventListenersToRow(row);
                 currentRow = row;
                 productModal.classList.remove("hidden");
-            });
+            }
 
-            quantityInput.addEventListener("input", function() {
-                calculateRowTotal(row);
-            });
+            function addServiceRow() {
+                var newIndex = serviceTable.rows.length;
 
-            unitPriceInput.addEventListener("input", function() {
-                calculateRowTotal(row);
-            });
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td class="p-2">
+                    <button type="button" class="open-service-modal bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">Select Service</button>
+                    <input type="hidden" name="services[${newIndex}][service_id]" class="service-id">
+                    <span class="service-name"></span>
+                </td>
+                <td class="p-2"><input type="number" name="services[${newIndex}][quantity]" class="service-quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1"></td>
+                <td class="p-2"><input type="number" name="services[${newIndex}][unit_price]" class="service-unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0"></td>
+                <td class="p-2"><input type="text" name="services[${newIndex}][gst_percentage]" class="service-gst-percentage w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2"><input type="text" name="services[${newIndex}][gst_total]" class="service-gst-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2"><input type="text" name="services[${newIndex}][total]" class="service-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
+                <td class="p-2">
+                    <button type="button" class="remove-service-row bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md transition">X</button>
+                </td>`;
 
-            row.querySelector(".remove-row").addEventListener("click", function() {
-                row.remove();
-                calculateSummary();
-            });
-        }
-
-        function addEventListenersToServiceRow(row) {
-            let quantityInput = row.querySelector(".service-quantity");
-            let unitPriceInput = row.querySelector(".service-unit-price");
-
-            row.querySelector(".open-service-modal").addEventListener("click", function() {
+                serviceTable.appendChild(row);
+                addEventListenersToServiceRow(row);
                 currentServiceRow = row;
                 serviceModal.classList.remove("hidden");
-            });
+            }
 
-            quantityInput.addEventListener("input", function() {
-                calculateServiceRowTotal(row);
-            });
+            function addEventListenersToRow(row) {
+                let quantityInput = row.querySelector(".quantity");
+                let unitPriceInput = row.querySelector(".unit-price");
 
-            unitPriceInput.addEventListener("input", function() {
-                calculateServiceRowTotal(row);
-            });
+                row.querySelector(".open-modal").addEventListener("click", function() {
+                    currentRow = row;
+                    productModal.classList.remove("hidden");
+                });
 
-            row.querySelector(".remove-service-row").addEventListener("click", function() {
-                row.remove();
-                calculateSummary();
-            });
-        }
+                quantityInput.addEventListener("input", function() {
+                    calculateRowTotal(row);
+                });
 
-        function updateGSTValues(row) {
-            let gstPercentage = parseFloat(row.querySelector(".gst-percentage").value) || 0;
-            let isIgst = row.querySelector(".product-id").getAttribute("data-isigst") === "1";
+                unitPriceInput.addEventListener("input", function() {
+                    calculateRowTotal(row);
+                });
 
-            row.querySelector(".cgst").value = isIgst ? "0" : (gstPercentage / 2).toFixed(2);
-            row.querySelector(".sgst").value = isIgst ? "0" : (gstPercentage / 2).toFixed(2);
-            row.querySelector(".igst").value = isIgst ? gstPercentage.toFixed(2) : "0";
-        }
+                row.querySelector(".remove-row").addEventListener("click", function() {
+                    row.remove();
+                    calculateSummary();
+                });
+            }
 
-        function calculateRowTotal(row) {
-            let quantity = parseFloat(row.querySelector(".quantity").value) || 0;
-            let unitPrice = parseFloat(row.querySelector(".unit-price").value) || 0;
+            function addEventListenersToServiceRow(row) {
+                let quantityInput = row.querySelector(".service-quantity");
+                let unitPriceInput = row.querySelector(".service-unit-price");
 
-            let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
-            let cgst_value = (quantity * unitPrice * cgst) / 100;
-            row.querySelector(".cgst-value").value = cgst_value.toFixed(2);
-            let sgst = parseFloat(row.querySelector(".sgst").value) || 0;
-            let sgst_value = (quantity * unitPrice * sgst) / 100;
-            row.querySelector(".sgst-value").value = sgst_value.toFixed(2);
-            let igst = parseFloat(row.querySelector(".igst").value) || 0;
-            let igst_value = (quantity * unitPrice * igst) / 100;
-            row.querySelector(".igst-value").value = igst_value.toFixed(2);
+                row.querySelector(".open-service-modal").addEventListener("click", function() {
+                    currentServiceRow = row;
+                    serviceModal.classList.remove("hidden");
+                });
 
-            let subTotal = (quantity * unitPrice).toFixed(2) || 0;
-            let totalGst = ((cgst + sgst + igst) / 100) * subTotal;
-            let grandTotal = parseFloat(subTotal) + totalGst;
+                quantityInput.addEventListener("input", function() {
+                    calculateServiceRowTotal(row);
+                });
 
-            row.querySelector(".total").value = grandTotal.toFixed(2);
+                unitPriceInput.addEventListener("input", function() {
+                    calculateServiceRowTotal(row);
+                });
 
-            calculateSummary();
-        }
+                row.querySelector(".remove-service-row").addEventListener("click", function() {
+                    row.remove();
+                    calculateSummary();
+                });
+            }
 
-        function calculateServiceRowTotal(row) {
-            let quantity = parseFloat(row.querySelector(".service-quantity").value) || 0;
-            let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
-            let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
+            function updateGSTValues(row) {
+                let gstPercentage = parseFloat(row.querySelector(".gst-percentage").value) || 0;
+                let isIgst = row.querySelector(".product-id").getAttribute("data-isigst") === "1";
 
-            let gstTotal = (quantity * unitPrice * gstPercentage) / 100;
-            row.querySelector(".service-gst-total").value = gstTotal.toFixed(2);
+                row.querySelector(".cgst").value = isIgst ? "0" : (gstPercentage / 2).toFixed(2);
+                row.querySelector(".sgst").value = isIgst ? "0" : (gstPercentage / 2).toFixed(2);
+                row.querySelector(".igst").value = isIgst ? gstPercentage.toFixed(2) : "0";
+            }
 
-            let total = (quantity * unitPrice) + gstTotal;
-            row.querySelector(".service-total").value = total.toFixed(2);
+            function calculateRowTotal(row) {
+                let quantity = parseFloat(row.querySelector(".quantity").value) || 0;
+                let unitPrice = parseFloat(row.querySelector(".unit-price").value) || 0;
 
-            calculateSummary();
-        }
-
-        function calculateSummary() {
-            let subtotal = 0,
-                totalCgst = 0,
-                totalSgst = 0,
-                totalIgst = 0,
-                totalGst = 0,
-                grandTotal = 0;
-
-            document.querySelectorAll("#productTable tr").forEach(row => {
-                let rowTotal = parseFloat(row.querySelector(".total").value) || 0;
                 let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
+                let cgst_value = (quantity * unitPrice * cgst) / 100;
+                row.querySelector(".cgst-value").value = cgst_value.toFixed(2);
                 let sgst = parseFloat(row.querySelector(".sgst").value) || 0;
+                let sgst_value = (quantity * unitPrice * sgst) / 100;
+                row.querySelector(".sgst-value").value = sgst_value.toFixed(2);
                 let igst = parseFloat(row.querySelector(".igst").value) || 0;
+                let igst_value = (quantity * unitPrice * igst) / 100;
+                row.querySelector(".igst-value").value = igst_value.toFixed(2);
 
-                let baseAmount = rowTotal / (1 + (cgst + sgst + igst) / 100);
-                subtotal += baseAmount;
-                totalCgst += (baseAmount * cgst) / 100;
-                totalSgst += (baseAmount * sgst) / 100;
-                totalIgst += (baseAmount * igst) / 100;
+                let subTotal = (quantity * unitPrice).toFixed(2) || 0;
+                let totalGst = ((cgst + sgst + igst) / 100) * subTotal;
+                let grandTotal = parseFloat(subTotal) + totalGst;
+
+                row.querySelector(".total").value = grandTotal.toFixed(2);
+
+                calculateSummary();
+            }
+
+            function calculateServiceRowTotal(row) {
+                let quantity = parseFloat(row.querySelector(".service-quantity").value) || 0;
+                let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
+                let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
+
+                let gstTotal = (quantity * unitPrice * gstPercentage) / 100;
+                row.querySelector(".service-gst-total").value = gstTotal.toFixed(2);
+
+                let total = (quantity * unitPrice) + gstTotal;
+                row.querySelector(".service-total").value = total.toFixed(2);
+
+                calculateSummary();
+            }
+
+            function calculateSummary() {
+                let productSubtotal = 0,
+                    productTotal = 0,
+                    productTotalCgst = 0,
+                    productTotalSgst = 0,
+                    productTotalIgst = 0,
+                    serviceSubtotal = 0,
+                    serviceTotal = 0,
+                    serviceTotalCgst = 0,
+                    serviceTotalSgst = 0,
+                    grandTotal = 0,
+                    grandSubTotal = 0,
+                    grandGstTotal = 0;
+
+                // Calculate product summary
+                document.querySelectorAll("#productTable tr").forEach(row => {
+                    let rowTotal = parseFloat(row.querySelector(".total").value) || 0;
+                    let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
+                    let sgst = parseFloat(row.querySelector(".sgst").value) || 0;
+                    let igst = parseFloat(row.querySelector(".igst").value) || 0;
+
+                    let baseAmount = rowTotal / (1 + (cgst + sgst + igst) / 100);
+                    productSubtotal += baseAmount;
+                    productTotal += rowTotal;
+                    productTotalCgst += (baseAmount * cgst) / 100;
+                    productTotalSgst += (baseAmount * sgst) / 100;
+                    productTotalIgst += (baseAmount * igst) / 100;
+                });
+
+                // Calculate service summary
+                document.querySelectorAll("#serviceTable tr").forEach(row => {
+                    let rowTotal = parseFloat(row.querySelector(".service-total").value) || 0;
+                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
+
+                    let baseAmount = rowTotal / (1 + gstPercentage / 100);
+                    serviceSubtotal += baseAmount;
+                    serviceTotal += rowTotal;
+                    serviceTotalCgst += (baseAmount * gstPercentage) / 200;
+                    serviceTotalSgst += (baseAmount * gstPercentage) / 200;
+                });
+
+                // Calculate grand total
+                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst +
+                    serviceTotalSgst;
+                grandTotal = productTotal + serviceTotal;
+                grandSubTotal = productSubtotal + serviceSubtotal;
+
+                // Update product summary fields
+                document.getElementById("productSubtotal").value = productSubtotal.toFixed(2);
+                document.getElementById("productTotal").value = productTotal.toFixed(2);
+                document.getElementById("productTotalCgst").value = productTotalCgst.toFixed(2);
+                document.getElementById("productTotalSgst").value = productTotalSgst.toFixed(2);
+                document.getElementById("productTotalIgst").value = productTotalIgst.toFixed(2);
+
+                // Update service summary fields
+                document.getElementById("serviceSubtotal").value = serviceSubtotal.toFixed(2);
+                document.getElementById("serviceTotal").value = serviceTotal.toFixed(2);
+                document.getElementById("serviceTotalCgst").value = serviceTotalCgst.toFixed(2);
+                document.getElementById("serviceTotalSgst").value = serviceTotalSgst.toFixed(2);
+
+                // Update grand total fields
+                document.getElementById("grandTotal").value = grandTotal.toFixed(2);
+                document.getElementById("grandSubTotal").value = grandSubTotal.toFixed(2);
+                document.getElementById("grandGstTotal").value = grandGstTotal.toFixed(2);
+            }
+
+            document.querySelectorAll(".select-product").forEach(button => {
+                button.addEventListener("click", function() {
+                    let productId = this.getAttribute("data-id");
+                    let productName = this.getAttribute("data-name");
+                    let gstPercentage = this.getAttribute("data-gst");
+                    let isIgst = this.getAttribute("data-isigst");
+
+                    currentRow.querySelector(".product-id").value = productId;
+                    currentRow.querySelector(".product-id").setAttribute("data-isigst", isIgst);
+                    currentRow.querySelector(".product-name").textContent = productName;
+                    currentRow.querySelector(".gst-percentage").value = gstPercentage;
+
+                    updateGSTValues(currentRow);
+                    calculateRowTotal(currentRow);
+
+                    productModal.classList.add("hidden");
+                });
+            });
+
+            document.querySelectorAll(".select-service").forEach(button => {
+                button.addEventListener("click", function() {
+                    let serviceId = this.getAttribute("data-id");
+                    let serviceName = this.getAttribute("data-name");
+                    let gstPercentage = this.getAttribute("data-gst");
+
+                    currentServiceRow.querySelector(".service-id").value = serviceId;
+                    currentServiceRow.querySelector(".service-name").textContent = serviceName;
+                    currentServiceRow.querySelector(".service-gst-percentage").value =
+                    gstPercentage;
+
+                    calculateServiceRowTotal(currentServiceRow);
+
+                    serviceModal.classList.add("hidden");
+                });
+            });
+
+            closeModalBtn.addEventListener("click", function() {
+                productModal.classList.add("hidden");
+            });
+
+            closeServiceModalBtn.addEventListener("click", function() {
+                serviceModal.classList.add("hidden");
+            });
+
+            addRowBtn.addEventListener("click", addProductRow);
+            addServiceRowBtn.addEventListener("click", addServiceRow);
+
+            // Initialize event listeners for existing rows
+            document.querySelectorAll("#productTable tr").forEach(row => {
+                if (row.querySelector(".product-id")) {
+                    addEventListenersToRow(row);
+                }
             });
 
             document.querySelectorAll("#serviceTable tr").forEach(row => {
-                let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
-                let gstTotal = parseFloat(row.querySelector(".service-gst-total").value) || 0;
-
-                subtotal += unitPrice;
-                totalGst += gstTotal;
+                if (row.querySelector(".service-id")) {
+                    addEventListenersToServiceRow(row);
+                }
             });
 
-            grandTotal = subtotal + totalCgst + totalSgst + totalIgst + totalGst;
-
-            document.getElementById("subtotal").value = subtotal.toFixed(2);
-            document.getElementById("totalCgst").value = totalCgst.toFixed(2);
-            document.getElementById("totalSgst").value = totalSgst.toFixed(2);
-            document.getElementById("totalIgst").value = totalIgst.toFixed(2);
-            document.getElementById("totalGst").value = totalGst.toFixed(2);
-            document.getElementById("grandTotal").value = grandTotal.toFixed(2);
-        }
-
-        document.querySelectorAll(".select-product").forEach(button => {
-            button.addEventListener("click", function() {
-                let productId = this.getAttribute("data-id");
-                let productName = this.getAttribute("data-name");
-                let gstPercentage = this.getAttribute("data-gst");
-                let isIgst = this.getAttribute("data-isigst");
-
-                currentRow.querySelector(".product-id").value = productId;
-                currentRow.querySelector(".product-id").setAttribute("data-isigst", isIgst);
-                currentRow.querySelector(".product-name").textContent = productName;
-                currentRow.querySelector(".gst-percentage").value = gstPercentage;
-
-                updateGSTValues(currentRow);
-                calculateRowTotal(currentRow);
-
-                productModal.classList.add("hidden");
-            });
+            // Calculate initial summary
+            calculateSummary();
         });
-
-        document.querySelectorAll(".select-service").forEach(button => {
-            button.addEventListener("click", function() {
-                let serviceId = this.getAttribute("data-id");
-                let serviceName = this.getAttribute("data-name");
-                let gstPercentage = this.getAttribute("data-gst");
-
-                currentServiceRow.querySelector(".service-id").value = serviceId;
-                currentServiceRow.querySelector(".service-name").textContent = serviceName;
-                currentServiceRow.querySelector(".service-gst-percentage").value = gstPercentage;
-
-                calculateServiceRowTotal(currentServiceRow);
-
-                serviceModal.classList.add("hidden");
-            });
-        });
-
-        closeModalBtn.addEventListener("click", function() {
-            productModal.classList.add("hidden");
-        });
-
-        closeServiceModalBtn.addEventListener("click", function() {
-            serviceModal.classList.add("hidden");
-        });
-
-        addRowBtn.addEventListener("click", addProductRow);
-        addServiceRowBtn.addEventListener("click", addServiceRow);
-    });
-</script>
+    </script>
 </x-app-layout>
