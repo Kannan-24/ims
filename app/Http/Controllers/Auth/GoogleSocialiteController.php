@@ -26,14 +26,14 @@ class GoogleSocialiteController extends Controller
     {
         try {
             $user = Socialite::driver('google')->user();
-            
+
             // Check if user exists in our database
             $finduser = User::where('email', $user->email)->first();
-            
+
             if ($finduser) {
                 // User exists, log them in
                 Auth::login($finduser);
-                
+
                 return redirect()->intended(route('dashboard', absolute: false))
                     ->with('response', [
                         'status' => 'success',
@@ -47,7 +47,6 @@ class GoogleSocialiteController extends Controller
                         'message' => 'This email is not registered. Please contact administrator to create an account.'
                     ]);
             }
-            
         } catch (Exception $e) {
             // Handle any errors during the OAuth process
             return redirect()->route('login')
@@ -64,10 +63,10 @@ class GoogleSocialiteController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-        
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('login')
             ->with('response', [
                 'status' => 'success',

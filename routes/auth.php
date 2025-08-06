@@ -38,7 +38,7 @@ Route::middleware('guest')->group(function () {
     // Google OAuth Routes
     Route::get('auth/google', [GoogleSocialiteController::class, 'redirectToGoogle'])
         ->name('auth.google');
-    
+
     Route::get('auth/google/callback', [GoogleSocialiteController::class, 'handleGoogleCallback'])
         ->name('auth.google.callback');
 });
