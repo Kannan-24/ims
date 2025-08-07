@@ -10,7 +10,7 @@
             <p class="mt-2 text-sm text-gray-400">
                 Sign in to manage invoices, quotations, and customer details effortlessly.
             </p>
-        </div> 
+        </div>
 
         <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
@@ -91,8 +91,8 @@
 
             <!-- Google Login Button -->
             <div class="!mt-6">
-                <button type="button" id="googleLoginBtn"
-                    class="w-full flex justify-center items-center gap-3 py-2.5 px-4 text-sm tracking-wide rounded-lg text-gray-200 bg-gray-800 border border-gray-700 hover:bg-gray-700 focus:outline-none transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <a href="{{ route('auth.google') }}"
+                    class="w-full flex justify-center items-center gap-3 py-2.5 px-4 text-sm tracking-wide rounded-lg text-gray-200 bg-gray-800 border border-gray-700 hover:bg-gray-700 focus:outline-none transition-colors duration-200">
                     <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4"
                             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -103,120 +103,9 @@
                         <path fill="#EA4335"
                             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                     </svg>
-                    <span id="googleBtnText">Sign in with Google</span>
-                    <div id="googleLoader" class="hidden animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                </button>
+                    Sign in with Google
+                </a>
             </div>
         </form>
-
-        <!-- Success/Error Alert -->
-        <div id="alertMessage" class="hidden mt-4 p-4 rounded-lg">
-            <div class="flex items-center">
-                <div id="alertIcon" class="flex-shrink-0 w-5 h-5 mr-3"></div>
-                <div id="alertText" class="text-sm font-medium"></div>
-            </div>
-        </div>
     </div>
-
-    <!-- Google Login Popup Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const googleLoginBtn = document.getElementById('googleLoginBtn');
-            const googleBtnText = document.getElementById('googleBtnText');
-            const googleLoader = document.getElementById('googleLoader');
-            const alertMessage = document.getElementById('alertMessage');
-            const alertIcon = document.getElementById('alertIcon');
-            const alertText = document.getElementById('alertText');
-
-            function showAlert(type, message) {
-                alertMessage.className = `mt-4 p-4 rounded-lg ${type === 'success' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'}`;
-                
-                alertIcon.innerHTML = type === 'success' 
-                    ? '<svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>'
-                    : '<svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>';
-                
-                alertText.textContent = message;
-                alertMessage.classList.remove('hidden');
-                
-                // Auto hide success message after 3 seconds
-                if (type === 'success') {
-                    setTimeout(() => {
-                        alertMessage.classList.add('hidden');
-                    }, 3000);
-                }
-            }
-
-            function setButtonLoading(loading) {
-                googleLoginBtn.disabled = loading;
-                if (loading) {
-                    googleBtnText.textContent = 'Signing in...';
-                    googleLoader.classList.remove('hidden');
-                } else {
-                    googleBtnText.textContent = 'Sign in with Google';
-                    googleLoader.classList.add('hidden');
-                }
-            }
-
-            googleLoginBtn.addEventListener('click', function() {
-                // Hide any previous alerts
-                alertMessage.classList.add('hidden');
-                
-                // Show loading state
-                setButtonLoading(true);
-
-                // Open Google OAuth popup
-                const popup = window.open(
-                    '{{ route("auth.google") }}?popup=1',
-                    'google-login',
-                    'width=500,height=600,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no'
-                );
-
-                // Check if popup was blocked
-                if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-                    setButtonLoading(false);
-                    showAlert('error', 'Popup was blocked. Please allow popups and try again.');
-                    return;
-                }
-
-                // Poll for popup closure
-                const checkClosed = setInterval(function() {
-                    if (popup.closed) {
-                        clearInterval(checkClosed);
-                        setButtonLoading(false);
-                        
-                        // Check if there's a message from the popup
-                        const urlParams = new URLSearchParams(window.location.search);
-                        if (urlParams.has('login_success')) {
-                            showAlert('success', 'Successfully logged in with Google!');
-                            setTimeout(() => {
-                                window.location.href = '{{ route("dashboard") }}';
-                            }, 1500);
-                        } else if (urlParams.has('login_error')) {
-                            showAlert('error', decodeURIComponent(urlParams.get('login_error')));
-                        }
-                    }
-                }, 1000);
-
-                // Handle message from popup
-                window.addEventListener('message', function(event) {
-                    if (event.origin !== window.location.origin) return;
-                    
-                    if (event.data.type === 'GOOGLE_LOGIN_RESULT') {
-                        popup.close();
-                        clearInterval(checkClosed);
-                        setButtonLoading(false);
-                        
-                        if (event.data.success) {
-                            showAlert('success', event.data.message);
-                            setTimeout(() => {
-                                window.location.href = event.data.redirect;
-                            }, 1500);
-                        } else {
-                            showAlert('error', event.data.message);
-                        }
-                    }
-                });
-            });
-        });
-    </script>
 </x-guest-layout>
