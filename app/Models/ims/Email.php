@@ -14,9 +14,23 @@ class Email extends Model
         'subject',
         'body',
         'attachments',
+        'status',
+        'sent_at',
     ];
 
     protected $casts = [
         'attachments' => 'array',
+        'sent_at' => 'datetime',
     ];
+
+    // Scopes
+    public function scopeDrafts($query)
+    {
+        return $query->where('status', 'draft');
+    }
+
+    public function scopeSent($query)
+    {
+        return $query->where('status', 'sent');
+    }
 }

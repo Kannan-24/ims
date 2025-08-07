@@ -104,11 +104,17 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
 
     // Invoice Routes
     Route::resource('invoices', InvoiceController::class);
+    Route::get('/invoices/{id}/pdf', [InvoiceController::class, 'generatePDF'])->name('invoices.pdf');
 
 
 
     // Email Routes
     Route::resource('emails', EmailController::class);
+    Route::get('/emails/draft/create', [EmailController::class, 'createDraft'])->name('emails.draft.create');
+    Route::get('/emails/drafts/list', [EmailController::class, 'drafts'])->name('emails.drafts');
+    Route::get('/emails/test', function () {
+        return view('ims.emails.test');
+    })->name('emails.test');
 
     // Activity Log Routes
     Route::get('/activity-logs/clear', [ActivityLogController::class, 'destroyAll'])->name('activity-logs.destroyAll');

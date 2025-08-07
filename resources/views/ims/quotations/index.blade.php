@@ -65,8 +65,13 @@
                                         <td class="px-6 py-4">{{ number_format($quotation->sub_total, 2) }}</td>
                                         <td class="px-6 py-4">{{ number_format($quotation->total, 2) }}</td>
                                         <td class="px-6 py-4 flex justify-center gap-3">
-                                            <a href="{{ route('quotations.pdf', $quotation->id) }}"
+                                            <button onclick="createEmailDraft('{{ $quotation->id }}')"
                                                 class="text-green-400 hover:text-green-600 transition duration-300"
+                                                title="Send Email">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                            <a href="{{ route('quotations.pdf', $quotation->id) }}"
+                                                class="text-orange-400 hover:text-orange-600 transition duration-300"
                                                 title="Download PDF" target="_blank">
                                                 <i class="fas fa-file-pdf"></i>
                                             </a>
@@ -130,6 +135,12 @@
             rows.forEach(row => table.appendChild(row));
 
             table.dataset.sortOrder = isAscending ? "desc" : "asc";
+        }
+
+        // Email Draft Function
+        function createEmailDraft(quotationId) {
+            const url = "{{ route('emails.draft.create') }}?document_type=quotation&document_id=" + quotationId;
+            window.location.href = url;
         }
     </script>
 

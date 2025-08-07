@@ -12,8 +12,7 @@
 
             <div class="overflow-hidden bg-gray-800 rounded-lg shadow-xl">
                 <div class="bg-gray-800 p-4 rounded-lg shadow-md">
-                    <form method="GET" action="{{ route('invoices.index') }}"
-                        class="flex flex-wrap items-center gap-4">
+                    <form method="GET" action="{{ route('invoices.index') }}" class="flex flex-wrap items-center gap-4">
 
                         <input type="text" name="search" value="{{ request('search') }}"
                             placeholder="Search Invoice No or Company Name"
@@ -40,11 +39,14 @@
                         <table class="min-w-full text-left border-collapse table-auto">
                             <thead>
                                 <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
+                                        onclick="sortTable(0)">#
                                     </th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
+                                        onclick="sortTable(1)">
                                         Date</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(2)">
+                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer"
+                                        onclick="sortTable(2)">
                                         Invoice No</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Company Name</th>
                                     <th class="px-6 py-4 border-b-2 border-gray-600">Sub Total</th>
@@ -62,6 +64,16 @@
                                         <td class="px-6 py-4">{{ number_format($invoice->sub_total, 2) }}</td>
                                         <td class="px-6 py-4">{{ number_format($invoice->total, 2) }}</td>
                                         <td class="px-6 py-4 flex justify-center gap-3">
+                                            <button onclick="createEmailDraft('{{ $invoice->id }}')"
+                                                class="text-green-400 hover:text-green-600 transition duration-300"
+                                                title="Send Email">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                            <a href="{{ route('invoices.pdf', $invoice->id) }}"
+                                                class="text-orange-400 hover:text-orange-600 transition duration-300"
+                                                title="Download PDF" target="_blank">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </a>
                                             <a href="{{ route('invoices.show', $invoice) }}"
                                                 class="text-blue-400 hover:text-blue-600 transition duration-300"
                                                 title="View">
@@ -110,6 +122,12 @@
             rows.forEach(row => table.appendChild(row));
 
             table.dataset.sortOrder = isAscending ? "desc" : "asc";
+        }
+
+        // Email Draft Function
+        function createEmailDraft(invoiceId) {
+            const url = "{{ route('emails.draft.create') }}?document_type=invoice&document_id=" + invoiceId;
+            window.location.href = url;
         }
     </script>
 

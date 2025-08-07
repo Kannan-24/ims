@@ -25,7 +25,7 @@ class QuotationController extends Controller
      */
     public function index()
     {
-        $query = Quotation::with('customer');
+        $query = Quotation::with(['customer', 'customer.contactPersons']);
 
         if ($search = request('search')) {
             $query->where(function ($q) use ($search) {

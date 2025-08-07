@@ -3,7 +3,7 @@
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
             <x-bread-crumb-navigation />
 
-            <h2 class="text-3xl font-bold text-gray-200 mb-6">Compose Email</h2>
+            <h2 class="text-3xl font-bold text-gray-200 mb-6">Edit Email Draft</h2>
 
             @if (session('success'))
                 <div class="bg-green-500 text-white p-3 rounded mb-4">
@@ -27,76 +27,60 @@
                 </div>
             @endif
 
-            <form action="{{ route('emails.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('emails.update', $email->id) }}" method="POST" enctype="multipart/form-data"
+                id="emailForm">
                 @csrf
+                @method('PUT')
 
                 <div class="mb-6">
                     <label class="block text-gray-300 font-semibold mb-2">To:</label>
                     <input type="text" name="to" id="to"
                         class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        placeholder="Add recipient email addresses"
-                        value="{{ isset($emailData) ? $emailData['to'] : old('to') }}" required>
+                        placeholder="Add recipient email addresses" value="{{ $email->to }}" required>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-gray-300 font-semibold mb-2">CC:</label>
                     <input type="text" name="cc" id="cc"
                         class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        placeholder="Add CC email addresses" value="{{ old('cc') }}">
+                        placeholder="Add CC email addresses" value="{{ $email->cc }}">
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-gray-300 font-semibold mb-2">BCC:</label>
                     <input type="text" name="bcc" id="bcc"
                         class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        placeholder="Add BCC email addresses" value="{{ old('bcc') }}">
+                        placeholder="Add BCC email addresses" value="{{ $email->bcc }}">
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-gray-300 font-semibold mb-2">Subject:</label>
                     <input type="text" name="subject" id="subject"
                         class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        placeholder="Enter email subject"
-                        value="{{ isset($emailData) ? $emailData['subject'] : old('subject') }}" required>
+                        placeholder="Enter email subject" value="{{ $email->subject }}" required>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-gray-300 font-semibold mb-2">Body:</label>
                     <div id="editor-container" class="bg-gray-800 border border-gray-700 rounded-lg">
-                        <textarea name="body" id="body" style="display:none;">{{ isset($emailData)
-                            ? $emailData['body']
-                            : (old('body') ?:
-                                'Dear Sir,
-                        
-                        Good afternoon,
-                        
-                        As discussed, please find the attached quotation for your requirements.
-                        
-                        We kindly request you to confirm your valuable order with us at your earliest convenience.
-                        
-                        We assure you of our best service and support at all times.
-                        
-                        Thank you and regards,
-                        
-                        R. Radhika
-                        Partner
-                        SKM and Company
-                        8870820449
-                        skmandcompany@yahoo.in') }}</textarea>
+                        <textarea name="body" id="body" style="display:none;">{{ $email->body }}</textarea>
                     </div>
                 </div>
 
                 <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Attachments:</label>
-                    @if (isset($emailData['attachment_path']))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                            <div class="flex items-center">
-                                <i class="fas fa-file-pdf text-red-500 mr-2"></i>
-                                <span>{{ $emailData['attachment_name'] }} will be automatically attached</span>
-                            </div>
-                            <input type="hidden" name="auto_attachment" value="{{ $emailData['attachment_path'] }}">
+                    <label class="block text-gray-300 font-semibold mb-2">Current Attachments:</label>
+                    @if ($email->attachments && count(json_decode($email->attachments, true)) > 0)
+                        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+                            @foreach (json_decode($email->attachments, true) as $attachment)
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                                    <span>{{ basename($attachment) }}</span>
+                                </div>
+                            @endforeach
                         </div>
                     @endif
+
+                    <label class="block text-gray-300 font-semibold mb-2">Add More Attachments:</label>
                     <input type="file" name="attachments[]" id="attachments"
                         class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                         multiple>
@@ -104,14 +88,14 @@
                 </div>
 
                 <div class="flex justify-between">
-                    <a href="{{ url()->previous() }}"
+                    <a href="{{ route('emails.drafts') }}"
                         class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition">
-                        <i class="fas fa-arrow-left mr-2"></i>Back
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Drafts
                     </a>
                     <div class="space-x-3">
                         <button type="submit" name="save_draft" value="1" id="save-draft-btn"
                             class="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow-md transition">
-                            <i class="fas fa-save mr-2"></i>Save as Draft
+                            <i class="fas fa-save mr-2"></i>Save Draft
                         </button>
                         <button type="submit" id="send-email-btn"
                             class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition">

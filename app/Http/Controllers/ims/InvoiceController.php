@@ -13,6 +13,7 @@ use App\Models\ims\Service;
 use App\Models\ims\ContactPerson;
 use App\Models\ims\Product;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
@@ -21,7 +22,7 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Invoice::with('customer');
+        $query = Invoice::with(['customer', 'customer.contactPersons']);
 
         if ($request->search) {
             $search = $request->search;
@@ -376,5 +377,14 @@ class InvoiceController extends Controller
         $invoice->delete();
 
         return redirect()->route('invoices.index')->with('success', 'Invoice deleted successfully.');
+    }
+
+    public function generatePDF($id)
+    {
+        $invoice = Invoice::with(['items', 'customer'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('ims.invoices.pdf', compact('invoice'))->setPaper('a4', 'portrait');
+
+        return $pdf->stream('Invoice_' . $invoice->invoice_no . '.pdf');
     }
 }
