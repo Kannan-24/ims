@@ -503,13 +503,20 @@
                     productModal.classList.remove("hidden");
                 });
 
-                quantityInput.addEventListener("input", function() {
+                // Multiple event listeners for real-time calculation
+                function handleCalculation() {
                     calculateRowTotal(row);
-                });
+                }
 
-                unitPriceInput.addEventListener("input", function() {
-                    calculateRowTotal(row);
-                });
+                quantityInput.addEventListener("input", handleCalculation);
+                quantityInput.addEventListener("keyup", handleCalculation);
+                quantityInput.addEventListener("change", handleCalculation);
+                quantityInput.addEventListener("paste", handleCalculation);
+
+                unitPriceInput.addEventListener("input", handleCalculation);
+                unitPriceInput.addEventListener("keyup", handleCalculation);
+                unitPriceInput.addEventListener("change", handleCalculation);
+                unitPriceInput.addEventListener("paste", handleCalculation);
 
                 row.querySelector(".remove-row").addEventListener("click", function() {
                     row.remove();
@@ -526,13 +533,20 @@
                     serviceModal.classList.remove("hidden");
                 });
 
-                quantityInput.addEventListener("input", function() {
+                // Multiple event listeners for real-time calculation
+                function handleServiceCalculation() {
                     calculateServiceRowTotal(row);
-                });
+                }
 
-                unitPriceInput.addEventListener("input", function() {
-                    calculateServiceRowTotal(row);
-                });
+                quantityInput.addEventListener("input", handleServiceCalculation);
+                quantityInput.addEventListener("keyup", handleServiceCalculation);
+                quantityInput.addEventListener("change", handleServiceCalculation);
+                quantityInput.addEventListener("paste", handleServiceCalculation);
+
+                unitPriceInput.addEventListener("input", handleServiceCalculation);
+                unitPriceInput.addEventListener("keyup", handleServiceCalculation);
+                unitPriceInput.addEventListener("change", handleServiceCalculation);
+                unitPriceInput.addEventListener("paste", handleServiceCalculation);
 
                 row.querySelector(".remove-service-row").addEventListener("click", function() {
                     row.remove();
@@ -550,106 +564,192 @@
             }
 
             function calculateRowTotal(row) {
-                let quantity = parseFloat(row.querySelector(".quantity").value) || 0;
-                let unitPrice = parseFloat(row.querySelector(".unit-price").value) || 0;
+                try {
+                    // Add visual feedback during calculation
+                    const totalField = row.querySelector(".total");
+                    if (totalField) {
+                        totalField.style.transition = 'background-color 0.3s ease';
+                        totalField.style.backgroundColor = '#fef3cd';
+                    }
 
-                let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
-                let cgst_value = (quantity * unitPrice * cgst) / 100;
-                row.querySelector(".cgst-value").value = cgst_value.toFixed(2);
-                let sgst = parseFloat(row.querySelector(".sgst").value) || 0;
-                let sgst_value = (quantity * unitPrice * sgst) / 100;
-                row.querySelector(".sgst-value").value = sgst_value.toFixed(2);
-                let igst = parseFloat(row.querySelector(".igst").value) || 0;
-                let igst_value = (quantity * unitPrice * igst) / 100;
-                row.querySelector(".igst-value").value = igst_value.toFixed(2);
+                    let quantity = parseFloat(row.querySelector(".quantity")?.value) || 0;
+                    let unitPrice = parseFloat(row.querySelector(".unit-price")?.value) || 0;
 
-                let subTotal = (quantity * unitPrice).toFixed(2) || 0;
-                let totalGst = ((cgst + sgst + igst) / 100) * subTotal;
-                let grandTotal = parseFloat(subTotal) + totalGst;
+                    let cgst = parseFloat(row.querySelector(".cgst")?.value) || 0;
+                    let cgst_value = (quantity * unitPrice * cgst) / 100;
+                    const cgstValueField = row.querySelector(".cgst-value");
+                    if (cgstValueField) cgstValueField.value = cgst_value.toFixed(2);
 
-                row.querySelector(".total").value = grandTotal.toFixed(2);
+                    let sgst = parseFloat(row.querySelector(".sgst")?.value) || 0;
+                    let sgst_value = (quantity * unitPrice * sgst) / 100;
+                    const sgstValueField = row.querySelector(".sgst-value");
+                    if (sgstValueField) sgstValueField.value = sgst_value.toFixed(2);
 
-                calculateSummary();
+                    let igst = parseFloat(row.querySelector(".igst")?.value) || 0;
+                    let igst_value = (quantity * unitPrice * igst) / 100;
+                    const igstValueField = row.querySelector(".igst-value");
+                    if (igstValueField) igstValueField.value = igst_value.toFixed(2);
+
+                    let subTotal = (quantity * unitPrice).toFixed(2) || 0;
+                    let totalGst = ((cgst + sgst + igst) / 100) * subTotal;
+                    let grandTotal = parseFloat(subTotal) + totalGst;
+
+                    if (totalField) {
+                        totalField.value = grandTotal.toFixed(2);
+                        // Remove visual feedback after brief delay
+                        setTimeout(() => {
+                            totalField.style.backgroundColor = '';
+                        }, 300);
+                    }
+
+                    // Debounced summary calculation
+                    clearTimeout(window.summaryTimeout);
+                    window.summaryTimeout = setTimeout(calculateSummary, 100);
+
+                } catch (error) {
+                    console.error('Error in calculateRowTotal:', error);
+                }
             }
 
             function calculateServiceRowTotal(row) {
-                let quantity = parseFloat(row.querySelector(".service-quantity").value) || 0;
-                let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
-                let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
+                try {
+                    // Add visual feedback during calculation
+                    const totalField = row.querySelector(".service-total");
+                    if (totalField) {
+                        totalField.style.transition = 'background-color 0.3s ease';
+                        totalField.style.backgroundColor = '#fef3cd';
+                    }
 
-                let gstTotal = (quantity * unitPrice * gstPercentage) / 100;
-                row.querySelector(".service-gst-total").value = gstTotal.toFixed(2);
+                    let quantity = parseFloat(row.querySelector(".service-quantity")?.value) || 0;
+                    let unitPrice = parseFloat(row.querySelector(".service-unit-price")?.value) || 0;
+                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) || 0;
 
-                let total = (quantity * unitPrice) + gstTotal;
-                row.querySelector(".service-total").value = total.toFixed(2);
+                    let gstTotal = (quantity * unitPrice * gstPercentage) / 100;
+                    const gstTotalField = row.querySelector(".service-gst-total");
+                    if (gstTotalField) gstTotalField.value = gstTotal.toFixed(2);
 
-                calculateSummary();
+                    let total = (quantity * unitPrice) + gstTotal;
+                    if (totalField) {
+                        totalField.value = total.toFixed(2);
+                        // Remove visual feedback after brief delay
+                        setTimeout(() => {
+                            totalField.style.backgroundColor = '';
+                        }, 300);
+                    }
+
+                    // Debounced summary calculation
+                    clearTimeout(window.summaryTimeout);
+                    window.summaryTimeout = setTimeout(calculateSummary, 100);
+
+                } catch (error) {
+                    console.error('Error in calculateServiceRowTotal:', error);
+                }
             }
 
             function calculateSummary() {
-                let productSubtotal = 0,
-                    productTotal = 0,
-                    productTotalCgst = 0,
-                    productTotalSgst = 0,
-                    productTotalIgst = 0,
-                    serviceSubtotal = 0,
-                    serviceTotal = 0,
-                    serviceTotalCgst = 0,
-                    serviceTotalSgst = 0,
-                    grandTotal = 0,
-                    grandSubTotal = 0,
-                    grandGstTotal = 0;
+                try {
+                    // Add visual feedback to grand total field
+                    const grandTotalField = document.getElementById("grandTotal");
+                    if (grandTotalField) {
+                        grandTotalField.style.transition = 'all 0.3s ease';
+                        grandTotalField.style.backgroundColor = '#d1ecf1';
+                        grandTotalField.style.borderColor = '#bee5eb';
+                    }
 
-                // Calculate product summary
-                document.querySelectorAll("#productTable tr").forEach(row => {
-                    let rowTotal = parseFloat(row.querySelector(".total").value) || 0;
-                    let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
-                    let sgst = parseFloat(row.querySelector(".sgst").value) || 0;
-                    let igst = parseFloat(row.querySelector(".igst").value) || 0;
+                    let productSubtotal = 0,
+                        productTotal = 0,
+                        productTotalCgst = 0,
+                        productTotalSgst = 0,
+                        productTotalIgst = 0,
+                        serviceSubtotal = 0,
+                        serviceTotal = 0,
+                        serviceTotalCgst = 0,
+                        serviceTotalSgst = 0,
+                        grandTotal = 0,
+                        grandSubTotal = 0,
+                        grandGstTotal = 0;
 
-                    let baseAmount = rowTotal / (1 + (cgst + sgst + igst) / 100);
-                    productSubtotal += baseAmount;
-                    productTotal += rowTotal;
-                    productTotalCgst += (baseAmount * cgst) / 100;
-                    productTotalSgst += (baseAmount * sgst) / 100;
-                    productTotalIgst += (baseAmount * igst) / 100;
-                });
+                    // Calculate product summary
+                    document.querySelectorAll("#productTable tr").forEach(row => {
+                        let rowTotal = parseFloat(row.querySelector(".total")?.value) || 0;
+                        let cgst = parseFloat(row.querySelector(".cgst")?.value) || 0;
+                        let sgst = parseFloat(row.querySelector(".sgst")?.value) || 0;
+                        let igst = parseFloat(row.querySelector(".igst")?.value) || 0;
 
-                // Calculate service summary
-                document.querySelectorAll("#serviceTable tr").forEach(row => {
-                    let rowTotal = parseFloat(row.querySelector(".service-total").value) || 0;
-                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
+                        let baseAmount = rowTotal / (1 + (cgst + sgst + igst) / 100);
+                        productSubtotal += baseAmount;
+                        productTotal += rowTotal;
+                        productTotalCgst += (baseAmount * cgst) / 100;
+                        productTotalSgst += (baseAmount * sgst) / 100;
+                        productTotalIgst += (baseAmount * igst) / 100;
+                    });
 
-                    let baseAmount = rowTotal / (1 + gstPercentage / 100);
-                    serviceSubtotal += baseAmount;
-                    serviceTotal += rowTotal;
-                    serviceTotalCgst += (baseAmount * gstPercentage) / 200;
-                    serviceTotalSgst += (baseAmount * gstPercentage) / 200;
-                });
+                    // Calculate service summary
+                    document.querySelectorAll("#serviceTable tr").forEach(row => {
+                        let rowTotal = parseFloat(row.querySelector(".service-total")?.value) || 0;
+                        let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) || 0;
 
-                // Calculate grand total
-                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst +
-                    serviceTotalSgst;
-                grandTotal = productTotal + serviceTotal;
-                grandSubTotal = productSubtotal + serviceSubtotal;
+                        let baseAmount = rowTotal / (1 + gstPercentage / 100);
+                        serviceSubtotal += baseAmount;
+                        serviceTotal += rowTotal;
+                        serviceTotalCgst += (baseAmount * gstPercentage) / 200;
+                        serviceTotalSgst += (baseAmount * gstPercentage) / 200;
+                    });
 
-                // Update product summary fields
-                document.getElementById("productSubtotal").value = productSubtotal.toFixed(2);
-                document.getElementById("productTotal").value = productTotal.toFixed(2);
-                document.getElementById("productTotalCgst").value = productTotalCgst.toFixed(2);
-                document.getElementById("productTotalSgst").value = productTotalSgst.toFixed(2);
-                document.getElementById("productTotalIgst").value = productTotalIgst.toFixed(2);
+                    // Calculate grand total
+                    grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst +
+                        serviceTotalSgst;
+                    grandTotal = productTotal + serviceTotal;
+                    grandSubTotal = productSubtotal + serviceSubtotal;
 
-                // Update service summary fields
-                document.getElementById("serviceSubtotal").value = serviceSubtotal.toFixed(2);
-                document.getElementById("serviceTotal").value = serviceTotal.toFixed(2);
-                document.getElementById("serviceTotalCgst").value = serviceTotalCgst.toFixed(2);
-                document.getElementById("serviceTotalSgst").value = serviceTotalSgst.toFixed(2);
+                    // Update product summary fields
+                    const productSubtotalField = document.getElementById("productSubtotal");
+                    if (productSubtotalField) productSubtotalField.value = productSubtotal.toFixed(2);
+                    
+                    const productTotalField = document.getElementById("productTotal");
+                    if (productTotalField) productTotalField.value = productTotal.toFixed(2);
+                    
+                    const productTotalCgstField = document.getElementById("productTotalCgst");
+                    if (productTotalCgstField) productTotalCgstField.value = productTotalCgst.toFixed(2);
+                    
+                    const productTotalSgstField = document.getElementById("productTotalSgst");
+                    if (productTotalSgstField) productTotalSgstField.value = productTotalSgst.toFixed(2);
+                    
+                    const productTotalIgstField = document.getElementById("productTotalIgst");
+                    if (productTotalIgstField) productTotalIgstField.value = productTotalIgst.toFixed(2);
 
-                // Update grand total fields
-                document.getElementById("grandTotal").value = grandTotal.toFixed(2);
-                document.getElementById("grandSubTotal").value = grandSubTotal.toFixed(2);
-                document.getElementById("grandGstTotal").value = grandGstTotal.toFixed(2);
+                    // Update service summary fields
+                    const serviceSubtotalField = document.getElementById("serviceSubtotal");
+                    if (serviceSubtotalField) serviceSubtotalField.value = serviceSubtotal.toFixed(2);
+                    
+                    const serviceTotalField = document.getElementById("serviceTotal");
+                    if (serviceTotalField) serviceTotalField.value = serviceTotal.toFixed(2);
+                    
+                    const serviceTotalCgstField = document.getElementById("serviceTotalCgst");
+                    if (serviceTotalCgstField) serviceTotalCgstField.value = serviceTotalCgst.toFixed(2);
+                    
+                    const serviceTotalSgstField = document.getElementById("serviceTotalSgst");
+                    if (serviceTotalSgstField) serviceTotalSgstField.value = serviceTotalSgst.toFixed(2);
+
+                    // Update grand total fields
+                    if (grandTotalField) {
+                        grandTotalField.value = grandTotal.toFixed(2);
+                        // Remove visual feedback after brief delay
+                        setTimeout(() => {
+                            grandTotalField.style.backgroundColor = '';
+                            grandTotalField.style.borderColor = '';
+                        }, 500);
+                    }
+                    
+                    const grandSubTotalField = document.getElementById("grandSubTotal");
+                    if (grandSubTotalField) grandSubTotalField.value = grandSubTotal.toFixed(2);
+                    
+                    const grandGstTotalField = document.getElementById("grandGstTotal");
+                    if (grandGstTotalField) grandGstTotalField.value = grandGstTotal.toFixed(2);
+
+                } catch (error) {
+                    console.error('Error in calculateSummary:', error);
+                }
             }
 
             document.querySelectorAll(".select-product").forEach(button => {

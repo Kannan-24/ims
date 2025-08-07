@@ -410,8 +410,8 @@
                     <input type="hidden" name="products[${newIndex}][gst_percentage]" class="gst-percentage" value="0">
                     <span class="product-name"></span>
                 </td>
-                <td class="p-2"><input type="number" name="products[${newIndex}][quantity]" class="quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1"></td>
-                <td class="p-2"><input type="number" name="products[${newIndex}][unit_price]" class="unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0"></td>
+                <td class="p-2"><input type="number" name="products[${newIndex}][quantity]" class="quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1" oninput="calculateRowTotal(this.closest('tr'))" onkeyup="calculateRowTotal(this.closest('tr'))"></td>
+                <td class="p-2"><input type="number" name="products[${newIndex}][unit_price]" class="unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0" step="0.01" oninput="calculateRowTotal(this.closest('tr'))" onkeyup="calculateRowTotal(this.closest('tr'))"></td>
                 <td class="p-2">
                     <div class="flex items-center gap-2">
                         <input type="text" name="products[${newIndex}][cgst]" class="cgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly>
@@ -451,8 +451,8 @@
                     <input type="hidden" name="services[${newIndex}][service_id]" class="service-id">
                     <span class="service-name"></span>
                 </td>
-                <td class="p-2"><input type="number" name="services[${newIndex}][quantity]" class="service-quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1"></td>
-                <td class="p-2"><input type="number" name="services[${newIndex}][unit_price]" class="service-unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0"></td>
+                <td class="p-2"><input type="number" name="services[${newIndex}][quantity]" class="service-quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="1" min="1" oninput="calculateServiceRowTotal(this.closest('tr'))" onkeyup="calculateServiceRowTotal(this.closest('tr'))"></td>
+                <td class="p-2"><input type="number" name="services[${newIndex}][unit_price]" class="service-unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="0" min="0" step="0.01" oninput="calculateServiceRowTotal(this.closest('tr'))" onkeyup="calculateServiceRowTotal(this.closest('tr'))"></td>
                 <td class="p-2"><input type="text" name="services[${newIndex}][gst_percentage]" class="service-gst-percentage w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
                 <td class="p-2"><input type="text" name="services[${newIndex}][gst_total]" class="service-gst-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
                 <td class="p-2"><input type="text" name="services[${newIndex}][total]" class="service-total w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" readonly></td>
@@ -475,13 +475,25 @@
                     productModal.classList.remove("hidden");
                 });
 
-                quantityInput.addEventListener("input", function() {
-                    calculateRowTotal(row);
+                // Add multiple event listeners for real-time calculation
+                ['input', 'keyup', 'change', 'paste'].forEach(eventType => {
+                    quantityInput.addEventListener(eventType, function() {
+                        setTimeout(() => calculateRowTotal(row), 0);
+                    });
+
+                    unitPriceInput.addEventListener(eventType, function() {
+                        setTimeout(() => calculateRowTotal(row), 0);
+                    });
                 });
 
-                unitPriceInput.addEventListener("input", function() {
+                // Also add oninput for immediate response
+                quantityInput.oninput = function() {
                     calculateRowTotal(row);
-                });
+                };
+
+                unitPriceInput.oninput = function() {
+                    calculateRowTotal(row);
+                };
 
                 row.querySelector(".remove-row").addEventListener("click", function() {
                     row.remove();
@@ -498,13 +510,25 @@
                     serviceModal.classList.remove("hidden");
                 });
 
-                quantityInput.addEventListener("input", function() {
-                    calculateServiceRowTotal(row);
+                // Add multiple event listeners for real-time calculation
+                ['input', 'keyup', 'change', 'paste'].forEach(eventType => {
+                    quantityInput.addEventListener(eventType, function() {
+                        setTimeout(() => calculateServiceRowTotal(row), 0);
+                    });
+
+                    unitPriceInput.addEventListener(eventType, function() {
+                        setTimeout(() => calculateServiceRowTotal(row), 0);
+                    });
                 });
 
-                unitPriceInput.addEventListener("input", function() {
+                // Also add oninput for immediate response
+                quantityInput.oninput = function() {
                     calculateServiceRowTotal(row);
-                });
+                };
+
+                unitPriceInput.oninput = function() {
+                    calculateServiceRowTotal(row);
+                };
 
                 row.querySelector(".remove-service-row").addEventListener("click", function() {
                     row.remove();
@@ -522,43 +546,86 @@
             }
 
             function calculateRowTotal(row) {
-                let quantity = parseFloat(row.querySelector(".quantity").value) || 0;
-                let unitPrice = parseFloat(row.querySelector(".unit-price").value) || 0;
+                // Ensure row is valid
+                if (!row || !row.querySelector) return;
+                
+                let quantity = parseFloat(row.querySelector(".quantity")?.value) || 0;
+                let unitPrice = parseFloat(row.querySelector(".unit-price")?.value) || 0;
 
-                let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
-                let cgst_value = (quantity * unitPrice * cgst) / 100;
-                row.querySelector(".cgst-value").value = cgst_value.toFixed(2);
-                let sgst = parseFloat(row.querySelector(".sgst").value) || 0;
-                let sgst_value = (quantity * unitPrice * sgst) / 100;
-                row.querySelector(".sgst-value").value = sgst_value.toFixed(2);
-                let igst = parseFloat(row.querySelector(".igst").value) || 0;
-                let igst_value = (quantity * unitPrice * igst) / 100;
-                row.querySelector(".igst-value").value = igst_value.toFixed(2);
+                // Add visual feedback for calculation
+                let totalField = row.querySelector(".total");
+                if (totalField) {
+                    totalField.style.backgroundColor = '#1f2937'; // Slight highlight during calculation
+                    setTimeout(() => {
+                        totalField.style.backgroundColor = '';
+                    }, 200);
+                }
 
-                let subTotal = (quantity * unitPrice).toFixed(2) || 0;
-                let totalGst = ((cgst + sgst + igst) / 100) * subTotal;
-                let grandTotal = parseFloat(subTotal) + totalGst;
+                // Get GST percentages
+                let cgst = parseFloat(row.querySelector(".cgst")?.value) || 0;
+                let sgst = parseFloat(row.querySelector(".sgst")?.value) || 0;  
+                let igst = parseFloat(row.querySelector(".igst")?.value) || 0;
 
-                row.querySelector(".total").value = grandTotal.toFixed(2);
+                // Calculate GST values
+                let subtotal = quantity * unitPrice;
+                let cgst_value = (subtotal * cgst) / 100;
+                let sgst_value = (subtotal * sgst) / 100;
+                let igst_value = (subtotal * igst) / 100;
 
-                calculateSummary();
+                // Update GST value fields with proper formatting
+                if (row.querySelector(".cgst-value")) row.querySelector(".cgst-value").value = cgst_value.toFixed(2);
+                if (row.querySelector(".sgst-value")) row.querySelector(".sgst-value").value = sgst_value.toFixed(2);
+                if (row.querySelector(".igst-value")) row.querySelector(".igst-value").value = igst_value.toFixed(2);
+
+                // Calculate total
+                let totalGst = cgst_value + sgst_value + igst_value;
+                let grandTotal = subtotal + totalGst;
+
+                // Update total field with currency formatting
+                if (row.querySelector(".total")) {
+                    row.querySelector(".total").value = grandTotal.toFixed(2);
+                }
+
+                // Trigger summary calculation with a small delay to batch multiple changes
+                clearTimeout(window.summaryTimeout);
+                window.summaryTimeout = setTimeout(calculateSummary, 50);
             }
 
             function calculateServiceRowTotal(row) {
-                let quantity = parseFloat(row.querySelector(".service-quantity").value) || 0;
-                let unitPrice = parseFloat(row.querySelector(".service-unit-price").value) || 0;
-                let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
+                // Ensure row is valid
+                if (!row || !row.querySelector) return;
+                
+                let quantity = parseFloat(row.querySelector(".service-quantity")?.value) || 0;
+                let unitPrice = parseFloat(row.querySelector(".service-unit-price")?.value) || 0;
+                let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) || 0;
 
-                let gstTotal = (quantity * unitPrice * gstPercentage) / 100;
-                row.querySelector(".service-gst-total").value = gstTotal.toFixed(2);
+                // Calculate values
+                let subtotal = quantity * unitPrice;
+                let gstTotal = (subtotal * gstPercentage) / 100;
+                let total = subtotal + gstTotal;
 
-                let total = (quantity * unitPrice) + gstTotal;
-                row.querySelector(".service-total").value = total.toFixed(2);
+                // Update fields
+                if (row.querySelector(".service-gst-total")) {
+                    row.querySelector(".service-gst-total").value = gstTotal.toFixed(2);
+                }
+                
+                if (row.querySelector(".service-total")) {
+                    row.querySelector(".service-total").value = total.toFixed(2);
+                }
 
-                calculateSummary();
+                // Trigger summary calculation with a small delay to batch multiple changes
+                clearTimeout(window.summaryTimeout);
+                window.summaryTimeout = setTimeout(calculateSummary, 50);
             }
 
             function calculateSummary() {
+                // Add visual feedback for calculation in progress
+                let grandTotalField = document.getElementById("grandTotal");
+                if (grandTotalField) {
+                    grandTotalField.style.backgroundColor = '#1f2937';
+                    grandTotalField.style.borderColor = '#3b82f6';
+                }
+
                 let productSubtotal = 0,
                     productTotal = 0,
                     productTotalCgst = 0,
@@ -574,10 +641,10 @@
 
                 // Calculate product summary
                 document.querySelectorAll("#productTable tr").forEach(row => {
-                    let rowTotal = parseFloat(row.querySelector(".total").value) || 0;
-                    let cgst = parseFloat(row.querySelector(".cgst").value) || 0;
-                    let sgst = parseFloat(row.querySelector(".sgst").value) || 0;
-                    let igst = parseFloat(row.querySelector(".igst").value) || 0;
+                    let rowTotal = parseFloat(row.querySelector(".total")?.value) || 0;
+                    let cgst = parseFloat(row.querySelector(".cgst")?.value) || 0;
+                    let sgst = parseFloat(row.querySelector(".sgst")?.value) || 0;
+                    let igst = parseFloat(row.querySelector(".igst")?.value) || 0;
 
                     let baseAmount = rowTotal / (1 + (cgst + sgst + igst) / 100);
                     productSubtotal += baseAmount;
@@ -589,8 +656,8 @@
 
                 // Calculate service summary
                 document.querySelectorAll("#serviceTable tr").forEach(row => {
-                    let rowTotal = parseFloat(row.querySelector(".service-total").value) || 0;
-                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage").value) || 0;
+                    let rowTotal = parseFloat(row.querySelector(".service-total")?.value) || 0;
+                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) || 0;
 
                     let baseAmount = rowTotal / (1 + gstPercentage / 100);
                     serviceSubtotal += baseAmount;
@@ -604,23 +671,42 @@
                 grandTotal = productTotal + serviceTotal;
                 grandSubTotal = productSubtotal + serviceSubtotal;
 
-                // Update product summary fields
-                document.getElementById("productSubtotal").value = productSubtotal.toFixed(2);
-                document.getElementById("productTotal").value = productTotal.toFixed(2);
-                document.getElementById("productTotalCgst").value = productTotalCgst.toFixed(2);
-                document.getElementById("productTotalSgst").value = productTotalSgst.toFixed(2);
-                document.getElementById("productTotalIgst").value = productTotalIgst.toFixed(2);
+                // Update product summary fields with smooth transitions
+                const updateField = (fieldId, value) => {
+                    let field = document.getElementById(fieldId);
+                    if (field) {
+                        field.value = value.toFixed(2);
+                        field.style.backgroundColor = '#065f46';
+                        setTimeout(() => {
+                            field.style.backgroundColor = '';
+                        }, 300);
+                    }
+                };
+
+                updateField("productSubtotal", productSubtotal);
+                updateField("productTotal", productTotal);
+                updateField("productTotalCgst", productTotalCgst);
+                updateField("productTotalSgst", productTotalSgst);
+                updateField("productTotalIgst", productTotalIgst);
 
                 // Update service summary fields
-                document.getElementById("serviceSubtotal").value = serviceSubtotal.toFixed(2);
-                document.getElementById("serviceTotal").value = serviceTotal.toFixed(2);
-                document.getElementById("serviceTotalCgst").value = serviceTotalCgst.toFixed(2);
-                document.getElementById("serviceTotalSgst").value = serviceTotalSgst.toFixed(2);
+                updateField("serviceSubtotal", serviceSubtotal);
+                updateField("serviceTotal", serviceTotal);
+                updateField("serviceTotalCgst", serviceTotalCgst);
+                updateField("serviceTotalSgst", serviceTotalSgst);
 
-                // Update grand total fields
-                document.getElementById("grandTotal").value = grandTotal.toFixed(2);
-                document.getElementById("grandSubTotal").value = grandSubTotal.toFixed(2);
-                document.getElementById("grandGstTotal").value = grandGstTotal.toFixed(2);
+                // Update grand total fields with highlight
+                updateField("grandTotal", grandTotal);
+                updateField("grandSubTotal", grandSubTotal);
+                updateField("grandGstTotal", grandGstTotal);
+
+                // Reset visual feedback
+                setTimeout(() => {
+                    if (grandTotalField) {
+                        grandTotalField.style.backgroundColor = '';
+                        grandTotalField.style.borderColor = '';
+                    }
+                }, 500);
             }
 
             document.querySelectorAll(".select-product").forEach(button => {

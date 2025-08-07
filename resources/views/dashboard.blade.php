@@ -78,6 +78,104 @@
 
         </div>
 
+        <!-- AI Features Showcase -->
+        <div class="bg-gradient-to-r from-blue-900/50 to-purple-900/50 backdrop-blur-xl border border-blue-500/20 p-6 rounded-2xl shadow-2xl mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white">AI Copilot Assistant</h3>
+                        <p class="text-blue-200">Powered by DeepSeek AI - Boost your productivity</p>
+                    </div>
+                </div>
+                <a href="{{ route('ai.copilot') }}" 
+                   class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Try AI Assistant
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Email Generation -->
+                <div class="bg-blue-500/20 border border-blue-500/30 rounded-xl p-4 hover:bg-blue-500/30 transition-all duration-200 cursor-pointer" 
+                     onclick="window.location.href='{{ route('ai.copilot') }}'">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-white font-semibold">Smart Emails</h4>
+                    </div>
+                    <p class="text-blue-200 text-sm">Generate professional emails for customers, follow-ups, and business communications</p>
+                </div>
+
+                <!-- Quotation Terms -->
+                <div class="bg-green-500/20 border border-green-500/30 rounded-xl p-4 hover:bg-green-500/30 transition-all duration-200 cursor-pointer" 
+                     onclick="window.location.href='{{ route('ai.copilot') }}'">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-white font-semibold">Quotation T&C</h4>
+                    </div>
+                    <p class="text-green-200 text-sm">Create professional terms and conditions for quotations and business proposals</p>
+                </div>
+
+                <!-- Product Descriptions -->
+                <div class="bg-purple-500/20 border border-purple-500/30 rounded-xl p-4 hover:bg-purple-500/30 transition-all duration-200 cursor-pointer" 
+                     onclick="window.location.href='{{ route('ai.copilot') }}'">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-white font-semibold">Product Content</h4>
+                    </div>
+                    <p class="text-purple-200 text-sm">Generate compelling product descriptions and marketing content</p>
+                </div>
+
+                <!-- Business Documents -->
+                <div class="bg-yellow-500/20 border border-yellow-500/30 rounded-xl p-4 hover:bg-yellow-500/30 transition-all duration-200 cursor-pointer" 
+                     onclick="window.location.href='{{ route('ai.copilot') }}'">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-white font-semibold">Business Docs</h4>
+                    </div>
+                    <p class="text-yellow-200 text-sm">Create professional business proposals, reports, and documentation</p>
+                </div>
+            </div>
+
+            <!-- AI Stats -->
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-white" id="dashboard-ai-requests">0</div>
+                    <div class="text-sm text-gray-300">AI Requests Today</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-green-400" id="dashboard-ai-success">0</div>
+                    <div class="text-sm text-gray-300">Successful Generations</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-blue-400">24/7</div>
+                    <div class="text-sm text-gray-300">AI Availability</div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Charts -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -295,6 +393,21 @@
                         }
                     }
                 });
+
+                // Load AI usage stats
+                function loadAIStats() {
+                    const requestCount = localStorage.getItem('aiRequestCount') || '0';
+                    const successCount = localStorage.getItem('aiSuccessCount') || '0';
+                    
+                    document.getElementById('dashboard-ai-requests').textContent = requestCount;
+                    document.getElementById('dashboard-ai-success').textContent = successCount;
+                }
+
+                // Load AI stats on page load
+                loadAIStats();
+
+                // Refresh AI stats every 30 seconds
+                setInterval(loadAIStats, 30000);
             });
         </script>
 </x-app-layout>

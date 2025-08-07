@@ -90,7 +90,7 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
                         x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute right-0 mt-4 w-64 bg-white dark:bg-gray-800 rounded-b-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 ">
+                        class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
 
                         <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                             <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Quick Actions</h3>
@@ -148,8 +148,7 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
                                 \App\Models\ims\Invoice::where('created_at', '>=', now()->subDays(3))->count() +
                                 \App\Models\ims\Quotation::where('created_at', '>=', now()->subDays(3))->count() +
                                 \App\Models\ims\Customer::where('created_at', '>=', now()->subDays(7))->count();
-                            $userNotifications = Auth::user()->notifications()->unread()->get();
-                            $totalNotifications = $draftCount + $recentCount + $userNotifications->count() + 1;
+                            $totalNotifications = $draftCount + $recentCount + 1;
                         @endphp
 
                         @if ($totalNotifications > 0)
@@ -705,17 +704,34 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
                 </div>
 
                 <!-- Communication Section -->
-                <a href="{{ route('emails.index') }}"
-                    class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('emails.*') ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
-                    <div
-                        class="flex items-center justify-center w-8 h-8 mr-3 rounded-lg {{ request()->routeIs('emails.*') ? 'bg-red-100 dark:bg-red-800 text-red-600 dark:text-red-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-600' }} transition-colors">
-                        <i class="fas fa-envelope text-sm"></i>
-                    </div>
-                    <span>Mails</span>
-                    @if (request()->routeIs('emails.*'))
-                        <div class="ml-auto w-2 h-2 bg-red-600 dark:bg-red-400 rounded-full"></div>
-                    @endif
-                </a>
+                <div class="mb-6">
+                    <h3
+                        class="px-3 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Communication</h3>
+
+                    <!-- Mails Link -->
+                    <a href="{{ route('emails.index') }}"
+                        class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('emails.*') ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
+                        <div
+                            class="flex items-center justify-center w-8 h-8 mr-3 rounded-lg {{ request()->routeIs('emails.*') ? 'bg-red-100 dark:bg-red-800 text-red-600 dark:text-red-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-600' }} transition-colors">
+                            <i class="fas fa-envelope text-sm"></i>
+                        </div>
+                        <span>Mails</span>
+                    </a>
+
+                    <!-- AI Copilot Link -->
+                    <a href="{{ route('ai.copilot') }}"
+                        class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('ai.copilot') ? 'bg-gray-50 dark:bg-gray-900/20 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
+                        <div
+                            class="flex items-center justify-center w-8 h-8 mr-3 rounded-lg {{ request()->routeIs('ai.copilot') ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-600' }} transition-colors">
+                            <i class="fas fa-microchip text-sm"></i>
+                        </div>
+                        <span>AI Copilot</span>
+                        @if (request()->routeIs('ai.copilot'))
+                            <div class="ml-auto w-2 h-2 bg-gray-600 dark:bg-gray-400 rounded-full"></div>
+                        @endif
+                    </a>
+                </div>
 
                 <!-- Reports Section -->
                 <div class="mb-6">

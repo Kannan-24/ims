@@ -253,7 +253,7 @@ class QuotationController extends Controller
                         'sgst' => $product['sgst'] ?? 0,
                         'igst' => $product['igst'] ?? 0,
                         'gst' => ($product['cgst'] ?? 0) + ($product['sgst'] ?? 0) + ($product['igst'] ?? 0),
-                        'total' => $product['total'],
+                        'total' => (float)str_replace(',', '', $product['total']),
                         'type' => 'product',
                     ]);
                 }
@@ -275,7 +275,7 @@ class QuotationController extends Controller
                         'sgst' => ($service['gst_total'] ?? 0) / 2,
                         'igst' => 0,
                         'gst' => $service['gst_total'] ?? 0,
-                        'total' => $service['total'],
+                        'total' => (float)str_replace(',', '', $service['total']),
                         'type' => 'service',
                     ]);
                 }

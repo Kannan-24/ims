@@ -13,6 +13,7 @@ use App\Http\Controllers\ims\PaymentController;
 use App\Http\Controllers\ims\EmailController;
 use App\Http\Controllers\ims\ReportController;
 use App\Http\Controllers\ims\ActivityLogController;
+use App\Http\Controllers\ims\AIContentController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -112,9 +113,6 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::resource('emails', EmailController::class);
     Route::get('/emails/draft/create', [EmailController::class, 'createDraft'])->name('emails.draft.create');
     Route::get('/emails/drafts/list', [EmailController::class, 'drafts'])->name('emails.drafts');
-    Route::get('/emails/test', function () {
-        return view('ims.emails.test');
-    })->name('emails.test');
 
     // Activity Log Routes
     Route::get('/activity-logs/clear', [ActivityLogController::class, 'destroyAll'])->name('activity-logs.destroyAll');
@@ -123,4 +121,11 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::get('/activity-logs/{id}', [ActivityLogController::class, 'show'])->name('activity-logs.show');
     Route::delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])->name('activity-logs.destroy');
     Route::get('/activity-logs/{id}/delete', [ActivityLogController::class, 'destroy'])->name('activity-logs.delete');
+
+    //ai 
+    Route::view('/ai-copilot', 'ims.ai.copilot')->name('ai.copilot');
+    Route::view('/ai-debug', 'ims.ai.debug')->name('ai.debug');
+    Route::post('/generate-content', [AIContentController::class, 'generate']);
+    Route::get('/ai-usage-stats', [AIContentController::class, 'getUsageStats'])->name('ai.usage-stats');
+    Route::get('/ai-test-connection', [AIContentController::class, 'testConnection'])->name('ai.test-connection');
 });
