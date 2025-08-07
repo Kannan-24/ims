@@ -10,7 +10,7 @@
             <p class="mt-2 text-sm text-gray-400">
                 Sign in to manage invoices, quotations, and customer details effortlessly.
             </p>
-        </div>
+        </div> 
 
         <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
