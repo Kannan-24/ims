@@ -3,11 +3,6 @@
     userDropdown: false,
     showNotifications: false,
     darkMode: localStorage.getItem('darkMode') === 'true' || true,
-    notifications: [
-        { id: 1, message: 'New invoice created!', read: false },
-        { id: 2, message: 'Stock updated successfully.', read: false },
-        { id: 3, message: 'New customer added.', read: false },
-    ]
 }" x-init="$watch('darkMode', value => localStorage.setItem('darkMode', value));
 if (darkMode) document.documentElement.classList.add('dark');
 else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkMode }">
@@ -95,7 +90,7 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
                         x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                        class="absolute right-0 mt-4 w-64 bg-white dark:bg-gray-800 rounded-b-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 ">
 
                         <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                             <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Quick Actions</h3>
@@ -136,24 +131,27 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
                 </div>
 
                 <!-- Notification Bell -->
-                <div class="relative">
+                <div class="relative" x-data="{ showNotifications: false }">
+                    <!-- Notification Button -->
                     <button @click="showNotifications = !showNotifications"
-                        class="relative flex items-center justify-center w-10 h-10 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-200">
+                        class="relative flex items-center justify-center w-10 h-10 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-200">
                         <span class="sr-only">View notifications</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V9a6 6 0 00-12 0v5c0 .386-.146.774-.405 1.095L4 17h5m6 0a3 3 0 11-6 0">
-                            </path>
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V9a6 6 0 00-12 0v5c0 .386-.146.774-.405 1.095L4 17h5m6 0a3 3 0 11-6 0" />
                         </svg>
+
                         @php
                             $draftCount = \App\Models\ims\Email::where('status', 'draft')->count();
                             $recentCount =
                                 \App\Models\ims\Invoice::where('created_at', '>=', now()->subDays(3))->count() +
                                 \App\Models\ims\Quotation::where('created_at', '>=', now()->subDays(3))->count() +
                                 \App\Models\ims\Customer::where('created_at', '>=', now()->subDays(7))->count();
-                            $totalNotifications = $draftCount + $recentCount + 1;
+                            $userNotifications = Auth::user()->notifications()->unread()->get();
+                            $totalNotifications = $draftCount + $recentCount + $userNotifications->count() + 1;
                         @endphp
+
                         @if ($totalNotifications > 0)
                             <span
                                 class="absolute -top-1 -right-1 w-5 h-5 text-xs text-white bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center font-bold shadow-lg animate-pulse">
@@ -162,16 +160,16 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
                         @endif
                     </button>
 
-                    <!-- Enhanced Notification Panel -->
-                    <div x-show="showNotifications" @click.away="showNotifications = false"
+                    <!-- Notification Panel -->
+                    <div x-show="showNotifications" x-cloak @click.away="showNotifications = false"
                         x-transition:enter="transition ease-out duration-300 transform"
                         x-transition:enter-start="translate-x-full opacity-0 scale-95"
                         x-transition:enter-end="translate-x-0 opacity-100 scale-100"
                         x-transition:leave="transition ease-in duration-200 transform"
                         x-transition:leave-start="translate-x-0 opacity-100 scale-100"
                         x-transition:leave-end="translate-x-full opacity-0 scale-95"
-                        class="fixed top-0 right-0 z-50 w-80 sm:w-96 h-full bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-2xl">
-
+                        class="fixed top-0 right-0 z-[99] w-full sm:w-96 h-screen bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden flex flex-col"
+                        style="max-width: 400px;">
                         <!-- Header -->
                         <div
                             class="flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800">
@@ -184,7 +182,7 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
                                 class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"></path>
+                                        d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
@@ -707,47 +705,17 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
                 </div>
 
                 <!-- Communication Section -->
-                <div class="mb-6">
-                    <h3
-                        class="px-3 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Communication</h3>
-
-                    <!-- Mails Link -->
-                    <a href="{{ route('emails.index') }}"
-                        class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('emails.*') ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
-                        <div
-                            class="flex items-center justify-center w-8 h-8 mr-3 rounded-lg {{ request()->routeIs('emails.*') ? 'bg-red-100 dark:bg-red-800 text-red-600 dark:text-red-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-600' }} transition-colors">
-                            <i class="fas fa-envelope text-sm"></i>
-                        </div>
-                        <div class="flex-1 flex items-center justify-between">
-                            <span>Mails</span>
-                            @php
-                                $sidebarDraftCount = \App\Models\ims\Email::where('status', 'draft')->count();
-                            @endphp
-                            @if ($sidebarDraftCount > 0)
-                                <span
-                                    class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
-                                    {{ $sidebarDraftCount }}
-                                </span>
-                            @endif
-                            @if (request()->routeIs('emails.*'))
-                                <div
-                                    class="w-2 h-2 bg-red-600 dark:bg-red-400 rounded-full {{ $sidebarDraftCount > 0 ? 'ml-2' : '' }}">
-                                </div>
-                            @endif
-                        </div>
-                    </a>
-
-                    @if ($sidebarDraftCount > 0)
-                        <div class="ml-11 mt-1">
-                            <a href="{{ route('emails.drafts') }}"
-                                class="flex items-center px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                                <i class="fas fa-file-alt w-4 h-4 mr-2"></i>
-                                {{ $sidebarDraftCount }} Draft{{ $sidebarDraftCount > 1 ? 's' : '' }}
-                            </a>
-                        </div>
+                <a href="{{ route('emails.index') }}"
+                    class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('emails.*') ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
+                    <div
+                        class="flex items-center justify-center w-8 h-8 mr-3 rounded-lg {{ request()->routeIs('emails.*') ? 'bg-red-100 dark:bg-red-800 text-red-600 dark:text-red-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-600' }} transition-colors">
+                        <i class="fas fa-envelope text-sm"></i>
+                    </div>
+                    <span>Mails</span>
+                    @if (request()->routeIs('emails.*'))
+                        <div class="ml-auto w-2 h-2 bg-red-600 dark:bg-red-400 rounded-full"></div>
                     @endif
-                </div>
+                </a>
 
                 <!-- Reports Section -->
                 <div class="mb-6">
@@ -909,7 +877,7 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
         // Apply saved theme on page load
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)')
-            .matches)) {
+                .matches)) {
             document.documentElement.classList.add('dark');
         }
 
