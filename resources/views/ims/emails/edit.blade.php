@@ -63,8 +63,8 @@
                 <div class="mb-6">
                     <label class="block text-gray-300 font-semibold mb-2">Body:</label>
                     <div id="editor-container" class="bg-gray-800 border border-gray-700 rounded-lg">
-                        <textarea name="body" id="body" style="display:none;">{{ $email->body }}</textarea>
                     </div>
+                    <textarea name="body" id="body" style="display:none;">{{ $email->body }}</textarea>
                 </div>
 
                 <div class="mb-6">

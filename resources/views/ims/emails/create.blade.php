@@ -61,29 +61,30 @@
                 </div>
 
                 <div class="mb-6">
-                    <label class="block text-gray-300 font-semibold mb-2">Body:</label>
-                    <div id="editor-container" class="bg-gray-800 border border-gray-700 rounded-lg">
-                        <textarea name="body" id="body" style="display:none;">{{ isset($emailData)
+                    <label for="body" class="block text-gray-300 font-semibold mb-2">Body:</label>
+
+                    <!-- Rich Text Editor Container -->
+                    <div id="editor-container" class="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-2">
+                        <!-- Quill.js or another editor will be initialized here -->
+                    </div>
+
+                    <!-- Hidden Textarea to store the editor content -->
+                    <textarea name="body" id="body" class="hidden">
+                        {{ isset($emailData)
                             ? $emailData['body']
                             : (old('body') ?:
-                                'Dear Sir,
-                        
-                        Good afternoon,
-                        
-                        As discussed, please find the attached quotation for your requirements.
-                        
-                        We kindly request you to confirm your valuable order with us at your earliest convenience.
-                        
-                        We assure you of our best service and support at all times.
-                        
-                        Thank you and regards,
-                        
-                        R. Radhika
-                        Partner
-                        SKM and Company
-                        8870820449
-                        skmandcompany@yahoo.in') }}</textarea>
-                    </div>
+                            "Dear Sir,
+                            Good afternoon,
+                            As discussed, please find the attached quotation for your requirements.
+                            We kindly request you to confirm your valuable order with us at your earliest convenience.
+                            We assure you of our best service and support at all times.
+                            Thank you and regards,
+                            R. Radhika
+                            Partner
+                            SKM and Company
+                            8870820449
+                            skmandcompany@yahoo.in") }}
+                    </textarea>
                 </div>
 
                 <div class="mb-6">
