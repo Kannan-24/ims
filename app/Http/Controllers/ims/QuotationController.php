@@ -298,11 +298,14 @@ class QuotationController extends Controller
 
     public function generatePDF($id)
     {
-        $quotation = Quotation::with('items')->findOrFail($id);
+        $quotation = Quotation::with(['items', 'customer'])->findOrFail($id);
 
         $pdf = Pdf::loadView('ims.quotations.pdf', compact('quotation'))->setPaper('a4', 'portrait');
 
-        return $pdf->stream('Quotation_' . $quotation->quotation_no . '.pdf');
+        // Sanitize filename by replacing invalid characters
+        $sanitizedQuotationNo = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $quotation->quotation_no);
+        
+        return $pdf->stream('Quotation_' . $sanitizedQuotationNo . '.pdf');
     }
 
     /**

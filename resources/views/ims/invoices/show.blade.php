@@ -11,6 +11,18 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-3xl font-bold text-gray-200">Invoice Details</h2>
                     <div class="flex gap-2">
+                        <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
+                            class="flex items-center px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition">
+                            <i class="fas fa-file-pdf mr-2"></i>PDF
+                        </a>
+                        <a href="{{ route('invoices.qr-view', $invoice->id) }}" target="_blank"
+                            class="flex items-center px-4 py-2 text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition">
+                            <i class="fas fa-qrcode mr-2"></i>QR View
+                        </a>
+                        <button onclick="generateDeliveryChallan({{ $invoice->id }})"
+                            class="flex items-center px-4 py-2 text-white bg-purple-500 rounded-lg hover:bg-purple-600 transition">
+                            <i class="fas fa-truck mr-2"></i>Delivery Challan
+                        </button>
                         <a href="{{ route('invoices.edit', $invoice->id) }}"
                             class="flex items-center px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition">
                             Edit
@@ -160,4 +172,95 @@
             </div>
         </div>
     </div>
+
+    <script>
+    function generateDeliveryChallan(invoiceId) {
+        if (confirm('Generate delivery challan for this invoice?')) {
+            // Show loading state
+            showToast('info', 'Generating delivery challan...');
+            
+            fetch('/ims/delivery-challans/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    invoice_id: invoiceId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('success', data.message);
+                    if (confirm('Would you like to view the generated delivery challan?')) {
+                        window.open(data.pdf_url, '_blank');
+                    }
+                } else {
+                    showToast('error', data.message || 'Failed to generate delivery challan');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'An error occurred while generating delivery challan');
+            });
+        }
+    }
+
+    function showToast(type, message) {
+        // Remove existing toasts
+        const existingToasts = document.querySelectorAll('.toast-notification');
+        existingToasts.forEach(toast => toast.remove());
+
+        const toastDiv = document.createElement('div');
+        toastDiv.className = `toast-notification fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm transition-all duration-300 transform translate-x-0`;
+        
+        let bgColor, textColor, icon;
+        switch(type) {
+            case 'success':
+                bgColor = 'bg-green-100 border border-green-200';
+                textColor = 'text-green-800';
+                icon = 'fa-check-circle';
+                break;
+            case 'error':
+                bgColor = 'bg-red-100 border border-red-200';
+                textColor = 'text-red-800';
+                icon = 'fa-exclamation-circle';
+                break;
+            case 'info':
+                bgColor = 'bg-blue-100 border border-blue-200';
+                textColor = 'text-blue-800';
+                icon = 'fa-info-circle';
+                break;
+            default:
+                bgColor = 'bg-gray-100 border border-gray-200';
+                textColor = 'text-gray-800';
+                icon = 'fa-bell';
+        }
+        
+        toastDiv.className += ` ${bgColor} ${textColor}`;
+        toastDiv.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas ${icon} mr-3 text-lg"></i>
+                <div class="flex-1">
+                    <p class="font-medium">${message}</p>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-lg hover:opacity-70">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(toastDiv);
+        
+        // Auto-remove after 5 seconds (except for info messages which are manually removed)
+        if (type !== 'info') {
+            setTimeout(() => {
+                if (toastDiv.parentNode) {
+                    toastDiv.remove();
+                }
+            }, 5000);
+        }
+    }
+    </script>
 </x-app-layout>

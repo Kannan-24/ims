@@ -689,6 +689,19 @@ else document.documentElement.classList.remove('dark');" :class="{ 'dark': darkM
                         @endif
                     </a>
 
+                    <!-- Delivery Challans Link -->
+                    <a href="{{ route('delivery-challans.index') }}"
+                        class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('delivery-challans.*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
+                        <div
+                            class="flex items-center justify-center w-8 h-8 mr-3 rounded-lg {{ request()->routeIs('delivery-challans.*') ? 'bg-orange-100 dark:bg-orange-800 text-orange-600 dark:text-orange-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-600' }} transition-colors">
+                            <i class="fas fa-truck text-sm"></i>
+                        </div>
+                        <span>Delivery Challans</span>
+                        @if (request()->routeIs('delivery-challans.*'))
+                            <div class="ml-auto w-2 h-2 bg-orange-600 dark:bg-orange-400 rounded-full"></div>
+                        @endif
+                    </a>
+
                     <!-- Payments Link -->
                     <a href="{{ route('payments.index') }}"
                         class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {{ request()->routeIs('payments.*') ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">

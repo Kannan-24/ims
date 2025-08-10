@@ -14,6 +14,8 @@ use App\Models\ims\ContactPerson;
 use App\Models\ims\Product;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceController extends Controller
 {
@@ -381,10 +383,56 @@ class InvoiceController extends Controller
 
     public function generatePDF($id)
     {
-        $invoice = Invoice::with(['items', 'customer'])->findOrFail($id);
+        try {
+            $invoice = Invoice::with(['items.product', 'items.service', 'customer'])->findOrFail($id);
 
-        $pdf = Pdf::loadView('ims.invoices.pdf', compact('invoice'))->setPaper('a4', 'portrait');
+            // Generate QR code for invoice verification - use absolute URL
+            $qrUrl = url('/ims/invoices/' . $id . '/qr-view');
+            
+            // Generate QR code with SVG format for better PDF compatibility
+            $qrCodeSvg = QrCode::format('svg')
+                ->size(80)
+                ->errorCorrection('M')
+                ->generate($qrUrl);
+            
+            // Convert SVG to data URL for PDF embedding
+            $qrCode = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
 
-        return $pdf->stream('Invoice_' . $invoice->invoice_no . '.pdf');
+            $pdf = Pdf::loadView('ims.invoices.pdf', compact('invoice', 'qrCode'))
+                ->setPaper('a4', 'portrait')
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                ]);
+
+            // Sanitize filename by replacing invalid characters
+            $sanitizedInvoiceNo = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $invoice->invoice_no);
+            
+            return $pdf->stream('Invoice_' . $sanitizedInvoiceNo . '.pdf');
+        } catch (\Exception $e) {
+            Log::error('PDF Generation Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error generating PDF: ' . $e->getMessage());
+        }
+    }
+
+    public function qrView($id)
+    {
+        try {
+            $invoice = Invoice::with(['items.product', 'items.service', 'customer'])->findOrFail($id);
+            
+            // Generate QR code URL for the invoice - use absolute URL
+            $qrUrl = url('/ims/invoices/' . $id . '/qr-view');
+            
+            // Generate QR code with proper format for web display
+            $qrCode = QrCode::format('svg')
+                ->size(200)
+                ->errorCorrection('M')
+                ->generate($qrUrl);
+            
+            return view('ims.invoices.qr-view', compact('invoice', 'qrCode'));
+        } catch (\Exception $e) {
+            Log::error('QR View Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error loading invoice QR view: ' . $e->getMessage());
+        }
     }
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\ims\EmailController;
 use App\Http\Controllers\ims\ReportController;
 use App\Http\Controllers\ims\ActivityLogController;
 use App\Http\Controllers\ims\AIContentController;
+use App\Http\Controllers\ims\DeliveryChallanController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -106,6 +107,16 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     // Invoice Routes
     Route::resource('invoices', InvoiceController::class);
     Route::get('/invoices/{id}/pdf', [InvoiceController::class, 'generatePDF'])->name('invoices.pdf');
+    Route::get('/invoices/{id}/qr-view', [InvoiceController::class, 'qrView'])->name('invoices.qr-view');
+
+    // Delivery Challan Routes
+    Route::get('/delivery-challans', [DeliveryChallanController::class, 'index'])->name('delivery-challans.index');
+    Route::get('/delivery-challans/{id}', [DeliveryChallanController::class, 'show'])->name('delivery-challans.show');
+    Route::post('/delivery-challans/generate', [DeliveryChallanController::class, 'generate'])->name('delivery-challans.generate');
+    Route::get('/delivery-challans/{id}/pdf', [DeliveryChallanController::class, 'pdf'])->name('delivery-challans.pdf');
+    Route::get('/delivery-challans/{id}/download', [DeliveryChallanController::class, 'download'])->name('delivery-challans.download');
+    Route::put('/delivery-challans/{id}/status', [DeliveryChallanController::class, 'updateStatus'])->name('delivery-challans.update-status');
+    Route::delete('/delivery-challans/{id}', [DeliveryChallanController::class, 'destroy'])->name('delivery-challans.destroy');
 
 
 
