@@ -177,7 +177,8 @@
                                                     class="cgst w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                                     value="{{ $item->product ? $item->product->gst_percentage / 2 : 0 }}"
                                                     readonly>
-                                                <input type="text" name="products[{{ $index }}][cgst_value]"
+                                                <input type="text"
+                                                    name="products[{{ $index }}][cgst_value]"
                                                     class="cgst-value w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                                     value="{{ number_format($item->cgst, 2) }}" readonly>
                                             </div>
@@ -574,21 +575,22 @@
             // Force initial calculation on page load
             function initializeCalculations() {
                 console.log('Initializing invoice calculations...');
-                
+
                 // Calculate all existing product rows
                 document.querySelectorAll("#productTable tr").forEach(row => {
                     if (row.querySelector(".quantity") && row.querySelector(".unit-price")) {
                         calculateRowTotal(row);
                     }
                 });
-                
+
                 // Calculate all existing service rows
                 document.querySelectorAll("#serviceTable tr").forEach(row => {
-                    if (row.querySelector(".service-quantity") && row.querySelector(".service-unit-price")) {
+                    if (row.querySelector(".service-quantity") && row.querySelector(
+                        ".service-unit-price")) {
                         calculateServiceRowTotal(row);
                     }
                 });
-                
+
                 // Calculate summary after a brief delay to ensure row calculations complete
                 setTimeout(() => {
                     calculateSummary();
@@ -907,7 +909,8 @@
                     document.querySelectorAll("#serviceTable tr").forEach(row => {
                         let quantity = parseFloat(row.querySelector(".service-quantity")?.value) || 0;
                         let unitPrice = parseFloat(row.querySelector(".service-unit-price")?.value) || 0;
-                        let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) || 0;
+                        let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")
+                            ?.value) || 0;
 
                         if (quantity > 0 && unitPrice > 0) {
                             let baseAmount = quantity * unitPrice;
@@ -936,29 +939,29 @@
                     // Update product summary fields
                     const productSubtotalField = document.getElementById("productSubtotal");
                     if (productSubtotalField) productSubtotalField.value = productSubtotal.toFixed(2);
-                    
+
                     const productTotalField = document.getElementById("productTotal");
                     if (productTotalField) productTotalField.value = productTotal.toFixed(2);
-                    
+
                     const productTotalCgstField = document.getElementById("productTotalCgst");
                     if (productTotalCgstField) productTotalCgstField.value = productTotalCgst.toFixed(2);
-                    
+
                     const productTotalSgstField = document.getElementById("productTotalSgst");
                     if (productTotalSgstField) productTotalSgstField.value = productTotalSgst.toFixed(2);
-                    
+
                     const productTotalIgstField = document.getElementById("productTotalIgst");
                     if (productTotalIgstField) productTotalIgstField.value = productTotalIgst.toFixed(2);
 
                     // Update service summary fields
                     const serviceSubtotalField = document.getElementById("serviceSubtotal");
                     if (serviceSubtotalField) serviceSubtotalField.value = serviceSubtotal.toFixed(2);
-                    
+
                     const serviceTotalField = document.getElementById("serviceTotal");
                     if (serviceTotalField) serviceTotalField.value = serviceTotal.toFixed(2);
-                    
+
                     const serviceTotalCgstField = document.getElementById("serviceTotalCgst");
                     if (serviceTotalCgstField) serviceTotalCgstField.value = serviceTotalCgst.toFixed(2);
-                    
+
                     const serviceTotalSgstField = document.getElementById("serviceTotalSgst");
                     if (serviceTotalSgstField) serviceTotalSgstField.value = serviceTotalSgst.toFixed(2);
 
@@ -971,10 +974,10 @@
                             grandTotalField.style.borderColor = '';
                         }, 500);
                     }
-                    
+
                     const grandSubTotalField = document.getElementById("grandSubTotal");
                     if (grandSubTotalField) grandSubTotalField.value = grandSubTotal.toFixed(2);
-                    
+
                     const grandGstTotalField = document.getElementById("grandGstTotal");
                     if (grandGstTotalField) grandGstTotalField.value = grandGstTotal.toFixed(2);
 

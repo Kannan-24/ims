@@ -1,7 +1,7 @@
 <?php
 
 return [
-    
+
     /*
     |--------------------------------------------------------------------------
     | OpenAI API Key and Organization (Now supports OpenRouter)

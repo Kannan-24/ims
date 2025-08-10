@@ -20,7 +20,8 @@ class OpenAIServiceProvider extends ServiceProvider
 
         // Merge OpenAI configuration
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/openai.php', 'openai'
+            __DIR__ . '/../../config/openai.php',
+            'openai'
         );
     }
 
@@ -41,7 +42,7 @@ class OpenAIServiceProvider extends ServiceProvider
         // Publish configuration file
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../../config/openai.php' => config_path('openai.php'),
+                __DIR__ . '/../../config/openai.php' => config_path('openai.php'),
             ], 'openai-config');
         }
     }

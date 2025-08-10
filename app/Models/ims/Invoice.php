@@ -33,6 +33,14 @@ class Invoice extends Model
     }
 
     /**
+     * Get the contact person associated with the invoice.
+     */
+    public function contactPerson()
+    {
+        return $this->belongsTo(ContactPerson::class, 'contactperson_id');
+    }
+
+    /**
      * Get the items associated with the invoice.
      */
     public function items()

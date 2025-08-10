@@ -7,7 +7,7 @@
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
 
             <x-bread-crumb-navigation />
-            
+
             <div class="bg-gray-800 p-6 rounded-lg shadow-md">
                 <h2 class="text-3xl font-bold text-gray-200 mb-6">Create Quotation</h2>
 
@@ -70,20 +70,24 @@
                     <!-- Quotation Date & Quotation No -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="quotation_date" class="block text-gray-300 font-semibold mb-2">Quotation Date:</label>
+                            <label for="quotation_date" class="block text-gray-300 font-semibold mb-2">Quotation
+                                Date:</label>
                             <input type="date" name="quotation_date" id="quotation_date"
-                                value="{{ old('quotation_date') }}" class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                                value="{{ old('quotation_date') }}"
+                                class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                required>
                         </div>
                     </div>
 
                     <!-- Terms and Condition -->
                     <div class="mb-6">
-                        <label for="terms_condition" class="block text-gray-300 font-semibold mb-2">Terms and condition:</label>
+                        <label for="terms_condition" class="block text-gray-300 font-semibold mb-2">Terms and
+                            condition:</label>
                         <textarea id="terms_condition" name="terms_condition" rows="4"
                             class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                             placeholder="Enter terms and condition">{{ old('terms_condition') }}</textarea>
                     </div>
-                                        
+
                     <!-- Product Table -->
                     <div class="mt-6">
                         <h3 class="text-2xl font-bold text-gray-200 mb-4">Quotation Items</h3>
@@ -118,7 +122,8 @@
                         </label>
                         <div id="serviceSection" class="hidden">
                             <h3 class="text-2xl font-bold text-gray-200 mb-4">Service Items</h3>
-                            <table class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
+                            <table
+                                class="min-w-full text-left border-collapse table-auto bg-gray-800 text-gray-300 rounded-lg shadow-md">
                                 <thead>
                                     <tr class="text-sm text-gray-400 bg-gray-700">
                                         <th class="px-3 py-3 border-b border-gray-600">Service</th>
@@ -134,7 +139,9 @@
 
                                 </tbody>
                             </table>
-                            <button type="button" id="addServiceRow" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+ Add Service</button>
+                            <button type="button" id="addServiceRow"
+                                class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition">+
+                                Add Service</button>
                         </div>
                     </div>
 
@@ -166,38 +173,38 @@
                                     <tbody class="divide-y divide-gray-700">
                                         <tr>
                                             <td class="py-2 font-medium w-1/2">Product Subtotal</td>
-                                            <td class="py-2"><input type="text" id="productSubtotal" name="product_subtotal"
-                                                value="{{ old('product_subtotal') }}"
-                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                readonly></td>
+                                            <td class="py-2"><input type="text" id="productSubtotal"
+                                                    name="product_subtotal" value="{{ old('product_subtotal') }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
                                         </tr>
                                         <tr>
                                             <td class="py-2 font-medium">Product CGST Total</td>
-                                            <td class="py-2"><input type="text" id="productTotalCgst" name="product_total_cgst"
-                                                value="{{ old('product_total_cgst') }}"
-                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                readonly></td>
+                                            <td class="py-2"><input type="text" id="productTotalCgst"
+                                                    name="product_total_cgst" value="{{ old('product_total_cgst') }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
                                         </tr>
                                         <tr>
                                             <td class="py-2 font-medium">Product SGST Total</td>
-                                            <td class="py-2"><input type="text" id="productTotalSgst" name="product_total_sgst"
-                                                value="{{ old('product_total_sgst') }}"
-                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                readonly></td>
+                                            <td class="py-2"><input type="text" id="productTotalSgst"
+                                                    name="product_total_sgst" value="{{ old('product_total_sgst') }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
                                         </tr>
                                         <tr>
                                             <td class="py-2 font-medium">Product IGST Total</td>
-                                            <td class="py-2"><input type="text" id="productTotalIgst" name="product_total_igst"
-                                                value="{{ old('product_total_igst') }}"
-                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                readonly></td>
+                                            <td class="py-2"><input type="text" id="productTotalIgst"
+                                                    name="product_total_igst" value="{{ old('product_total_igst') }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
                                         </tr>
                                         <tr class="border-t border-gray-700 font-bold text-white">
                                             <td class="py-3">Product Total</td>
-                                            <td class="py-3"><input type="text" id="productTotal" name="product_total"
-                                                value="{{ old('product_total') }}"
-                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                readonly></td>
+                                            <td class="py-3"><input type="text" id="productTotal"
+                                                    name="product_total" value="{{ old('product_total') }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -210,31 +217,31 @@
                                     <tbody class="divide-y divide-gray-700">
                                         <tr>
                                             <td class="py-2 font-medium w-1/2">Service Subtotal</td>
-                                            <td class="py-2"><input type="text" id="serviceSubtotal" name="service_subtotal"
-                                                value="{{ old('service_subtotal') }}"
-                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                readonly></td>
+                                            <td class="py-2"><input type="text" id="serviceSubtotal"
+                                                    name="service_subtotal" value="{{ old('service_subtotal') }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
                                         </tr>
                                         <tr>
                                             <td class="py-2 font-medium">Service CGST Total</td>
-                                            <td class="py-2"><input type="text" id="serviceTotalCgst" name="service_total_cgst"
-                                                value="{{ old('service_total_cgst') }}"
-                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                readonly></td>
+                                            <td class="py-2"><input type="text" id="serviceTotalCgst"
+                                                    name="service_total_cgst" value="{{ old('service_total_cgst') }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
                                         </tr>
                                         <tr>
                                             <td class="py-2 font-medium">Service SGST Total</td>
-                                            <td class="py-2"><input type="text" id="serviceTotalSgst" name="service_total_sgst"
-                                                value="{{ old('service_total_sgst') }}"
-                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                readonly></td>
+                                            <td class="py-2"><input type="text" id="serviceTotalSgst"
+                                                    name="service_total_sgst" value="{{ old('service_total_sgst') }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
                                         </tr>
                                         <tr class="border-t border-gray-700 font-bold text-white">
                                             <td class="py-3">Service Total</td>
-                                            <td class="py-3"><input type="text" id="serviceTotal" name="service_total"
-                                                value="{{ old('service_total') }}"
-                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                readonly></td>
+                                            <td class="py-3"><input type="text" id="serviceTotal"
+                                                    name="service_total" value="{{ old('service_total') }}"
+                                                    class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                    readonly></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -248,24 +255,24 @@
                                 <tbody class="divide-y divide-gray-700">
                                     <tr>
                                         <td class="py-2 font-medium w-1/4">Grand Sub Total</td>
-                                        <td class="py-2"><input type="text" id="grandSubTotal" name="grand_sub_total"
-                                            value="{{ old('grand_sub_total') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                            readonly></td>
+                                        <td class="py-2"><input type="text" id="grandSubTotal"
+                                                name="grand_sub_total" value="{{ old('grand_sub_total') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
                                     </tr>
                                     <tr>
                                         <td class="py-2 font-medium">Grand GST Total</td>
-                                        <td class="py-2"><input type="text" id="grandGstTotal" name="grand_gst_total"
-                                            value="{{ old('grand_gst_total') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                            readonly></td>
+                                        <td class="py-2"><input type="text" id="grandGstTotal"
+                                                name="grand_gst_total" value="{{ old('grand_gst_total') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
                                     </tr>
                                     <tr class="border-t border-gray-700 font-bold text-white text-lg">
                                         <td class="py-3">Grand Total</td>
                                         <td class="py-3"><input type="text" id="grandTotal" name="grand_total"
-                                            value="{{ old('grand_total') }}"
-                                            class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                            readonly></td>
+                                                value="{{ old('grand_total') }}"
+                                                class="w-full px-4 py-3 border border-gray-600 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                                readonly></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -350,7 +357,8 @@
                         <tr data-id="{{ $product->id }}" class="product-row">
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->name }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->hsn_code }}</td>
-                            <td class="px-6 py-4 border-b border-gray-600">{{ $product->stock->sum('quantity') - $product->stock->sum('sold') }}</td>
+                            <td class="px-6 py-4 border-b border-gray-600">
+                                {{ $product->stock->sum('quantity') - $product->stock->sum('sold') }}</td>
                             <td class="px-6 py-4 border-b border-gray-600">{{ $product->gst_percentage }}%</td>
                             <td class="px-6 py-4 border-b border-gray-600">
                                 <button type="button"
@@ -548,7 +556,7 @@
             function calculateRowTotal(row) {
                 // Ensure row is valid
                 if (!row || !row.querySelector) return;
-                
+
                 let quantity = parseFloat(row.querySelector(".quantity")?.value) || 0;
                 let unitPrice = parseFloat(row.querySelector(".unit-price")?.value) || 0;
 
@@ -563,7 +571,7 @@
 
                 // Get GST percentages
                 let cgst = parseFloat(row.querySelector(".cgst")?.value) || 0;
-                let sgst = parseFloat(row.querySelector(".sgst")?.value) || 0;  
+                let sgst = parseFloat(row.querySelector(".sgst")?.value) || 0;
                 let igst = parseFloat(row.querySelector(".igst")?.value) || 0;
 
                 // Calculate GST values
@@ -573,9 +581,12 @@
                 let igst_value = (subtotal * igst) / 100;
 
                 // Update GST value fields with proper formatting
-                if (row.querySelector(".cgst-value")) row.querySelector(".cgst-value").value = cgst_value.toFixed(2);
-                if (row.querySelector(".sgst-value")) row.querySelector(".sgst-value").value = sgst_value.toFixed(2);
-                if (row.querySelector(".igst-value")) row.querySelector(".igst-value").value = igst_value.toFixed(2);
+                if (row.querySelector(".cgst-value")) row.querySelector(".cgst-value").value = cgst_value.toFixed(
+                2);
+                if (row.querySelector(".sgst-value")) row.querySelector(".sgst-value").value = sgst_value.toFixed(
+                2);
+                if (row.querySelector(".igst-value")) row.querySelector(".igst-value").value = igst_value.toFixed(
+                2);
 
                 // Calculate total
                 let totalGst = cgst_value + sgst_value + igst_value;
@@ -594,7 +605,7 @@
             function calculateServiceRowTotal(row) {
                 // Ensure row is valid
                 if (!row || !row.querySelector) return;
-                
+
                 let quantity = parseFloat(row.querySelector(".service-quantity")?.value) || 0;
                 let unitPrice = parseFloat(row.querySelector(".service-unit-price")?.value) || 0;
                 let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) || 0;
@@ -608,7 +619,7 @@
                 if (row.querySelector(".service-gst-total")) {
                     row.querySelector(".service-gst-total").value = gstTotal.toFixed(2);
                 }
-                
+
                 if (row.querySelector(".service-total")) {
                     row.querySelector(".service-total").value = total.toFixed(2);
                 }
@@ -657,7 +668,8 @@
                 // Calculate service summary
                 document.querySelectorAll("#serviceTable tr").forEach(row => {
                     let rowTotal = parseFloat(row.querySelector(".service-total")?.value) || 0;
-                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) || 0;
+                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) ||
+                    0;
 
                     let baseAmount = rowTotal / (1 + gstPercentage / 100);
                     serviceSubtotal += baseAmount;
@@ -667,7 +679,8 @@
                 });
 
                 // Calculate grand total
-                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst + serviceTotalSgst;
+                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst +
+                    serviceTotalSgst;
                 grandTotal = productTotal + serviceTotal;
                 grandSubTotal = productSubtotal + serviceSubtotal;
 
@@ -736,7 +749,8 @@
 
                     currentServiceRow.querySelector(".service-id").value = serviceId;
                     currentServiceRow.querySelector(".service-name").textContent = serviceName;
-                    currentServiceRow.querySelector(".service-gst-percentage").value = gstPercentage;
+                    currentServiceRow.querySelector(".service-gst-percentage").value =
+                    gstPercentage;
 
                     calculateServiceRowTotal(currentServiceRow);
 

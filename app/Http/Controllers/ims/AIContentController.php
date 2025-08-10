@@ -4,7 +4,7 @@ namespace App\Http\Controllers\ims;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\OpenRouterService;
+use App\Services\GeminiService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +16,7 @@ class AIContentController extends Controller
         return view('ims.ai.copilot');
     }
 
-    public function generate(Request $request, OpenRouterService $openRouter)
+    public function generate(Request $request, GeminiService $geminiService)
     {
         $request->validate([
             'prompt' => 'required|string|max:2000',
@@ -33,7 +33,7 @@ class AIContentController extends Controller
             // Check rate limiting (optional)
             $cacheKey = 'ai_requests_' . Auth::id() . '_' . now()->format('Y-m-d-H');
             $requestCount = Cache::get($cacheKey, 0);
-            
+
             if ($requestCount >= 50) { // 50 requests per hour limit
                 return response()->json([
                     'error' => 'Rate limit exceeded. Please try again later.',
@@ -45,8 +45,8 @@ class AIContentController extends Controller
 
             // Enhanced prompt for better business context
             $enhancedPrompt = $this->enhancePrompt($request->prompt);
-            
-            $content = $openRouter->generateContent($enhancedPrompt);
+
+            $content = $geminiService->generateContent($enhancedPrompt);
 
             // Log successful generation
             Log::info('AI Content Generated Successfully', [
@@ -63,7 +63,6 @@ class AIContentController extends Controller
                     'limit' => 50
                 ]
             ]);
-
         } catch (\Exception $e) {
             Log::error('AI Content Generation Failed', [
                 'user_id' => Auth::id(),
@@ -82,12 +81,12 @@ class AIContentController extends Controller
     {
         // Add business context to improve AI responses
         $businessContext = "You are an AI assistant helping with business operations for an inventory management system. " .
-                          "Please provide professional, business-appropriate responses. " .
-                          "Focus on clarity, professionalism, and practical business value.\n\n";
+            "Please provide professional, business-appropriate responses. " .
+            "Focus on clarity, professionalism, and practical business value.\n\n";
 
         // Detect prompt type and add specific instructions
         $lowercasePrompt = strtolower($userPrompt);
-        
+
         if (str_contains($lowercasePrompt, 'email')) {
             $businessContext .= "When writing emails, use professional business tone, proper formatting, and include appropriate greetings and closings.\n\n";
         } elseif (str_contains($lowercasePrompt, 'quotation') || str_contains($lowercasePrompt, 'terms')) {
@@ -103,10 +102,10 @@ class AIContentController extends Controller
     {
         $userId = Auth::id();
         $today = now()->format('Y-m-d');
-        
+
         $dailyRequests = Cache::get("ai_daily_requests_{$userId}_{$today}", 0);
         $totalRequests = Cache::get("ai_total_requests_{$userId}", 0);
-        
+
         return response()->json([
             'daily_requests' => $dailyRequests,
             'total_requests' => $totalRequests,
@@ -114,9 +113,9 @@ class AIContentController extends Controller
         ]);
     }
 
-    public function testConnection(OpenRouterService $openRouter)
+    public function testConnection(GeminiService $geminiService)
     {
-        $result = $openRouter->testConnection();
+        $result = $geminiService->testConnection();
         return response()->json($result);
     }
 }

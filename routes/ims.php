@@ -113,6 +113,9 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::resource('emails', EmailController::class);
     Route::get('/emails/draft/create', [EmailController::class, 'createDraft'])->name('emails.draft.create');
     Route::get('/emails/drafts/list', [EmailController::class, 'drafts'])->name('emails.drafts');
+    Route::post('/emails/ai/generate', [EmailController::class, 'generateAIContent'])->name('emails.ai.generate');
+    Route::post('/emails/ai/regenerate', [EmailController::class, 'regenerateEmailContent'])->name('emails.ai.regenerate');
+    Route::get('/emails/ai/documents', [EmailController::class, 'getAvailableDocuments'])->name('emails.ai.documents');
 
     // Activity Log Routes
     Route::get('/activity-logs/clear', [ActivityLogController::class, 'destroyAll'])->name('activity-logs.destroyAll');

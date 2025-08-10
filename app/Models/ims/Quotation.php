@@ -32,6 +32,14 @@ class Quotation extends Model
     }
 
     /**
+     * Get the contact person associated with the quotation.
+     */
+    public function contactPerson()
+    {
+        return $this->belongsTo(ContactPerson::class, 'contactperson_id');
+    }
+
+    /**
      * Get the items associated with the quotation.
      */
     public function items()

@@ -144,11 +144,15 @@
                                         <td class="p-2"><input type="number"
                                                 name="products[{{ $index }}][quantity]"
                                                 class="quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                value="{{ $item->quantity }}" min="1" oninput="calculateRowTotal(this.closest('tr'))" onkeyup="calculateRowTotal(this.closest('tr'))"></td>
+                                                value="{{ $item->quantity }}" min="1"
+                                                oninput="calculateRowTotal(this.closest('tr'))"
+                                                onkeyup="calculateRowTotal(this.closest('tr'))"></td>
                                         <td class="p-2"><input type="number"
                                                 name="products[{{ $index }}][unit_price]"
                                                 class="unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                value="{{ $item->unit_price }}" min="0" step="0.01" oninput="calculateRowTotal(this.closest('tr'))" onkeyup="calculateRowTotal(this.closest('tr'))"></td>
+                                                value="{{ $item->unit_price }}" min="0" step="0.01"
+                                                oninput="calculateRowTotal(this.closest('tr'))"
+                                                onkeyup="calculateRowTotal(this.closest('tr'))"></td>
                                         <td class="p-2">
                                             <div class="flex items-center gap-2">
                                                 <input type="text" name="products[{{ $index }}][cgst]"
@@ -239,11 +243,15 @@
                                             <td class="p-2"><input type="number"
                                                     name="services[{{ $index }}][quantity]"
                                                     class="service-quantity w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->quantity }}" min="1" oninput="calculateServiceRowTotal(this.closest('tr'))" onkeyup="calculateServiceRowTotal(this.closest('tr'))"></td>
+                                                    value="{{ $item->quantity }}" min="1"
+                                                    oninput="calculateServiceRowTotal(this.closest('tr'))"
+                                                    onkeyup="calculateServiceRowTotal(this.closest('tr'))"></td>
                                             <td class="p-2"><input type="number"
                                                     name="services[{{ $index }}][unit_price]"
                                                     class="service-unit-price w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                                                    value="{{ $item->unit_price }}" min="0" step="0.01" oninput="calculateServiceRowTotal(this.closest('tr'))" onkeyup="calculateServiceRowTotal(this.closest('tr'))"></td>
+                                                    value="{{ $item->unit_price }}" min="0" step="0.01"
+                                                    oninput="calculateServiceRowTotal(this.closest('tr'))"
+                                                    onkeyup="calculateServiceRowTotal(this.closest('tr'))"></td>
                                             <td class="p-2"><input type="text"
                                                     name="services[{{ $index }}][gst_percentage]"
                                                     class="service-gst-percentage w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
@@ -707,7 +715,7 @@
             function calculateRowTotal(row) {
                 // Ensure row is valid
                 if (!row || !row.querySelector) return;
-                
+
                 let quantity = parseFloat(row.querySelector(".quantity")?.value) || 0;
                 let unitPrice = parseFloat(row.querySelector(".unit-price")?.value) || 0;
 
@@ -722,7 +730,7 @@
 
                 // Get GST percentages
                 let cgst = parseFloat(row.querySelector(".cgst")?.value) || 0;
-                let sgst = parseFloat(row.querySelector(".sgst")?.value) || 0;  
+                let sgst = parseFloat(row.querySelector(".sgst")?.value) || 0;
                 let igst = parseFloat(row.querySelector(".igst")?.value) || 0;
 
                 // Calculate GST values
@@ -732,9 +740,12 @@
                 let igst_value = (subtotal * igst) / 100;
 
                 // Update GST value fields with proper formatting
-                if (row.querySelector(".cgst-value")) row.querySelector(".cgst-value").value = cgst_value.toFixed(2);
-                if (row.querySelector(".sgst-value")) row.querySelector(".sgst-value").value = sgst_value.toFixed(2);
-                if (row.querySelector(".igst-value")) row.querySelector(".igst-value").value = igst_value.toFixed(2);
+                if (row.querySelector(".cgst-value")) row.querySelector(".cgst-value").value = cgst_value.toFixed(
+                2);
+                if (row.querySelector(".sgst-value")) row.querySelector(".sgst-value").value = sgst_value.toFixed(
+                2);
+                if (row.querySelector(".igst-value")) row.querySelector(".igst-value").value = igst_value.toFixed(
+                2);
 
                 // Calculate total
                 let totalGst = cgst_value + sgst_value + igst_value;
@@ -753,7 +764,7 @@
             function calculateServiceRowTotal(row) {
                 // Ensure row is valid
                 if (!row || !row.querySelector) return;
-                
+
                 let quantity = parseFloat(row.querySelector(".service-quantity")?.value) || 0;
                 let unitPrice = parseFloat(row.querySelector(".service-unit-price")?.value) || 0;
                 let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) || 0;
@@ -767,7 +778,7 @@
                 if (row.querySelector(".service-gst-total")) {
                     row.querySelector(".service-gst-total").value = gstTotal.toFixed(2);
                 }
-                
+
                 if (row.querySelector(".service-total")) {
                     row.querySelector(".service-total").value = total.toFixed(2);
                 }
@@ -818,7 +829,8 @@
                 // Calculate service summary
                 document.querySelectorAll("#serviceTable tr").forEach(row => {
                     let rowTotal = parseFloat(row.querySelector(".service-total")?.value) || 0;
-                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) || 0;
+                    let gstPercentage = parseFloat(row.querySelector(".service-gst-percentage")?.value) ||
+                    0;
 
                     if (rowTotal > 0) {
                         let baseAmount = rowTotal / (1 + gstPercentage / 100);
@@ -830,7 +842,8 @@
                 });
 
                 // Calculate grand total
-                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst + serviceTotalSgst;
+                grandGstTotal = productTotalCgst + productTotalSgst + productTotalIgst + serviceTotalCgst +
+                    serviceTotalSgst;
                 grandTotal = productTotal + serviceTotal;
                 grandSubTotal = productSubtotal + serviceSubtotal;
 
@@ -900,7 +913,7 @@
                     currentServiceRow.querySelector(".service-id").value = serviceId;
                     currentServiceRow.querySelector(".service-name").textContent = serviceName;
                     currentServiceRow.querySelector(".service-gst-percentage").value =
-                    gstPercentage;
+                        gstPercentage;
 
                     calculateServiceRowTotal(currentServiceRow);
 
@@ -943,7 +956,8 @@
 
                 // Calculate all existing service rows  
                 document.querySelectorAll("#serviceTable tr").forEach(row => {
-                    if (row.querySelector(".service-quantity") && row.querySelector(".service-unit-price")) {
+                    if (row.querySelector(".service-quantity") && row.querySelector(
+                        ".service-unit-price")) {
                         calculateServiceRowTotal(row);
                     }
                 });
@@ -961,7 +975,7 @@
             console.log('Edit form initialized');
             console.log('Product rows found:', document.querySelectorAll("#productTable tr").length);
             console.log('Service rows found:', document.querySelectorAll("#serviceTable tr").length);
-            
+
             // Calculate initial summary
             setTimeout(() => {
                 calculateSummary();
