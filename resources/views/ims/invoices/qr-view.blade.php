@@ -154,7 +154,7 @@
 
                                 @if (count($items) > 0)
                                     @foreach ($items as $item)
-                                    <tr class="border-b">
+                                        <tr class="border-b">
                                             <td class="py-2">{{ $loop->iteration }}</td>
                                             @if (is_array($item))
                                                 <td class="py-2">
@@ -168,13 +168,13 @@
                                                 </td>
                                             @else
                                                 <td class="py-2">
-                                                @if ($item->product)
-                                                    {{ $item->product->name }}
-                                                @elseif($item->service)
-                                                    {{ $item->service->name }}
-                                                @else
-                                                    {{ $item->product_name ?? ($item->name ?? 'N/A') }}
-                                                @endif
+                                                    @if ($item->product)
+                                                        {{ $item->product->name }}
+                                                    @elseif($item->service)
+                                                        {{ $item->service->name }}
+                                                    @else
+                                                        {{ $item->product_name ?? ($item->name ?? 'N/A') }}
+                                                    @endif
                                                 </td>
                                                 <td class="py-2 text-center">{{ $item->quantity ?? 0 }}</td>
                                                 <td class="py-2 text-right">
@@ -231,12 +231,7 @@
                     <a href="{{ route('invoices.pdf', $invoice->id) }}"
                         class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center">
                         <i class="fas fa-eye mr-2"></i>
-                        View Full Invoice
-                    </a>
-                    <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
-                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center">
-                        <i class="fas fa-download mr-2"></i>
-                        Download PDF
+                        View Invoice
                     </a>
                     <button onclick="shareInvoice()"
                         class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center">

@@ -55,21 +55,22 @@
                     <p><strong>Address:</strong> {{ $invoice->customer->address }},
                         {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }},
                         {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
-                        <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Contact Person Details</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @foreach ($invoice->customer->contactPersons as $contactPerson)
-                                @if ($contactPerson->id == $invoice->contactperson_id)
-                                    <div class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
-                                        <p class="text-lg font-semibold">{{ $contactPerson->name }}</p>
-                                        <p class="text-sm mt-1"><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
-                                        <p class="text-sm"><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
-                                        <p><strong>Address:</strong> {{ $invoice->customer->address }},
-                                            {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }},
-                                            {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
+                    <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Contact Person Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @foreach ($invoice->customer->contactPersons as $contactPerson)
+                            @if ($contactPerson->id == $invoice->contactperson_id)
+                                <div
+                                    class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
+                                    <p class="text-lg font-semibold">{{ $contactPerson->name }}</p>
+                                    <p class="text-sm mt-1"><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
+                                    <p class="text-sm"><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
+                                    <p><strong>Address:</strong> {{ $invoice->customer->address }},
+                                        {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }},
+                                        {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
                 </div>
 
                 <hr class="my-6 border-gray-600">
@@ -174,72 +175,73 @@
     </div>
 
     <script>
-    function generateDeliveryChallan(invoiceId) {
-        if (confirm('Generate delivery challan for this invoice?')) {
-            // Show loading state
-            showToast('info', 'Generating delivery challan...');
-            
-            fetch('/ims/delivery-challans/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    invoice_id: invoiceId
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('success', data.message);
-                    if (confirm('Would you like to view the generated delivery challan?')) {
-                        window.open(data.pdf_url, '_blank');
-                    }
-                } else {
-                    showToast('error', data.message || 'Failed to generate delivery challan');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('error', 'An error occurred while generating delivery challan');
-            });
-        }
-    }
+        function generateDeliveryChallan(invoiceId) {
+            if (confirm('Generate delivery challan for this invoice?')) {
+                // Show loading state
+                showToast('info', 'Generating delivery challan...');
 
-    function showToast(type, message) {
-        // Remove existing toasts
-        const existingToasts = document.querySelectorAll('.toast-notification');
-        existingToasts.forEach(toast => toast.remove());
-
-        const toastDiv = document.createElement('div');
-        toastDiv.className = `toast-notification fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm transition-all duration-300 transform translate-x-0`;
-        
-        let bgColor, textColor, icon;
-        switch(type) {
-            case 'success':
-                bgColor = 'bg-green-100 border border-green-200';
-                textColor = 'text-green-800';
-                icon = 'fa-check-circle';
-                break;
-            case 'error':
-                bgColor = 'bg-red-100 border border-red-200';
-                textColor = 'text-red-800';
-                icon = 'fa-exclamation-circle';
-                break;
-            case 'info':
-                bgColor = 'bg-blue-100 border border-blue-200';
-                textColor = 'text-blue-800';
-                icon = 'fa-info-circle';
-                break;
-            default:
-                bgColor = 'bg-gray-100 border border-gray-200';
-                textColor = 'text-gray-800';
-                icon = 'fa-bell';
+                fetch('/ims/delivery-challans/generate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            invoice_id: invoiceId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('success', data.message);
+                            if (confirm('Would you like to view the generated delivery challan?')) {
+                                window.open(data.pdf_url, '_blank');
+                            }
+                        } else {
+                            showToast('error', data.message || 'Failed to generate delivery challan');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('error', 'An error occurred while generating delivery challan');
+                    });
+            }
         }
-        
-        toastDiv.className += ` ${bgColor} ${textColor}`;
-        toastDiv.innerHTML = `
+
+        function showToast(type, message) {
+            // Remove existing toasts
+            const existingToasts = document.querySelectorAll('.toast-notification');
+            existingToasts.forEach(toast => toast.remove());
+
+            const toastDiv = document.createElement('div');
+            toastDiv.className =
+                `toast-notification fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm transition-all duration-300 transform translate-x-0`;
+
+            let bgColor, textColor, icon;
+            switch (type) {
+                case 'success':
+                    bgColor = 'bg-green-100 border border-green-200';
+                    textColor = 'text-green-800';
+                    icon = 'fa-check-circle';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-100 border border-red-200';
+                    textColor = 'text-red-800';
+                    icon = 'fa-exclamation-circle';
+                    break;
+                case 'info':
+                    bgColor = 'bg-blue-100 border border-blue-200';
+                    textColor = 'text-blue-800';
+                    icon = 'fa-info-circle';
+                    break;
+                default:
+                    bgColor = 'bg-gray-100 border border-gray-200';
+                    textColor = 'text-gray-800';
+                    icon = 'fa-bell';
+            }
+
+            toastDiv.className += ` ${bgColor} ${textColor}`;
+            toastDiv.innerHTML = `
             <div class="flex items-center">
                 <i class="fas ${icon} mr-3 text-lg"></i>
                 <div class="flex-1">
@@ -250,17 +252,17 @@
                 </button>
             </div>
         `;
-        
-        document.body.appendChild(toastDiv);
-        
-        // Auto-remove after 5 seconds (except for info messages which are manually removed)
-        if (type !== 'info') {
-            setTimeout(() => {
-                if (toastDiv.parentNode) {
-                    toastDiv.remove();
-                }
-            }, 5000);
+
+            document.body.appendChild(toastDiv);
+
+            // Auto-remove after 5 seconds (except for info messages which are manually removed)
+            if (type !== 'info') {
+                setTimeout(() => {
+                    if (toastDiv.parentNode) {
+                        toastDiv.remove();
+                    }
+                }, 5000);
+            }
         }
-    }
     </script>
 </x-app-layout>

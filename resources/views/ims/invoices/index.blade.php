@@ -69,6 +69,11 @@
                                                 title="Send Email">
                                                 <i class="fas fa-envelope"></i>
                                             </button>
+                                            <button onclick="generateDeliveryChallan('{{ $invoice->id }}')"
+                                                class="text-purple-400 hover:text-purple-600 transition duration-300"
+                                                title="Create Delivery Challan">
+                                                <i class="fas fa-truck"></i>
+                                            </button>
                                             <a href="{{ route('invoices.pdf', $invoice->id) }}"
                                                 class="text-orange-400 hover:text-orange-600 transition duration-300"
                                                 title="Download PDF" target="_blank">
