@@ -15,7 +15,6 @@ class UserController extends Controller
      */
     public function index()
     {
-        // Retrieve all users from the database with optional search filtering.
         $query = User::query();
 
         if ($search = request('search')) {
@@ -27,7 +26,7 @@ class UserController extends Controller
 
         $users = $query->get();
 
-        return view('ims/users.index', compact('users'));
+        return view('ims.users.index', compact('users'));
     }
 
     /**
@@ -35,8 +34,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        // Return the view to create a new user.
-        return view('ims/users.create');
+        return view('ims.users.create');
     }
 
     /**
@@ -81,7 +79,6 @@ class UserController extends Controller
 
         ]);
 
-        // Send email to the new user
         Mail::to($user->email)->send(new UserCreatedMail($user, $defaultPassword));
 
         return redirect()->route('users.index')->with('success', 'User created successfully and email sent.');
@@ -93,8 +90,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        // Return the view with the specific user data.
-        return view('ims/users.show', compact('user'));
+        return view('ims.users.show', compact('user'));
     }
 
     /**
@@ -102,8 +98,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        // Return the edit form for the selected user.
-        return view('ims/susers.edit', compact('user'));
+        return view('ims.users.edit', compact('user'));
     }
 
     /**
@@ -111,7 +106,6 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        // Validate the incoming request.
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -126,7 +120,6 @@ class UserController extends Controller
             'role' => 'required|string|max:255',
         ]);
 
-        // Update the user with the new data.
         $user->update([
             'employee_id' => $user->employee_id, // Keep the existing employee ID
             'name' => $request->name,
@@ -142,7 +135,6 @@ class UserController extends Controller
             'role' => $request->role,
         ]);
 
-        // Redirect back with a success message.
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
@@ -151,10 +143,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // Delete the user.
         $user->delete();
 
-        // Redirect back with a success message.
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }
