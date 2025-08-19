@@ -64,4 +64,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // Forced password reset routes
+    Route::get('force-password-reset', [\App\Http\Controllers\Auth\ForcePasswordResetController::class, 'show'])
+        ->name('password.force.show');
+    Route::put('force-password-reset', [\App\Http\Controllers\Auth\ForcePasswordResetController::class, 'update'])
+        ->name('password.force.update');
 });

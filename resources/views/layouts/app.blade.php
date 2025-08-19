@@ -27,6 +27,57 @@
     <div class="min-h-[calc(100vh-80px)] mt-20">
         @include('layouts.navigation')
 
+        @php
+            $authUser = auth()->user();
+            $routeName = optional(request()->route())->getName();
+        @endphp
+        @if($authUser && $routeName !== 'password.force.show')
+            @php
+                $expiresAt = $authUser->password_expires_at; 
+                $mustChange = $authUser->must_change_password; 
+                $daysLeft = $expiresAt ? now()->diffInDays($expiresAt, false) : null; 
+                $reminderOffsets = collect(config('password_policy.reminder_offsets', []));
+                $showBanner = $mustChange || ($daysLeft !== null && ($daysLeft <= ($reminderOffsets->max() ?? 14) || $daysLeft < 0));
+            @endphp
+            @if($showBanner)
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4">
+                    <div class="relative rounded-md border p-4 flex items-start gap-4
+                        {{ $mustChange || ($daysLeft !== null && $daysLeft < 0) ? 'bg-red-900/40 border-red-600 text-red-200' : 'bg-amber-900/40 border-amber-600 text-amber-200' }}">
+                        <div class="shrink-0">
+                            @if($mustChange || ($daysLeft !== null && $daysLeft < 0))
+                                <i class="fas fa-exclamation-triangle text-red-400"></i>
+                            @else
+                                <i class="fas fa-clock text-amber-400"></i>
+                            @endif
+                        </div>
+                        <div class="flex-1 text-sm leading-5">
+                            @if($mustChange)
+                                Your password must be changed before you can continue using the system.
+                            @elseif($daysLeft !== null && $daysLeft < 0)
+                                Your password expired {{ abs($daysLeft) }} day{{ abs($daysLeft) === 1 ? '' : 's' }} ago. Please update it now.
+                            @elseif($daysLeft !== null && $daysLeft === 0)
+                                Your password expires today. Please update it.
+                            @elseif($daysLeft !== null)
+                                Your password will expire in <strong>{{ $daysLeft }}</strong> day{{ $daysLeft === 1 ? '' : 's' }}. Update it now to avoid interruption.
+                            @else
+                                Please set your password now.
+                            @endif
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('password.force.show') }}" class="px-3 py-1.5 rounded text-xs font-semibold
+                                {{ $mustChange || ($daysLeft !== null && $daysLeft < 0) ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500' }} text-white transition">
+                                Update Password
+                            </a>
+                            <button type="button" onclick="this.closest('[data-password-expiry-banner]').remove()" class="text-xs text-gray-400 hover:text-gray-200" aria-label="Dismiss" title="Dismiss">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div data-password-expiry-banner class="hidden"></div>
+                    </div>
+                </div>
+            @endif
+        @endif
+
         <div id="message-alert"
             class="fixed inset-x-0 bottom-5 right-5 z-50 transition-all ease-in-out duration-300 message-alert">
             <!-- Message Alert -->

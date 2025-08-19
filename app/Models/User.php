@@ -39,7 +39,11 @@ class User extends Authenticatable
         'is_deleted',
         'created_by',
         'updated_by',
-        'deleted_by'
+    'deleted_by',
+    'must_change_password',
+    'password_expires_at',
+    'last_password_changed_at',
+    'password_last_reminder_sent_at'
     ];
 
 
@@ -63,6 +67,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'password_expires_at' => 'datetime',
+            'last_password_changed_at' => 'datetime',
+            'password_last_reminder_sent_at' => 'datetime',
         ];
     }
 }

@@ -60,7 +60,8 @@ class UserController extends Controller
         $lastEmployeeId = $lastUser ? intval(substr($lastUser->employee_id, 4)) : 0;
         $newEmployeeId = 'SKME' . str_pad($lastEmployeeId + 1, 3, '0', STR_PAD_LEFT);
 
-        $defaultPassword = 'SKM@123';
+    // Generate a secure temporary password meeting policy requirements
+    $defaultPassword = $this->generateTemporaryPassword();
 
         $user = User::create([
             'employee_id' => $newEmployeeId,
@@ -76,6 +77,8 @@ class UserController extends Controller
             'doj' => $request->doj,
             'role' => $request->role,
             'must_change_password' => true,
+            'password_expires_at' => now()->addDays(config('password_policy.expiry_days')),
+            'last_password_changed_at' => null,
 
         ]);
 
@@ -146,5 +149,30 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+    }
+    /**
+     * Create a random password matching configured policy.
+     */
+    protected function generateTemporaryPassword(int $length = null): string
+    {
+        $config = config('password_policy');
+        $length = $length ?? max(12, $config['min_length'] ?? 12);
+        $sets = [
+            'upper' => 'ABCDEFGHJKLMNPQRSTUVWXYZ',
+            'lower' => 'abcdefghjkmnpqrstuvwxyz',
+            'digits' => '23456789',
+            'symbols' => '!@#$%^&*()-_=+[]{}',
+        ];
+        $password = '';
+        if (($config['require_uppercase'] ?? true)) $password .= $sets['upper'][random_int(0, strlen($sets['upper'])-1)];
+        if (($config['require_lowercase'] ?? true)) $password .= $sets['lower'][random_int(0, strlen($sets['lower'])-1)];
+        if (($config['require_number'] ?? true)) $password .= $sets['digits'][random_int(0, strlen($sets['digits'])-1)];
+        if (($config['require_symbol'] ?? true)) $password .= $sets['symbols'][random_int(0, strlen($sets['symbols'])-1)];
+        $all = '';
+        foreach ($sets as $set) { $all .= $set; }
+        while (strlen($password) < $length) {
+            $password .= $all[random_int(0, strlen($all)-1)];
+        }
+        return str_shuffle($password);
     }
 }

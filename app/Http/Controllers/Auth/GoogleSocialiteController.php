@@ -34,6 +34,9 @@ class GoogleSocialiteController extends Controller
                 // User exists, log them in
                 Auth::login($finduser);
 
+                if ($finduser->must_change_password || ($finduser->password_expires_at && now()->greaterThan($finduser->password_expires_at))) {
+                    return redirect()->route('password.force.show');
+                }
                 return redirect()->intended(route('dashboard', absolute: false))
                     ->with('response', [
                         'status' => 'success',

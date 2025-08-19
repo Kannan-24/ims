@@ -88,7 +88,7 @@
         <p>You can access the system by clicking the link below:</p>
         <a href="{{ env('APP_URL') }}" class="btn">Log in to SKM and Company</a>
 
-        <p style="margin-top: 20px;">For your security, we recommend changing your password immediately after logging in for the first time.</p>
+    <p style="margin-top: 20px;">For your security, you will be <strong>required</strong> to change this temporary password on first login. Your password will then expire every {{ config('password_policy.expiry_days') }} days and you'll receive reminder emails before it expires.</p>
 
         <div class="footer">
             Regards,<br>
