@@ -70,4 +70,14 @@ Route::middleware('auth')->group(function () {
         ->name('password.force.show');
     Route::put('force-password-reset', [\App\Http\Controllers\Auth\ForcePasswordResetController::class, 'update'])
         ->name('password.force.update');
+
+    // Two-Factor routes
+    Route::post('2fa/start', [\App\Http\Controllers\Auth\TwoFactorController::class,'start'])->name('2fa.start');
+    Route::post('2fa/confirm', [\App\Http\Controllers\Auth\TwoFactorController::class,'confirm'])->name('2fa.confirm');
+    Route::post('2fa/disable', [\App\Http\Controllers\Auth\TwoFactorController::class,'disable'])->name('2fa.disable');
+    Route::post('2fa/method/disable', [\App\Http\Controllers\Auth\TwoFactorController::class,'disableMethod'])->name('2fa.method.disable');
+    Route::post('2fa/management/email-code', [\App\Http\Controllers\Auth\TwoFactorController::class,'sendManagementEmailCode'])->name('2fa.management.email');
+    Route::get('2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class,'show'])->name('2fa.challenge.show');
+    Route::post('2fa/challenge', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class,'verify'])->name('2fa.challenge.verify');
+    Route::post('2fa/challenge/resend', [\App\Http\Controllers\Auth\TwoFactorChallengeController::class,'resendOtp'])->name('2fa.challenge.resend');
 });

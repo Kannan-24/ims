@@ -43,7 +43,19 @@ class User extends Authenticatable
     'must_change_password',
     'password_expires_at',
     'last_password_changed_at',
-    'password_last_reminder_sent_at'
+    'password_last_reminder_sent_at',
+    'two_factor_enabled',
+    'two_factor_secret',
+    'two_factor_recovery_codes',
+    'two_factor_confirmed_at',
+    'preferred_2fa_method',
+    'pending_otp_code',
+    'pending_otp_expires_at'
+    ];
+    
+    protected $attributes = [
+        'totp_enabled' => false,
+        'email_otp_enabled' => false,
     ];
 
 
@@ -55,6 +67,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    'two_factor_secret',
+    'two_factor_recovery_codes',
+    'pending_otp_code',
     ];
 
     /**
@@ -70,6 +85,10 @@ class User extends Authenticatable
             'password_expires_at' => 'datetime',
             'last_password_changed_at' => 'datetime',
             'password_last_reminder_sent_at' => 'datetime',
+            'two_factor_confirmed_at' => 'datetime',
+            'pending_otp_expires_at' => 'datetime',
+            'totp_enabled' => 'boolean',
+            'email_otp_enabled' => 'boolean',
         ];
     }
 }

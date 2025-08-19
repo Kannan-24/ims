@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AccountSettingsController extends Controller
 {
@@ -13,7 +14,26 @@ class AccountSettingsController extends Controller
      */
     public function index()
     {
-        return view('profile.account-settings', ['user' => Auth::user()]);
+        $user = Auth::user();
+        $confirmedAt = session('account_settings_confirmed_at');
+        $confirmed = $confirmedAt && now()->diffInMinutes($confirmedAt) < 10; // 10 minute window
+        $sessions = [];
+        if ($confirmed) {
+            $sessions = DB::table('sessions')
+                ->where('user_id', $user->id)
+                ->orderByDesc('last_activity')
+                ->get()
+                ->map(function($row){
+                    return [
+                        'id' => $row->id,
+                        'ip' => $row->ip_address,
+                        'user_agent' => $row->user_agent,
+                        'last_activity' => \Carbon\Carbon::createFromTimestamp($row->last_activity),
+                        'is_current' => $row->id === session()->getId(),
+                    ];
+                });
+        }
+        return view('profile.account-settings', compact('user','confirmed','sessions'));
     }
 
     /**
@@ -46,6 +66,33 @@ class AccountSettingsController extends Controller
         ]);
 
         return redirect()->route('account.settings')->with('status', 'password-updated');
+    }
+
+    public function confirmAccess(Request $request)
+    {
+        $request->validate(['current_password' => ['required']]);
+        if (!Hash::check($request->current_password, Auth::user()->password)) {
+            return back()->with('error','Password incorrect');
+        }
+        session(['account_settings_confirmed_at' => now()]);
+        return redirect()->route('account.settings');
+    }
+
+    public function destroySession(Request $request, string $sessionId)
+    {
+        $user = Auth::user();
+        if ($sessionId === session()->getId()) {
+            return back()->with('error','Cannot delete current session.');
+        }
+        DB::table('sessions')->where('user_id',$user->id)->where('id',$sessionId)->delete();
+        return back()->with('success','Session terminated.');
+    }
+
+    public function destroyOtherSessions()
+    {
+        $user = Auth::user();
+        DB::table('sessions')->where('user_id',$user->id)->where('id','!=',session()->getId())->delete();
+        return back()->with('success','Other sessions terminated.');
     }
 
     /**

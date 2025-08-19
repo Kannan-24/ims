@@ -41,5 +41,6 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\Authenticate::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'password.policy' => \App\Http\Middleware\EnforcePasswordPolicy::class,
+    '2fa' => \App\Http\Middleware\EnsureTwoFactorVerified::class,
     ];
 }
