@@ -60,20 +60,20 @@
 
         <table style="width:100%;font-size:14px;margin-top:12px">
             <tr>
-                <td style="padding:6px 0;font-weight:600">Employee ID</td>
-                <td style="padding:6px 0">{{ $user->employee_id }}</td>
+                <td style="padding:6px 12px;font-weight:600">Employee ID</td>
+                <td style="padding:6px 12px">{{ $user->employee_id }}</td>
             </tr>
             <tr>
-                <td style="padding:6px 0;font-weight:600">Phone</td>
-                <td style="padding:6px 0">{{ $user->phone ?? 'N/A' }}</td>
+                <td style="padding:6px 12px;font-weight:600">Phone</td>
+                <td style="padding:6px 12px">{{ $user->phone ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td style="padding:6px 0;font-weight:600">Email</td>
-                <td style="padding:6px 0">{{ $user->email }}</td>
+                <td style="padding:6px 12px;font-weight:600">Email</td>
+                <td style="padding:6px 12px">{{ $user->email }}</td>
             </tr>
             <tr>
-                <td style="padding:6px 0;font-weight:600">Temporary Password</td>
-                <td style="padding:6px 0">{{ $defaultPassword }}</td>
+                <td style="padding:6px 12px;font-weight:600">Temporary Password</td>
+                <td style="padding:6px 12px">{{ $defaultPassword }}</td>
             </tr>
         </table>
 
