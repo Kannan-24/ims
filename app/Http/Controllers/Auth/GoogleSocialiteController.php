@@ -51,31 +51,21 @@ class GoogleSocialiteController extends Controller
                     } else {
                         $device = 'Desktop';
                     }
-                    // browser
-                    $agent = 'Unknown';
+                    // core browser name only (no versions)
                     if (preg_match('/Edg\//i', $rawUa)) {
-                        preg_match('/Edg\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
-                        $agent = 'Edge ' . ($v[1] ?? '');
-                    } elseif (preg_match('/OPR\//i', $rawUa)) {
-                        preg_match('/OPR\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
-                        $agent = 'Opera ' . ($v[1] ?? '');
-                    } elseif (preg_match('/Chrome\//i', $rawUa)) {
-                        preg_match('/Chrome\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
-                        $agent = 'Chrome ' . ($v[1] ?? '');
+                        $agent = 'Edge';
+                    } elseif (preg_match('/OPR\//i', $rawUa) || preg_match('/Opera/i', $rawUa)) {
+                        $agent = 'Opera';
+                    } elseif (preg_match('/Chrome\//i', $rawUa) && !preg_match('/Edg\//i', $rawUa) && !preg_match('/OPR\//i', $rawUa)) {
+                        $agent = 'Chrome';
                     } elseif (preg_match('/Firefox\//i', $rawUa)) {
-                        preg_match('/Firefox\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
-                        $agent = 'Firefox ' . ($v[1] ?? '');
-                    } elseif (preg_match('/Safari\//i', $rawUa) && preg_match('/Version\//i', $rawUa)) {
-                        preg_match('/Version\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
-                        $agent = 'Safari ' . ($v[1] ?? '');
+                        $agent = 'Firefox';
+                    } elseif (preg_match('/Safari\//i', $rawUa) && preg_match('/Version\//i', $rawUa) && !preg_match('/Chrome\//i', $rawUa)) {
+                        $agent = 'Safari';
                     } else {
-                        $agent = substr($rawUa, 0, 200);
+                        $agent = 'Other';
                     }
-                    $location = null;
-                    if (function_exists('geoip') ) {
-                        try { $g = geoip($ip); $location = trim(implode(', ', array_filter([$g->city, $g->state, $g->country]))); } catch(\Throwable $__e) { $location = null; }
-                    }
-                    $finduser->notify(new \App\Notifications\LoginSuccessNotification('Social (Google)', $ip, $agent, $time, $location, $device));
+                    $finduser->notify(new \App\Notifications\LoginSuccessNotification('Social (Google)', $ip, $agent, $time, $device));
                 } catch(\Throwable $e) { /* swallow notification errors */ }
 
                 if ($finduser->must_change_password || ($finduser->password_expires_at && now()->greaterThan($finduser->password_expires_at))) {

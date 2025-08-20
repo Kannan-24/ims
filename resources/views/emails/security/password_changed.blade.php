@@ -11,9 +11,8 @@
         <h2 style="font-size:18px; margin:0 0 12px;">Hi {{ $user->name }},</h2>
         <p style="font-size:14px; margin:0 0 12px; line-height:1.5;">Your account password was changed on <strong>{{ $time }} ({{ config('app.timezone') }})</strong>.</p>
         <table style="width:100%; margin-top:10px; font-size:14px; border-collapse:collapse;">
-            <tr><td style="padding:6px 0; font-weight:bold;">IP Address</td><td style="padding:6px 0;">{{ $ip }}</td></tr>
-            <tr><td style="padding:6px 0; font-weight:bold;">Location</td><td style="padding:6px 0;">{{ $location ?? 'Location not available' }}</td></tr>
-            <tr><td style="padding:6px 0; font-weight:bold;">Device / Browser</td><td style="padding:6px 0;">{{ $agent }}</td></tr>
+            <tr><td style="padding:6px 12px; font-weight:bold;">IP Address</td><td style="padding:6px 12px;">{{ $ip }}</td></tr>
+            <tr><td style="padding:6px 12px; font-weight:bold;">Device / Browser</td><td style="padding:6px 12px;">{{ $agent }}</td></tr>
         </table>
         <p style="font-size:14px; margin:16px 0 12px;">If you did not perform this change, immediately <a href="{{ route('password.request') }}" style="color:#1a73e8; text-decoration:none;">reset your password</a> and review active sessions on your <a href="{{ route('account.settings') }}" style="color:#1a73e8; text-decoration:none;">Sessions Page</a>.</p>
         <p style="font-size:14px; margin:0 0 10px;">For assistance contact <a href="mailto:{{ config('company.email') }}" style="color:#1a73e8; text-decoration:none;">{{ config('company.email') }}</a>.</p>

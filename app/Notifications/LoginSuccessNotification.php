@@ -10,15 +10,14 @@ class LoginSuccessNotification extends Notification
 {
     use Queueable;
 
-    protected string $method; protected string $ip; protected string $agent; protected string $time; protected ?string $location; protected ?string $device;
+    protected string $method; protected string $ip; protected string $agent; protected string $time; protected ?string $device;
 
-    public function __construct(string $method, string $ip, string $agent, string $time, ?string $location = null, ?string $device = null)
+    public function __construct(string $method, string $ip, string $agent, string $time, ?string $device = null)
     {
         $this->method = $method;
         $this->ip = $ip;
         $this->agent = $agent;
         $this->time = $time;
-        $this->location = $location;
         $this->device = $device;
     }
 
@@ -34,7 +33,7 @@ class LoginSuccessNotification extends Notification
                 'ip' => $this->ip,
                 'agent' => $this->agent,
                 'time' => $this->time,
-                'location' => $this->location,
+                'location' => null,
                 'device' => $this->device,
             ]);
     }

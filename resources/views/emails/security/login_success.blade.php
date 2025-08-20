@@ -30,19 +30,16 @@
         <!-- Login Details -->
         <table style="width:100%; margin-top: 10px; font-size: 14px; border-collapse: collapse;">
             <tr>
-                <td style="padding: 6px 0; font-weight: bold;">Device</td>
-                <td style="padding: 6px 0;">{{ $device ?? 'Unknown Device' }}</td>
+                <td style="padding: 6px 12px; font-weight: bold;">Device</td>
+                <td style="padding: 6px 12px;">{{ $device ?? 'Unknown Device' }}</td>
             </tr>
             <tr>
-                <td style="padding: 6px 0; font-weight: bold;">App / Browser</td>
-                <td style="padding: 6px 0;">{{ $agent }}</td>
+                <td style="padding: 6px 12px; font-weight: bold;">App / Browser</td>
+                <td style="padding: 6px 12px;">{{ $agent }}</td>
             </tr>
             <tr>
-                <td style="padding: 6px 0; font-weight: bold;">Location</td>
-                <td style="padding: 6px 0;">
-                    {{ $location ?? 'Location not available' }} <br>
-                    <small style="color: #555;">(Based on IP Address: {{ $ip }})</small>
-                </td>
+                <td style="padding: 6px 12px; font-weight: bold;">IP Address</td>
+                <td style="padding: 6px 12px;">{{ $ip }}</td>
             </tr>
         </table>
 
