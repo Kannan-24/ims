@@ -22,6 +22,6 @@ class PasswordExpiryReminderMail extends Mailable
     public function build()
     {
         return $this->subject('Password Expiry Reminder')
-            ->view('emails.password_expiry_reminder');
+            ->markdown('emails.password_expiry_reminder_markdown');
     }
 }

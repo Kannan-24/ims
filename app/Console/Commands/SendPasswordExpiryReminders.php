@@ -4,8 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\PasswordExpiryReminderMail;
+// Mailing disabled for password expiry reminders per request
 
 class SendPasswordExpiryReminders extends Command
 {
@@ -30,9 +29,8 @@ class SendPasswordExpiryReminders extends Command
             if (!$offsets->contains($daysLeft)) continue;
             // prevent duplicate reminders same day
             if ($user->password_last_reminder_sent_at && $user->password_last_reminder_sent_at->isToday()) continue;
-            Mail::to($user->email)->queue(new PasswordExpiryReminderMail($user, $daysLeft));
-            $user->password_last_reminder_sent_at = now();
-            $user->save();
+            // Mailing for password expiry has been disabled. Log the candidate instead.
+            $this->info("[disabled] Would remind {$user->email} (days left: {$daysLeft})");
             $count++;
         }
         $this->info("Sent {$count} reminder(s).");

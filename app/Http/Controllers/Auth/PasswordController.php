@@ -22,7 +22,15 @@ class PasswordController extends Controller
 
         $request->user()->update([
             'password' => Hash::make($validated['password']),
+            'last_password_changed_at' => now(),
+            'password_expires_at' => now()->addDays(config('password_policy.expiry_days')),
         ]);
+           
+           try {
+               $ip = $request->ip();
+               $agent = substr((string)($request->header('User-Agent') ?? 'Unknown Agent'),0,200);
+               $request->user()->notify(new \App\Notifications\PasswordChangedNotification($ip, $agent, now()->toDateTimeString()));
+           } catch(\Throwable $e) { /* swallow */ }
 
         return back()->with('status', 'password-updated');
     }

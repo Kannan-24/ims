@@ -29,7 +29,7 @@ class UserCreatedMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Welcome to SKM & Company - Your Account Details')
-            ->view('emails.user_created');
+        return $this->subject('Welcome to '.config('app.name').' - Your Account Details')
+            ->markdown('emails.user_created_markdown');
     }
 }

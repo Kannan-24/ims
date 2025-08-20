@@ -24,9 +24,15 @@ class TwoFactorChallengeController extends Controller
                 $user->pending_otp_code = Hash::make($code);
                 $user->pending_otp_expires_at = now()->addMinutes(10);
                 $user->save();
-                Mail::raw('Your login email verification code is: '.$code, function($m) use ($user){
-                    $m->to($user->email)->subject('Your 2FA email code');
-                });
+                Mail::send('emails.security.2fa_otp', [
+                    'user' => $user,
+                    'code' => $code,
+                    'otp_expires_at' => $user->pending_otp_expires_at->toDateTimeString(),
+                    'otp_ttl' => 10,
+                    'ip' => request()->ip(),
+                    'agent' => substr((string)(request()->header('User-Agent') ?? 'Unknown Agent'),0,200),
+                    'purpose' => 'login',
+                ], function($m) use ($user){ $m->to($user->email)->subject('Your 2FA email code'); });
                 session()->flash('success','Email verification code sent.');
             }
         }
@@ -84,9 +90,15 @@ class TwoFactorChallengeController extends Controller
         $user->pending_otp_code = Hash::make($code);
         $user->pending_otp_expires_at = now()->addMinutes(10);
         $user->save();
-        Mail::raw('Your login email verification code is: '.$code, function($m) use ($user){
-            $m->to($user->email)->subject('Your 2FA email code');
-        });
+        Mail::send('emails.security.2fa_otp', [
+            'user' => $user,
+            'code' => $code,
+            'otp_expires_at' => $user->pending_otp_expires_at->toDateTimeString(),
+            'otp_ttl' => 10,
+            'ip' => request()->ip(),
+            'agent' => substr((string)(request()->header('User-Agent') ?? 'Unknown Agent'),0,200),
+            'purpose' => 'login',
+        ], function($m) use ($user){ $m->to($user->email)->subject('Your 2FA email code'); });
         return back()->with('success','Email code resent.');
     }
 }

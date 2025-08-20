@@ -63,7 +63,16 @@ class AccountSettingsController extends Controller
 
         Auth::user()->update([
             'password' => Hash::make($request->password),
+            'last_password_changed_at' => now(),
+            'password_expires_at' => now()->addDays(config('password_policy.expiry_days')),
         ]);
+           
+           // Notify user that their password was changed
+           try {
+               $ip = $request->ip();
+               $agent = substr((string)($request->header('User-Agent') ?? 'Unknown Agent'),0,200);
+               Auth::user()->notify(new \App\Notifications\PasswordChangedNotification($ip, $agent, now()->toDateTimeString()));
+           } catch(\Throwable $e) { /* swallow */ }
 
         return redirect()->route('account.settings')->with('status', 'password-updated');
     }

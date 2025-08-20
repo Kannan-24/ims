@@ -91,4 +91,9 @@ class User extends Authenticatable
             'email_otp_enabled' => 'boolean',
         ];
     }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\CustomResetPassword($token));
+    }
 }

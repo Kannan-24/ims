@@ -58,7 +58,15 @@ class TwoFactorController extends Controller
         $user->preferred_2fa_method = 'otp';
         $user->two_factor_enabled = false;
         $user->save();
-        Mail::raw('Your verification code is: '.$code, function($m) use ($user){
+        Mail::send('emails.security.2fa_otp', [
+            'user' => $user,
+            'code' => $code,
+            'otp_expires_at' => $user->pending_otp_expires_at->toDateTimeString(),
+            'otp_ttl' => 10,
+            'ip' => $request->ip(),
+            'agent' => substr((string)($request->header('User-Agent') ?? 'Unknown Agent'),0,200),
+            'purpose' => 'confirm email 2FA'
+        ], function($m) use ($user){
             $m->to($user->email)->subject('Your 2FA verification code');
         });
         return back()->with('success','OTP sent to your email. Enter to confirm.');
@@ -71,7 +79,7 @@ class TwoFactorController extends Controller
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->with('error','Current password incorrect');
         }
-        if ($user->preferred_2fa_method === 'totp') {
+    if ($user->preferred_2fa_method === 'totp') {
             if (!$user->two_factor_secret) return back()->with('error','No secret generated.');
             if (!$totp->verifyCode($user->two_factor_secret, $request->code)) {
                 return back()->with('error','Invalid code.');
@@ -95,6 +103,16 @@ class TwoFactorController extends Controller
         $user->two_factor_enabled = ($user->totp_enabled || $user->email_otp_enabled);
         $user->two_factor_confirmed_at = now();
         $user->save();
+        // notify user that 2FA enabled
+        try {
+            Mail::send('emails.security.2fa_enabled', [
+                'user' => $user,
+                'method' => $user->preferred_2fa_method,
+                'ip' => $request->ip(),
+                'agent' => substr((string)($request->header('User-Agent') ?? 'Unknown Agent'),0,200),
+                'time' => now()->toDateTimeString(),
+            ], function($m) use ($user){ $m->to($user->email)->subject('Two-factor authentication enabled'); });
+        } catch(\Throwable $e) { /* swallow */ }
         return back()->with('success','Two-factor method enabled.');
     }
 
@@ -129,6 +147,16 @@ class TwoFactorController extends Controller
     $user->email_otp_enabled = false;
     $user->two_factor_enabled = false;
     $user->save();
+    // notify user that 2FA disabled
+    try {
+        Mail::send('emails.security.2fa_disabled', [
+            'user' => $user,
+            'method' => 'all methods',
+            'ip' => $request->ip(),
+            'agent' => substr((string)($request->header('User-Agent') ?? 'Unknown Agent'),0,200),
+            'time' => now()->toDateTimeString(),
+        ], function($m) use ($user){ $m->to($user->email)->subject('Two-factor authentication disabled'); });
+    } catch(\Throwable $e) { /* swallow */ }
     return back()->with('success','All two-factor methods disabled.');
     }
 
@@ -144,7 +172,7 @@ class TwoFactorController extends Controller
             return back()->with('error','Current password incorrect');
         }
         $method = $request->method;
-        if ($method === 'totp' && $user->totp_enabled) {
+    if ($method === 'totp' && $user->totp_enabled) {
             // Optional code verification for extra security when disabling TOTP
             if ($request->filled('code')) {
                 if (!$totp->verifyCode($user->two_factor_secret, $request->code)) {
@@ -154,6 +182,15 @@ class TwoFactorController extends Controller
             $user->totp_enabled = false;
             // If no other methods remain keep secret only if user wants maybe reuse; we remove for safety
             $user->two_factor_secret = null;
+            try {
+                Mail::send('emails.security.2fa_disabled', [
+                    'user' => $user,
+                    'method' => 'TOTP',
+                    'ip' => $request->ip(),
+                    'agent' => substr((string)($request->header('User-Agent') ?? 'Unknown Agent'),0,200),
+                    'time' => now()->toDateTimeString(),
+                ], function($m) use ($user){ $m->to($user->email)->subject('Two-factor method disabled'); });
+            } catch(\Throwable $e) { /* swallow */ }
         } elseif ($method === 'otp' && $user->email_otp_enabled) {
             // Require a valid email code when disabling email OTP
             if (!$request->filled('code') || !$user->pending_otp_code || !$user->pending_otp_expires_at || now()->greaterThan($user->pending_otp_expires_at) || !Hash::check($request->code, $user->pending_otp_code)) {
@@ -162,6 +199,15 @@ class TwoFactorController extends Controller
             $user->email_otp_enabled = false;
             $user->pending_otp_code = null;
             $user->pending_otp_expires_at = null;
+            try {
+                Mail::send('emails.security.2fa_disabled', [
+                    'user' => $user,
+                    'method' => 'Email OTP',
+                    'ip' => $request->ip(),
+                    'agent' => substr((string)($request->header('User-Agent') ?? 'Unknown Agent'),0,200),
+                    'time' => now()->toDateTimeString(),
+                ], function($m) use ($user){ $m->to($user->email)->subject('Two-factor method disabled'); });
+            } catch(\Throwable $e) { /* swallow */ }
         }
         // Recalculate global flag
         $user->two_factor_enabled = ($user->totp_enabled || $user->email_otp_enabled);
@@ -189,9 +235,15 @@ class TwoFactorController extends Controller
         $user->pending_otp_code = Hash::make($code);
         $user->pending_otp_expires_at = now()->addMinutes(10);
         $user->save();
-        Mail::raw('Your code to manage (disable) Email OTP is: '.$code, function($m) use ($user){
-            $m->to($user->email)->subject('Your 2FA management email code');
-        });
+        Mail::send('emails.security.2fa_otp', [
+            'user' => $user,
+            'code' => $code,
+            'otp_expires_at' => $user->pending_otp_expires_at->toDateTimeString(),
+            'otp_ttl' => 10,
+            'ip' => request()->ip(),
+            'agent' => substr((string)(request()->header('User-Agent') ?? 'Unknown Agent'),0,200),
+            'purpose' => 'management',
+        ], function($m) use ($user){ $m->to($user->email)->subject('Your 2FA management email code'); });
         if ($request->wantsJson()) {
             return response()->json(['message'=>'Management email code sent']);
         }

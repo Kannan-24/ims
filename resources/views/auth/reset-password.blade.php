@@ -54,6 +54,14 @@
             </div>
 
             <!-- Confirm Password -->
+            <!-- OTP -->
+            <div class="relative mt-4">
+                <label class="block text-sm font-medium text-gray-200" for="otp">One-time Password (OTP)</label>
+                <input id="otp" name="otp" type="text" required
+                    class="w-full py-3 pl-4 pr-10 text-sm text-gray-200 bg-gray-800 border border-gray-700 rounded-lg outline-blue-500 placeholder-gray-500"
+                    placeholder="Enter the OTP sent to your email">
+                <x-input-error :messages="$errors->get('otp')" class="mt-2" />
+            </div>
             <div class="relative mt-4" x-data="{ show: false }">
                 <label class="block text-sm font-medium text-gray-200" for="password_confirmation">Confirm Password</label>
                 <input

@@ -5,6 +5,7 @@ namespace App\Http\Requests\Auth;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -40,15 +41,45 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-
+    $email = $this->input('email');
+    $attemptCacheKey = 'login_failed_count:'.sha1($email.'|'.$this->ip());
+    $threshold = (int) config('security.failed_login_alert_threshold', 3);
+    $alertEvery = (bool) config('security.failed_login_alert_every', false);
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
-
+            $count = cache()->increment($attemptCacheKey) ?: 1; // increment returns 1 when created
+            cache()->put($attemptCacheKey, $count, now()->addMinutes(30));
+            $shouldAlert = false;
+            if($count >= $threshold) {
+                if($alertEvery) {
+                    $shouldAlert = true;
+                } else {
+                    $shouldAlert = $count === $threshold; // only first time threshold reached
+                }
+            }
+            if($shouldAlert){
+                $user = \App\Models\User::where('email',$email)->first();
+                if($user){
+                    try {
+                        Log::info('Dispatching failed login alert email', [
+                            'email'=>$email,
+                            'count'=>$count,
+                            'ip'=>$this->ip(),
+                        ]);
+                        $user->notify(new \App\Notifications\MultipleFailedLoginAlert(
+                            $count,
+                            $this->ip() ?? 'unknown',
+                            substr((string)($this->header('User-Agent') ?? 'Unknown Agent'),0,200),
+                            now()->toDateTimeString()
+                        ));
+                    } catch(\Throwable $e) { /* swallow */ }
+                }
+            }
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
-
+        cache()->forget($attemptCacheKey);
         RateLimiter::clear($this->throttleKey());
     }
 

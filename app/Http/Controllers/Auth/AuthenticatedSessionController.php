@@ -28,6 +28,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
         $user = $request->user();
+        if($user){
+            try {
+                $user->notify(new \App\Notifications\LoginSuccessNotification(
+                    $request->has('google_id') ? 'Social (Google)' : 'Password',
+                    $request->ip() ?? 'unknown',
+                    substr((string)($request->header('User-Agent') ?? 'Unknown Agent'),0,200),
+                    now()->toDateTimeString()
+                ));
+            } catch(\Throwable $e) { /* swallow notification errors */ }
+        }
         if ($user && ($user->must_change_password || ($user->password_expires_at && now()->greaterThan($user->password_expires_at)))) {
             return redirect()->route('password.force.show');
         }
