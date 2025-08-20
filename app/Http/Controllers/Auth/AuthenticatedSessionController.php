@@ -28,15 +28,25 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
         $user = $request->user();
-        if($user){
+        if ($user) {
             try {
+                $ip = $request->ip() ?? 'unknown';
+                $agent = substr((string)($request->header('User-Agent') ?? 'Unknown Agent'), 0, 200);
+                $time = now()->toDateTimeString();
+                $device = null; // could be parsed from agent if required
+                $location = null;
+                if (function_exists('geoip')) {
+                    try { $g = geoip($ip); $location = trim(implode(', ', array_filter([$g->city, $g->state, $g->country]))); } catch (\Throwable $__e) { $location = null; }
+                }
                 $user->notify(new \App\Notifications\LoginSuccessNotification(
                     $request->has('google_id') ? 'Social (Google)' : 'Password',
-                    $request->ip() ?? 'unknown',
-                    substr((string)($request->header('User-Agent') ?? 'Unknown Agent'),0,200),
-                    now()->toDateTimeString()
+                    $ip,
+                    $agent,
+                    $time,
+                    $location,
+                    $device
                 ));
-            } catch(\Throwable $e) { /* swallow notification errors */ }
+            } catch (\Throwable $e) { /* swallow notification errors */ }
         }
         if ($user && ($user->must_change_password || ($user->password_expires_at && now()->greaterThan($user->password_expires_at)))) {
             return redirect()->route('password.force.show');

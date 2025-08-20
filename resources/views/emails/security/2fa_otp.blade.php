@@ -14,9 +14,11 @@
     <p style="font-size:14px;margin:0 0 12px;">Use the following one‑time code to {{ $purpose ?? 'verify' }} your account action:</p>
     <p style="margin:8px 0 12px;"><span class="code">{{ $code }}</span></p>
     <p style="font-size:13px;margin:0 0 12px;">This code expires in <strong>{{ $otp_ttl ?? 10 }}</strong> minutes (until {{ $otp_expires_at ?? '' }}). It was requested from IP <strong>{{ $ip ?? request()->ip() }}</strong> using <strong>{{ $agent ?? 'Unknown' }}</strong>.</p>
+    <p style="font-size:13px;margin:0 0 12px;">Location: <strong>{{ $location ?? 'Location not available' }}</strong></p>
     <p style="font-size:14px;margin:16px 0 0;">If you did not request this code, ignore this email or contact <a href="mailto:{{ config('company.email') }}">{{ config('company.email') }}</a>.</p>
     <hr style="border:none;border-top:1px solid #e0e0e0;margin:20px 0">
-    <p style="font-size:12px;color:#777">{{ config('company.name') }}, {{ config('company.address') }}</p>
+    @php $abuseHost = parse_url(config('company.website') ?? '', PHP_URL_HOST) ?: str_replace(['http://','https://'],'',config('company.website') ?? ''); @endphp
+    <p style="font-size:12px;color:#777">{{ config('company.name') }}, {{ config('company.address') }} — Report abuse: <a href="mailto:abuse@{{ $abuseHost }}">abuse@{{ $abuseHost }}</a></p>
 </div>
 </body>
 </html>

@@ -17,6 +17,7 @@
         <tr><td style="padding:6px 0; font-weight:bold;">Last Attempt</td><td style="padding:6px 0;">{{ $time }} ({{ config('app.timezone') }})</td></tr>
         <tr><td style="padding:6px 0; font-weight:bold;">IP Address</td><td style="padding:6px 0;">{{ $ip }}</td></tr>
         <tr><td style="padding:6px 0; font-weight:bold;">Device / Browser</td><td style="padding:6px 0;">{{ $agent }}</td></tr>
+        <tr><td style="padding:6px 0; font-weight:bold;">Location</td><td style="padding:6px 0;">{{ $location ?? 'Location not available' }}</td></tr>
     </table>
     <p style="font-size:14px; margin:16px 0 12px; line-height:1.5;">If these attempts weren't made by you, reset your password and enable Two‑Factor Authentication immediately.</p>
     <p style="margin:0 0 20px;">
@@ -34,6 +35,8 @@
     <p style="font-size:14px; font-weight:bold; margin:0 0 20px;">{{ config('company.name') }} Security Team</p>
     <hr style="border:none; border-top:1px solid #e0e0e0; margin:20px 0;">
     <p style="font-size:12px; color:#777; line-height:1.5; margin:0;">If you mistyped your password you can ignore this email. If these attempts weren't you, reset your password and enable Two‑Factor Authentication immediately.</p>
+        @php $abuseHost = parse_url(config('company.website') ?? '', PHP_URL_HOST) ?: str_replace(['http://','https://'],'',config('company.website') ?? ''); @endphp
+        <p style="font-size:12px; color:#777; line-height:1.5; margin:0;">If you mistyped your password you can ignore this email. If these attempts weren't you, reset your password and enable Two‑Factor Authentication immediately. If you'd like to report abuse contact <a href="mailto:abuse@{{ $abuseHost }}">abuse@{{ $abuseHost }}</a>.</p>
 </div>
 </body>
 </html>

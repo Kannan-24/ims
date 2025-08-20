@@ -34,6 +34,19 @@ class GoogleSocialiteController extends Controller
                 // User exists, log them in
                 Auth::login($finduser);
 
+                // Notify user of login (include ip, agent, time and location when possible)
+                try {
+                    $ip = request()->ip() ?? 'unknown';
+                    $agent = substr((string)(request()->header('User-Agent') ?? 'Unknown Agent'),0,200);
+                    $time = now()->toDateTimeString();
+                    $location = null;
+                    if (function_exists('geoip') ) {
+                        try { $g = geoip($ip); $location = trim(implode(', ', array_filter([$g->city, $g->state, $g->country]))); } catch(\Throwable $__e) { $location = null; }
+                    }
+                    $device = null;
+                    $finduser->notify(new \App\Notifications\LoginSuccessNotification('Social (Google)', $ip, $agent, $time, $location, $device));
+                } catch(\Throwable $e) { /* swallow notification errors */ }
+
                 if ($finduser->must_change_password || ($finduser->password_expires_at && now()->greaterThan($finduser->password_expires_at))) {
                     return redirect()->route('password.force.show');
                 }
