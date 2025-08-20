@@ -66,12 +66,39 @@ class LoginRequest extends FormRequest
                             'count'=>$count,
                             'ip'=>$this->ip(),
                         ]);
+                        // derive friendly device and core browser name (no versions)
+                        $rawUa = (string)($this->header('User-Agent') ?? '');
+                        if (preg_match('/iPhone|iPad|iPod/i', $rawUa)) {
+                            $device = 'iPhone / iPad';
+                        } elseif (preg_match('/Android/i', $rawUa)) {
+                            $device = 'Android device';
+                        } elseif (preg_match('/Windows NT/i', $rawUa)) {
+                            $device = 'Windows PC';
+                        } elseif (preg_match('/Macintosh|Mac OS X/i', $rawUa)) {
+                            $device = 'Mac';
+                        } else {
+                            $device = 'Desktop';
+                        }
+                        if (preg_match('/Edg\//i', $rawUa)) {
+                            $browser = 'Edge';
+                        } elseif (preg_match('/OPR\//i', $rawUa) || preg_match('/Opera/i', $rawUa)) {
+                            $browser = 'Opera';
+                        } elseif (preg_match('/Chrome\//i', $rawUa) && !preg_match('/Edg\//i', $rawUa) && !preg_match('/OPR\//i', $rawUa)) {
+                            $browser = 'Chrome';
+                        } elseif (preg_match('/Firefox\//i', $rawUa)) {
+                            $browser = 'Firefox';
+                        } elseif (preg_match('/Safari\//i', $rawUa) && preg_match('/Version\//i', $rawUa) && !preg_match('/Chrome\//i', $rawUa)) {
+                            $browser = 'Safari';
+                        } else {
+                            $browser = 'Other';
+                        }
+                        $agentLabel = $device.' / '.$browser;
                         $user->notify(new \App\Notifications\MultipleFailedLoginAlert(
-                            $count,
-                            $this->ip() ?? 'unknown',
-                            substr((string)($this->header('User-Agent') ?? 'Unknown Agent'),0,200),
-                            now()->toDateTimeString()
-                        ));
+                                    $count,
+                                    $this->ip() ?? 'unknown',
+                                    $agentLabel,
+                                    now()->toDateTimeString()
+                                ));
                     } catch(\Throwable $e) { /* swallow */ }
                 }
             }

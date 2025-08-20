@@ -18,6 +18,7 @@ return [
     'phone_2' => env('COMPANY_PHONE_2', null),
     'email' => env('COMPANY_EMAIL', 'email@company.com'),
     'website' => env('COMPANY_WEBSITE', 'www.company.com'),
+    'abuse_email' => env('COMPANY_ABUSE_EMAIL', 'report@skm.in'),
     'gst_number' => env('COMPANY_GST', 'GST Number'),
     'udyam_number' => env('COMPANY_UDYAM', 'UDYAM Number'),
     

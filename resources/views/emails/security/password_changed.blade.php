@@ -19,8 +19,7 @@
         <p style="font-size:14px; margin:0 0 5px;">Regards,</p>
         <p style="font-size:14px; font-weight:bold; margin:0 0 20px;">{{ config('company.name') }} Security Team</p>
     <hr style="border:none; border-top:1px solid #e0e0e0; margin:20px 0;">
-    @php $abuseHost = parse_url(config('company.website') ?? '', PHP_URL_HOST) ?: str_replace(['http://','https://'],'',config('company.website') ?? ''); @endphp
-    <p style="font-size:12px; color:#777; line-height:1.5; margin:0;">If you didn't request this, please report it to <a href="mailto:abuse@{{ $abuseHost }}" style="color:#1a73e8; text-decoration:none;">abuse@{{ $abuseHost }}</a>.</p>
+    <p style="font-size:12px; color:#777; line-height:1.5; margin:0;">If you didn't request this, please report it to <a href="mailto:{{ config('company.abuse_email') }}" style="color:#1a73e8; text-decoration:none;">{{ config('company.abuse_email') }}</a>.</p>
     </div>
 </body>
 </html>

@@ -54,11 +54,10 @@
         <p style="font-size:12px; color:#777; line-height:1.5; margin:0;">If you mistyped your password you can ignore
             this email. If these attempts weren't you, reset your password and enable Two‑Factor Authentication
             immediately.</p>
-        @php $abuseHost = parse_url(config('company.website') ?? '', PHP_URL_HOST) ?: str_replace(['http://','https://'],'',config('company.website') ?? ''); @endphp
         <p style="font-size:12px; color:#777; line-height:1.5; margin:0;">If you mistyped your password you can ignore
             this email. If these attempts weren't you, reset your password and enable Two‑Factor Authentication
             immediately. If you'd like to report abuse contact <a
-                href="mailto:abuse@{{ $abuseHost }}">abuse@{{ $abuseHost }}</a>.</p>
+                href="mailto:{{ config('company.abuse_email') }}">{{ config('company.abuse_email') }}</a>.</p>
     </div>
 </body>
 

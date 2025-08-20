@@ -87,14 +87,13 @@
 
         <!-- Footer -->
         <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
-        @php $abuseHost = parse_url(config('company.website') ?? '', PHP_URL_HOST) ?: str_replace(['http://','https://'],'',config('company.website') ?? ''); @endphp
         <p style="font-size: 12px; color: #777; line-height: 1.5; margin: 0;">
             {{ config('company.name') }}, {{ config('company.address') }} <br>
             Phone: {{ config('company.phone') }} | {{ config('company.phone_alt') }} <br><br>
             This email was generated automatically by {{ config('company.name') }}.
             If you think this is spam, please report it to
-            <a href="mailto:abuse@{{ $abuseHost }}" style="color: #1a73e8; text-decoration: none;">
-                abuse@{{ $abuseHost }}
+            <a href="mailto:{{ config('company.abuse_email') }}" style="color: #1a73e8; text-decoration: none;">
+                {{ config('company.abuse_email') }}
             </a>.
         </p>
     </div>
