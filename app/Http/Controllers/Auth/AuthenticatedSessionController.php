@@ -31,9 +31,40 @@ class AuthenticatedSessionController extends Controller
         if ($user) {
             try {
                 $ip = $request->ip() ?? 'unknown';
-                $agent = substr((string)($request->header('User-Agent') ?? 'Unknown Agent'), 0, 200);
+                $rawUa = (string)($request->header('User-Agent') ?? '');
                 $time = now()->toDateTimeString();
-                $device = null; // could be parsed from agent if required
+                // derive friendly device
+                if (preg_match('/iPhone|iPad|iPod/i', $rawUa)) {
+                    $device = 'iPhone / iPad';
+                } elseif (preg_match('/Android/i', $rawUa)) {
+                    $device = 'Android device';
+                } elseif (preg_match('/Windows NT/i', $rawUa)) {
+                    $device = 'Windows PC';
+                } elseif (preg_match('/Macintosh|Mac OS X/i', $rawUa)) {
+                    $device = 'Mac';
+                } else {
+                    $device = 'Desktop';
+                }
+                // derive friendly browser string
+                $agent = 'Unknown';
+                if (preg_match('/Edg\//i', $rawUa, $m)) {
+                    preg_match('/Edg\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
+                    $agent = 'Edge ' . ($v[1] ?? '');
+                } elseif (preg_match('/OPR\//i', $rawUa)) {
+                    preg_match('/OPR\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
+                    $agent = 'Opera ' . ($v[1] ?? '');
+                } elseif (preg_match('/Chrome\//i', $rawUa)) {
+                    preg_match('/Chrome\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
+                    $agent = 'Chrome ' . ($v[1] ?? '');
+                } elseif (preg_match('/Firefox\//i', $rawUa)) {
+                    preg_match('/Firefox\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
+                    $agent = 'Firefox ' . ($v[1] ?? '');
+                } elseif (preg_match('/Safari\//i', $rawUa) && preg_match('/Version\//i', $rawUa)) {
+                    preg_match('/Version\/(\d+(?:\.\d+)*)/i', $rawUa, $v);
+                    $agent = 'Safari ' . ($v[1] ?? '');
+                } else {
+                    $agent = substr($rawUa, 0, 200);
+                }
                 $location = null;
                 if (function_exists('geoip')) {
                     try { $g = geoip($ip); $location = trim(implode(', ', array_filter([$g->city, $g->state, $g->country]))); } catch (\Throwable $__e) { $location = null; }
