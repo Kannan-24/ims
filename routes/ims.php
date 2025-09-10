@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ims\CalendarController;
+use App\Http\Controllers\ims\HotkeyController;
 use App\Http\Controllers\ims\CustomerController;
 use App\Http\Controllers\ims\SupplierController;
 use App\Http\Controllers\ims\ProductController;
@@ -20,6 +22,31 @@ use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
 Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
+
+    // Calendar Routes
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::prefix('calendar')->name('calendar.')->group(function () {
+        Route::get('/events', [CalendarController::class, 'events'])->name('events');
+        Route::post('/events', [CalendarController::class, 'store'])->name('events.store');
+        Route::get('/events/{event}', [CalendarController::class, 'show'])->name('events.show');
+        Route::put('/events/{event}', [CalendarController::class, 'update'])->name('events.update');
+        Route::delete('/events/{event}', [CalendarController::class, 'destroy'])->name('events.destroy');
+        Route::patch('/events/{event}/move', [CalendarController::class, 'move'])->name('events.move');
+    });
+
+    // Hotkey Management Routes
+    Route::get('/hotkeys', [HotkeyController::class, 'index'])->name('hotkeys.index');
+    Route::post('/hotkeys', [HotkeyController::class, 'store'])->name('hotkeys.store');
+    Route::put('/hotkeys/{hotkey}', [HotkeyController::class, 'update'])->name('hotkeys.update');
+    Route::delete('/hotkeys/{hotkey}', [HotkeyController::class, 'destroy'])->name('hotkeys.destroy');
+    Route::patch('/hotkeys/{hotkey}/toggle', [HotkeyController::class, 'toggle'])->name('hotkeys.toggle');
+    Route::get('/hotkeys/active', [HotkeyController::class, 'active'])->name('hotkeys.active');
+    Route::get('/hotkeys/actions', [HotkeyController::class, 'getActions'])->name('hotkeys.actions');
+    
+    // Bulk operations for hotkeys
+    Route::delete('/hotkeys/bulk/delete', [HotkeyController::class, 'bulkDelete'])->name('hotkeys.bulk.delete');
+    Route::patch('/hotkeys/bulk/activate', [HotkeyController::class, 'bulkActivate'])->name('hotkeys.bulk.activate');
+    Route::patch('/hotkeys/bulk/deactivate', [HotkeyController::class, 'bulkDeactivate'])->name('hotkeys.bulk.deactivate');
 
 
     // Payment Routes

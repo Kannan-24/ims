@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\ims;
 
+use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +14,7 @@ class CalendarController extends Controller
 {
     public function index(): View
     {
-        return view('calendar.index');
+        return view('ims.calendar.index');
     }
 
     public function events(Request $request): JsonResponse

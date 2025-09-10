@@ -11,12 +11,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-gray-900 text-white">
-    <div class="min-h-[calc(100vh-80px)] mt-20">
-        @include('layouts.navigation')
+<body class="font-sans antialiased bg-gray-50" x-data="{ sidebarOpen: false, sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true' }" 
+      x-init="$watch('sidebarCollapsed', value => localStorage.setItem('sidebarCollapsed', value))">
+    
+    <!-- Top Navigation -->
+    @include('components.top-navigation')
+    
+    <!-- Sidebar -->
+    @include('components.sidebar')
+    
+    <!-- Main Content -->
+    <div class="transition-all duration-300 ease-in-out" 
+         :class="sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'">
+        
+        <!-- Password Expiry Banner -->
         @php
             $authUser = auth()->user();
             $routeName = optional(request()->route())->getName();
@@ -32,7 +44,7 @@
                     ($daysLeft !== null && ($daysLeft <= ($reminderOffsets->max() ?? 14) || $daysLeft < 0));
             @endphp
             @if ($showBanner)
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4" data-password-expiry-banner>
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-20" data-password-expiry-banner>
                     <div
                         class="relative rounded-md border p-4 flex items-start gap-4 {{ $mustChange || ($daysLeft !== null && $daysLeft < 0) ? 'bg-red-900/40 border-red-600 text-red-200' : 'bg-amber-900/40 border-amber-600 text-amber-200' }}">
                         <div class="shrink-0">
@@ -70,6 +82,7 @@
             @endif
         @endif
 
+        <!-- Flash Messages -->
         <div id="message-alert"
             class="fixed inset-x-0 bottom-5 right-5 z-50 transition-all ease-in-out duration-300 message-alert">
             @if (session()->has('response'))
@@ -116,14 +129,17 @@
         </div>
 
         @isset($header)
-            <header class="bg-white shadow">
+            <header class="bg-white shadow mt-16">
                 <div class="flex items-center justify-between px-4 py-6 W-full sm:px-6 lg:px-8">{{ $header }}</div>
             </header>
+            <main>
+                {{ $slot }}
+            </main>
+        @else
+            <main class="pt-16">
+                {{ $slot }}
+            </main>
         @endisset
-
-        <main>
-            {{ $slot }}
-        </main>
     </div>
 
     <script>
@@ -231,6 +247,162 @@
             }
         })();
     </script>
+
+    <!-- Global Hotkey Manager -->
+    <script>
+        (function() {
+            let activeHotkeys = {};
+            let hotkeyManagerReady = false;
+
+            // Load active hotkeys from server
+            async function loadActiveHotkeys() {
+                try {
+                    const response = await fetch('/hotkeys/active', {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        activeHotkeys = await response.json();
+                        console.log('Loaded active hotkeys:', Object.keys(activeHotkeys));
+                        hotkeyManagerReady = true;
+                    }
+                } catch (error) {
+                    console.warn('Could not load hotkeys:', error.message);
+                }
+            }
+
+            // Handle global keydown events
+            function handleGlobalHotkeys(event) {
+                // Don't trigger hotkeys when typing in inputs or the hotkey manager is open
+                if (!hotkeyManagerReady) return;
+                
+                const activeElement = document.activeElement;
+                const isInputFocused = ['INPUT', 'TEXTAREA', 'SELECT', 'CONTENTEDITABLE'].includes(activeElement.tagName) || 
+                                     activeElement.contentEditable === 'true';
+                
+                if (isInputFocused) return;
+
+                const keys = [];
+                
+                // Build key combination
+                if (event.ctrlKey) keys.push('Ctrl');
+                if (event.shiftKey) keys.push('Shift');
+                if (event.altKey) keys.push('Alt');
+                if (event.metaKey) keys.push('Meta');
+                
+                if (event.key && event.key.length === 1) {
+                    keys.push(event.key.toUpperCase());
+                } else if (['Enter', 'Space', 'Tab', 'Escape'].includes(event.key)) {
+                    keys.push(event.key);
+                } else if (event.key === ',') {
+                    keys.push('Comma');
+                }
+                
+                const combination = keys.join('+');
+                const hotkey = activeHotkeys[combination];
+                
+                if (hotkey) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    console.log('Triggered hotkey:', combination, hotkey);
+                    
+                    if (hotkey.action_type === 'navigate' && hotkey.action_url && hotkey.action_url !== '#') {
+                        window.location.href = hotkey.action_url;
+                    } else if (hotkey.action_type === 'modal') {
+                        // Handle modal opening - you can customize this
+                        if (combination === 'Ctrl+K') {
+                            openSearchModal();
+                        }
+                    } else if (hotkey.action_type === 'function') {
+                        // Handle function calls
+                        if (hotkey.action_url === '/logout') {
+                            if (confirm('Are you sure you want to logout?')) {
+                                const form = document.createElement('form');
+                                form.method = 'POST';
+                                form.action = '/logout';
+                                
+                                const token = document.createElement('input');
+                                token.type = 'hidden';
+                                token.name = '_token';
+                                token.value = document.querySelector('meta[name="csrf-token"]').content;
+                                form.appendChild(token);
+                                
+                                document.body.appendChild(form);
+                                form.submit();
+                            }
+                        }
+                    }
+                    
+                    // Show brief notification
+                    showHotkeyNotification(combination, hotkey);
+                }
+            }
+
+            // Search modal functionality (placeholder)
+            function openSearchModal() {
+                // You can implement a global search modal here
+                alert('Global search functionality would open here.\nImplement your search modal in this function.');
+            }
+
+            // Show brief hotkey activation notification
+            function showHotkeyNotification(combination, hotkey) {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm font-medium transform transition-all duration-300 translate-x-0';
+                notification.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-keyboard text-blue-200"></i>
+                        <span>Triggered: <kbd class="bg-blue-700 px-1 py-0.5 rounded text-xs">${combination}</kbd></span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Animate in
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(0)';
+                }, 10);
+                
+                // Remove after 2 seconds
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 2000);
+            }
+
+            // Initialize when DOM is ready
+            function initHotkeyManager() {
+                loadActiveHotkeys();
+                document.addEventListener('keydown', handleGlobalHotkeys);
+                
+                // Reload hotkeys when returning to the page
+                document.addEventListener('visibilitychange', function() {
+                    if (!document.hidden) {
+                        loadActiveHotkeys();
+                    }
+                });
+
+                // Provide global refresh method
+                window.refreshHotkeys = loadActiveHotkeys;
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initHotkeyManager);
+            } else {
+                initHotkeyManager();
+            }
+        })();
+    </script>
+    
+    <!-- Fixed Bottom-Right Hotkey Indicator -->
+    @include('components.hotkey-indicator')
 </body>
 
 </html>

@@ -1,3 +1,64 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom scrollbar styles */
+.sidebar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
+
+/* Smooth transitions */
+.sidebar {
+    transition: width 0.3s ease-in-out;
+}
+
+/* Tooltip positioning */
+.group:hover .absolute {
+    z-index: 9999;
+}
+
+/* Custom hover effects */
+.menu-item:hover .tooltip {
+    @apply opacity-100 visible;
+}
+
+.tooltip {
+    @apply opacity-0 invisible transition-all duration-200;
+}
+
+/* Custom focus states */
+.search-input:focus {
+    @apply ring-2 ring-blue-500 border-transparent;
+}
+
+/* Animation classes */
+.fade-in {
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+}
