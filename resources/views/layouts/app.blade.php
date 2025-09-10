@@ -15,7 +15,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-gray-50" x-data="{ sidebarOpen: false, sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true' }" 
+<body class="font-sans antialiased bg-gray-50" x-data="{ sidebarOpen: false, sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true', sidebarHovering: false }" 
       x-init="$watch('sidebarCollapsed', value => localStorage.setItem('sidebarCollapsed', value))">
     
     <!-- Top Navigation -->
@@ -26,7 +26,10 @@
     
     <!-- Main Content -->
     <div class="transition-all duration-300 ease-in-out" 
-         :class="sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'">
+         :class="[
+             (sidebarCollapsed && !sidebarHovering) ? 'lg:ml-16' : 'lg:ml-56',
+             $store.notifications && $store.notifications.panelOpen ? 'blur-sm' : ''
+         ]">
         
         <!-- Password Expiry Banner -->
         @php
@@ -81,6 +84,7 @@
                 </div>
             @endif
         @endif
+
 
         <!-- Flash Messages -->
         <div id="message-alert"
@@ -257,7 +261,7 @@
             // Load active hotkeys from server
             async function loadActiveHotkeys() {
                 try {
-                    const response = await fetch('/hotkeys/active', {
+                    const response = await fetch('/ims/hotkeys/active', {
                         headers: {
                             'Accept': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
@@ -350,31 +354,36 @@
 
             // Show brief hotkey activation notification
             function showHotkeyNotification(combination, hotkey) {
-                const notification = document.createElement('div');
-                notification.className = 'fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm font-medium transform transition-all duration-300 translate-x-0';
-                notification.innerHTML = `
-                    <div class="flex items-center space-x-2">
-                        <i class="fas fa-keyboard text-blue-200"></i>
-                        <span>Triggered: <kbd class="bg-blue-700 px-1 py-0.5 rounded text-xs">${combination}</kbd></span>
-                    </div>
-                `;
-                
-                document.body.appendChild(notification);
-                
-                // Animate in
-                setTimeout(() => {
-                    notification.style.transform = 'translateX(0)';
-                }, 10);
-                
-                // Remove after 2 seconds
-                setTimeout(() => {
-                    notification.style.transform = 'translateX(100%)';
+                // Add to notification panel if available
+                if (window.addNotification) {
+                    window.addNotification({
+                        title: 'Hotkey Activated',
+                        message: `Triggered: ${combination} - ${hotkey.action_name || 'Unknown Action'}`,
+                        type: 'success'
+                    });
+                } else {
+                    // Fallback: show brief toast notification
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm font-medium transform transition-all duration-300 translate-x-0';
+                    notification.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-keyboard text-green-200"></i>
+                            <span>Triggered: <kbd class="bg-green-700 px-1 py-0.5 rounded text-xs">${combination}</kbd></span>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Remove after 2 seconds
                     setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                }, 2000);
+                        notification.style.transform = 'translateX(100%)';
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.parentNode.removeChild(notification);
+                            }
+                        }, 300);
+                    }, 2000);
+                }
             }
 
             // Initialize when DOM is ready

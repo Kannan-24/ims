@@ -1,16 +1,21 @@
 <!-- Fixed Bottom-Right Hotkey Indicator -->
 <div x-data="hotkeyIndicator()" x-init="init()" 
-     class="fixed bottom-6 right-6 z-50" 
-     x-show="isActive">
+     class="fixed bottom-6 right-6 z-50">
     
     <!-- Floating Hotkey Button -->
     <button @click="toggleDisplay()" 
-            class="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 relative group">
-        <i class="fas fa-question-circle text-2xl"></i>
+            class="bg-green-600 hover:bg-green-700 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 relative group">
+        <i class="fas fa-keyboard text-lg"></i>
+        
+        <!-- Badge with count -->
+        <span x-show="hotkeyCount > 0" 
+              x-text="hotkeyCount" 
+              class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold animate-pulse">
+        </span>
         
         <!-- Tooltip -->
         <div class="absolute bottom-full right-0 mb-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            Active Hotkeys
+            <span x-text="`${hotkeyCount} Active Hotkeys`"></span>
             <div class="absolute top-full right-3 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
         </div>
     </button>
@@ -115,7 +120,7 @@
         return {
             hotkeys: {},
             hotkeyCount: 0,
-            isActive: false,
+            isActive: true,
             showHelp: false,
 
             async init() {
@@ -128,10 +133,11 @@
                     if (response.ok) {
                         this.hotkeys = await response.json();
                         this.hotkeyCount = Object.keys(this.hotkeys).length;
-                        this.isActive = this.hotkeyCount > 0;
+                        this.isActive = true; // Always show the indicator
                     }
                 } catch (error) {
                     console.warn('Could not load hotkey indicator data:', error);
+                    // Always show indicator, even if no hotkeys loaded
                     this.isActive = true;
                     this.hotkeyCount = 0;
                 }
