@@ -98,7 +98,7 @@ class CalendarController extends Controller
 
     private function getTypeColor(string $type): string
     {
-        return match ($type) {
+        return match($type) {
             'meeting' => '#4f46e5',      // Indigo
             'task' => '#06b6d4',         // Cyan
             'appointment' => '#10b981',   // Emerald

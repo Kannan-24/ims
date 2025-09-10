@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AccountSettingsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,6 +29,17 @@ Route::middleware(['auth','2fa'])->group(function () {
     Route::delete('/account-settings/sessions', [AccountSettingsController::class, 'destroyOtherSessions'])->name('account.settings.sessions.destroy.others');
     Route::patch('/account-settings/password', [AccountSettingsController::class, 'updatePassword'])->name('account.update.password');
     Route::delete('/account-settings/delete', [AccountSettingsController::class, 'destroy'])->name('account.destroy');
+
+    // Calendar Routes
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::prefix('calendar')->name('calendar.')->group(function () {
+        Route::get('/events', [CalendarController::class, 'events'])->name('events');
+        Route::post('/events', [CalendarController::class, 'store'])->name('events.store');
+        Route::get('/events/{event}', [CalendarController::class, 'show'])->name('events.show');
+        Route::put('/events/{event}', [CalendarController::class, 'update'])->name('events.update');
+        Route::delete('/events/{event}', [CalendarController::class, 'destroy'])->name('events.destroy');
+        Route::patch('/events/{event}/move', [CalendarController::class, 'move'])->name('events.move');
+    });
 });
 
 
