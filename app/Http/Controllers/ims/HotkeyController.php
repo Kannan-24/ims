@@ -13,11 +13,18 @@ class HotkeyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $hotkeys = Hotkey::where('user_id', Auth::id())
                           ->orderBy('action_name')
                           ->get();
+        
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'hotkeys' => $hotkeys
+            ]);
+        }
         
         return view('ims.hotkeys.index', compact('hotkeys'));
     }

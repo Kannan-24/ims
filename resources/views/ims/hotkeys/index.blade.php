@@ -3,21 +3,22 @@
 @endphp
 
 <x-app-layout :title="$title">
-    <div class="bg-white" x-data="hotkeyManager()" x-init="init()">
+    <div class="bg-gray-50 min-h-screen" x-data="hotkeyManager()" x-init="init()">
         <!-- Header -->
-        <div class="px-6 py-4 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Hotkey Manager</h1>
-                    <p class="text-sm text-gray-600 mt-1">Create and manage custom keyboard shortcuts for quick actions</p>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <!-- Help Button -->
-                    <button @click="showHelpModal = true" 
-                            class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                        Help
-                    </button>
+        <div class="bg-white shadow-sm border-b border-gray-200">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">⌨️ Hotkey Manager</h1>
+                        <p class="text-gray-600 mt-1">Create and manage custom keyboard shortcuts for quick actions</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <!-- Help Button -->
+                        <button @click="showHelpModal = true" 
+                                class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
+                            <i class="fas fa-question-circle mr-2"></i>
+                            Help
+                        </button>
                     <!-- Add Hotkey Button -->
                     <button @click="openModal()" 
                             class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
@@ -923,7 +924,54 @@
                 },
 
                 async init() {
+                    // Start with server-provided data, then optionally refresh with AJAX
+                    this.hotkeys = @json($hotkeys->toArray());
                     this.initGlobalHotkeys();
+                    
+                    // Optionally try to refresh data via AJAX (but don't block on it)
+                    setTimeout(() => {
+                        this.loadHotkeys();
+                    }, 100);
+                },
+
+                async loadHotkeys() {
+                    try {
+                        const response = await fetch('{{ route("hotkeys.index") }}', {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        
+                        // Check if we got a successful response
+                        if (!response.ok) {
+                            console.error('HTTP error:', response.status, response.statusText);
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        // Check if the response is actually JSON
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            console.error('Expected JSON but got:', contentType);
+                            // If we get HTML, it's likely a redirect to login
+                            if (contentType && contentType.includes('text/html')) {
+                                console.warn('Got HTML response - user might need to re-authenticate');
+                                // Fallback to hardcoded data from server
+                                this.hotkeys = @json($hotkeys->toArray());
+                                return;
+                            }
+                            throw new Error('Response is not valid JSON');
+                        }
+                        
+                        const data = await response.json();
+                        this.hotkeys = data.hotkeys || data || @json($hotkeys->toArray());
+                        
+                    } catch (error) {
+                        console.error('Error loading hotkeys:', error);
+                        // Fallback to data passed from server
+                        this.hotkeys = @json($hotkeys->toArray());
+                        // Don't show error notification for initial load, just use fallback data
+                    }
                 },
 
                 get availableActions() {
@@ -1100,8 +1148,8 @@
                         }
 
                         const url = this.editingHotkey 
-                            ? `/hotkeys/${this.editingHotkey.id}`
-                            : '/hotkeys';
+                            ? `{{ url('ims/hotkeys') }}/${this.editingHotkey.id}`
+                            : '{{ route("hotkeys.store") }}';
                             
                         const method = this.editingHotkey ? 'PUT' : 'POST';
                         
@@ -1182,7 +1230,7 @@
 
                 async toggleHotkey(hotkey) {
                     try {
-                        const response = await fetch(`/hotkeys/${hotkey.id}/toggle`, {
+                        const response = await fetch(`{{ url('ims/hotkeys') }}/${hotkey.id}/toggle`, {
                             method: 'PATCH',
                             headers: {
                                 'Accept': 'application/json',
@@ -1220,7 +1268,7 @@
                     )) return;
                     
                     try {
-                        const response = await fetch(`/hotkeys/${hotkey.id}`, {
+                        const response = await fetch(`{{ url('ims/hotkeys') }}/${hotkey.id}`, {
                             method: 'DELETE',
                             headers: {
                                 'Accept': 'application/json',
@@ -1397,7 +1445,7 @@
 
                 async initGlobalHotkeys() {
                     try {
-                        const response = await fetch('/hotkeys/active', {
+                        const response = await fetch('{{ route("hotkeys.active") }}', {
                             headers: {
                                 'Accept': 'application/json',
                                 'X-Requested-With': 'XMLHttpRequest'

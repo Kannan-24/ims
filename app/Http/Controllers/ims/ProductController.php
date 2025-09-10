@@ -37,7 +37,7 @@ class ProductController extends Controller
             'description' => 'required',
             'hsn_code' => 'required|max:20',
             'gst_percentage' => 'required|numeric',
-            'unit_type' => 'required|in:kg,ltr,pcs',
+            'unit_type' => 'required|in:kg,ltr,pcs,box,meter,feet',
             'is_igst' => 'sometimes|boolean',
         ]);
 
@@ -71,7 +71,7 @@ class ProductController extends Controller
             'description' => 'required',
             'hsn_code' => 'required|max:20',
             'gst_percentage' => 'required|numeric',
-            'unit_type' => 'required|in:kg,ltr,pcs',
+            'unit_type' => 'required|in:kg,ltr,pcs,box,meter,feet',
             'is_igst' => 'sometimes|boolean',
         ]);
 

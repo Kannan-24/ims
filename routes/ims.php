@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     // Calendar Routes
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
     Route::prefix('calendar')->name('calendar.')->group(function () {
+        Route::get('/stats', [CalendarController::class, 'stats'])->name('stats');
         Route::get('/events', [CalendarController::class, 'events'])->name('events');
         Route::post('/events', [CalendarController::class, 'store'])->name('events.store');
         Route::get('/events/{event}', [CalendarController::class, 'show'])->name('events.show');
@@ -42,7 +43,7 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::patch('/hotkeys/{hotkey}/toggle', [HotkeyController::class, 'toggle'])->name('hotkeys.toggle');
     Route::get('/hotkeys/active', [HotkeyController::class, 'active'])->name('hotkeys.active');
     Route::get('/hotkeys/actions', [HotkeyController::class, 'getActions'])->name('hotkeys.actions');
-    
+
     // Bulk operations for hotkeys
     Route::delete('/hotkeys/bulk/delete', [HotkeyController::class, 'bulkDelete'])->name('hotkeys.bulk.delete');
     Route::patch('/hotkeys/bulk/activate', [HotkeyController::class, 'bulkActivate'])->name('hotkeys.bulk.activate');

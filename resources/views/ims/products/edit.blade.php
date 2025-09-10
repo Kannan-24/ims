@@ -1,111 +1,322 @@
-<x-app-layout>
-    <x-slot name="title">
-        {{ __('Edit Product') }} - {{ config('app.name', 'ATMS') }}
-    </x-slot>
+@php
+    $title = 'Edit Product';
+@endphp
 
-    <div class="py-6 mt-20 ml-4 sm:ml-64">
-        <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <!-- Breadcrumb Navigation -->
-            <x-bread-crumb-navigation />
-
-            <div class="p-8 bg-gray-800 border border-gray-700 rounded-lg shadow-lg">
-                <h2 class="text-3xl font-bold text-gray-200 mb-6">Edit Product</h2>
-
-                <form action="{{ route('products.update', $product->id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-
-                    <!-- Product Name -->
-                    <div class="mb-6">
-                        <label for="name" class="block text-gray-300 font-semibold mb-2">Product Name:</label>
-                        <input type="text" name="name" id="name" value="{{ old('name', $product->name) }}"
-                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                            required>
-                        @error('name')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Description -->
-                    <div class="mb-6">
-                        <label for="description" class="block text-gray-300 font-semibold mb-2">Description:</label>
-                        <textarea name="description" id="description"
-                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                            required>{{ old('description', $product->description) }}</textarea>
-                        @error('description')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Unit Type -->
-                    <div class="mb-6">
-                        <label for="unit_type" class="block text-gray-300 font-semibold mb-2">Unit Type:</label>
-                        <input type="text" name="unit_type" id="unit_type" value="{{ old('unit_type', $product->unit_type) }}"
-                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                            required>
-                        @error('unit_type')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    
-                    <!-- HSN Code -->
-                    <div class="mb-6">
-                        <label for="hsn_code" class="block text-gray-300 font-semibold mb-2">HSN Code:</label>
-                        <input type="text" name="hsn_code" id="hsn_code" value="{{ old('hsn_code', $product->hsn_code) }}"
-                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                            required>
-                        @error('hsn_code')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- GST / IGST Toggle -->
-                    <div class="mb-6">
-                        <label class="block text-gray-300 font-semibold mb-2">Tax Type:</label>
-                        <div class="flex items-center space-x-4 mt-2">
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="is_igst" value="0" 
-                                    class="form-radio text-blue-500" 
-                                    {{ !$product->is_igst ? 'checked' : '' }}>
-                                <span class="ml-2 text-gray-300">GST</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="is_igst" value="1" 
-                                    class="form-radio text-blue-500" 
-                                    {{ $product->is_igst ? 'checked' : '' }}>
-                                <span class="ml-2 text-gray-300">IGST</span>
-                            </label>
+<x-app-layout :title="$title">
+    <div class="bg-white min-h-screen" x-data="productEditManager()" x-init="init()">
+        <!-- Breadcrumbs -->
+        <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{{ route('dashboard') }}"
+                            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                            <i class="fas fa-home mr-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                            <a href="{{ route('products.index') }}"
+                                class="text-sm font-medium text-gray-700 hover:text-blue-600">
+                                Products
+                            </a>
                         </div>
-                        @error('is_igst')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                            <span class="text-sm font-medium text-gray-500">Edit</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
 
-                    <!-- GST Percentage -->
-                    <div class="mb-6">
-                        <label for="gst_percentage" class="block text-gray-300 font-semibold mb-2">GST Percentage:</label>
-                        <input type="number" name="gst_percentage" id="gst_percentage"
-                            value="{{ old('gst_percentage', $product->gst_percentage) }}" step="0.01"
-                            class="w-full px-4 py-3 border border-gray-700 bg-gray-800 text-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                            required>
-                        @error('gst_percentage')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Edit Product</h1>
+                    <p class="text-sm text-gray-600 mt-1">Update product information and details</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- Help Button -->
+                    <button @click="showHelpModal = true"
+                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
+                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
+                        Help
+                    </button>
+                    <a href="{{ route('products.show', $product) }}"
+                        class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
+                        <i class="fas fa-arrow-left w-4 h-4 mr-2"></i>
+                        Back to Product
+                    </a>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Submit and Cancel Buttons -->
-                    <div class="flex justify-end mt-6 space-x-4">
-                        <a href="{{ route('products.index') }}"
-                            class="px-6 py-3 text-gray-300 bg-gray-700 rounded-lg shadow-md hover:bg-gray-600 transition">
+        <!-- Content -->
+        <div class="p-6">
+            <form action="{{ route('products.update', $product) }}" method="POST" id="productForm"
+                @submit.prevent="submitForm">
+                @csrf
+                @method('PUT')
+
+                <!-- Product Information -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Product Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Product Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="name" required value="{{ old('name', $product->name) }}"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Enter product name">
+                            @error('name')
+                                <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                HSN Code <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="hsn_code" required
+                                value="{{ old('hsn_code', $product->hsn_code) }}"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Enter HSN code">
+                            @error('hsn_code')
+                                <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Description
+                            </label>
+                            <textarea name="description" rows="3"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Enter product description">{{ old('description', $product->description) }}</textarea>
+                            @error('description')
+                                <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unit & Tax Information -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Unit & Tax Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Unit Type <span class="text-red-500">*</span>
+                            </label>
+                            <select name="unit_type" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                <option value="" disabled>Select Unit Type</option>
+                                <option value="kg"
+                                    {{ old('unit_type', $product->unit_type) == 'kg' ? 'selected' : '' }}>Kilogram (kg)
+                                </option>
+                                <option value="ltr"
+                                    {{ old('unit_type', $product->unit_type) == 'ltr' ? 'selected' : '' }}>Liter (ltr)
+                                </option>
+                                <option value="pcs"
+                                    {{ old('unit_type', $product->unit_type) == 'pcs' ? 'selected' : '' }}>Pieces (pcs)
+                                </option>
+                                <option value="box"
+                                    {{ old('unit_type', $product->unit_type) == 'box' ? 'selected' : '' }}>Box</option>
+                                <option value="meter"
+                                    {{ old('unit_type', $product->unit_type) == 'meter' ? 'selected' : '' }}>Meter
+                                </option>
+                                <option value="feet"
+                                    {{ old('unit_type', $product->unit_type) == 'feet' ? 'selected' : '' }}>Feet
+                                </option>
+                            </select>
+                            @error('unit_type')
+                                <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                GST Percentage (%) <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" step="0.01" name="gst_percentage" required
+                                value="{{ old('gst_percentage', $product->gst_percentage) }}"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Enter GST percentage">
+                            @error('gst_percentage')
+                                <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                IGST Applicable
+                            </label>
+                            <div class="flex items-center mt-3">
+                                <input type="checkbox" name="is_igst" id="is_igst" value="1"
+                                    {{ old('is_igst', $product->is_igst) ? 'checked' : '' }}
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+                                <label for="is_igst" class="ml-2 text-sm text-gray-700">Apply IGST instead of
+                                    CGST/SGST</label>
+                            </div>
+                            @error('is_igst')
+                                <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        <kbd class="px-2 py-1 bg-gray-100 rounded text-xs">Ctrl+S</kbd> to save •
+                        <kbd class="px-2 py-1 bg-gray-100 rounded text-xs">Esc</kbd> to cancel
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <a href="{{ route('products.show', $product) }}"
+                            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
                             Cancel
                         </a>
-                        <button type="submit"
-                            class="px-6 py-3 text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 transition">
-                            Update Product
+                        <button type="submit" :disabled="isSubmitting"
+                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition-colors inline-flex items-center">
+                            <span x-show="!isSubmitting">
+                                <i class="fas fa-save mr-2"></i>
+                                Update Product
+                            </span>
+                            <span x-show="isSubmitting" class="inline-flex items-center">
+                                <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                Updating...
+                            </span>
                         </button>
                     </div>
-                </form>
+                </div>
+            </form>
+        </div>
+
+        <!-- Help Modal -->
+        <div x-show="showHelpModal" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-900">Edit Product Help</h2>
+                    <button @click="showHelpModal = false" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- Keyboard Shortcuts -->
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                            <i class="fas fa-keyboard text-green-600 mr-2"></i>Keyboard Shortcuts
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Save Changes</span>
+                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Ctrl +
+                                        S</kbd>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Cancel & Exit</span>
+                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Esc</kbd>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Show Help</span>
+                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">H</kbd>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Focus Next Field</span>
+                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Tab</kbd>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Editing Guidelines -->
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                            <i class="fas fa-edit text-blue-600 mr-2"></i>Editing Guidelines
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                            <div class="space-y-2">
+                                <div>• <strong>Product Name:</strong> Keep it descriptive and unique</div>
+                                <div>• <strong>HSN Code:</strong> Verify accuracy for tax compliance</div>
+                                <div>• <strong>Description:</strong> Update if product details changed</div>
+                            </div>
+                            <div class="space-y-2">
+                                <div>• <strong>Unit Type:</strong> Change if measurement method updated</div>
+                                <div>• <strong>GST Rate:</strong> Update if tax rates changed</div>
+                                <div>• <strong>IGST:</strong> Enable for inter-state transactions</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end px-6 py-4 bg-gray-50 border-t border-gray-200">
+                    <button @click="showHelpModal = false"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Got it!
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function productEditManager() {
+            return {
+                showHelpModal: false,
+                isSubmitting: false,
+
+                init() {
+                    this.bindKeyboardEvents();
+                },
+
+                bindKeyboardEvents() {
+                    document.addEventListener('keydown', (e) => {
+                        if (e.ctrlKey && e.key === 's') {
+                            e.preventDefault();
+                            this.submitForm();
+                        }
+
+                        if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.altKey) {
+                            e.preventDefault();
+                            this.showHelpModal = true;
+                        }
+
+                        if (e.key === 'Escape') {
+                            e.preventDefault();
+                            if (this.showHelpModal) {
+                                this.showHelpModal = false;
+                            } else if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
+                                window.location.href = '{{ route('products.show', $product) }}';
+                            }
+                        }
+                    });
+                },
+
+                submitForm() {
+                    if (this.isSubmitting) return;
+
+                    this.isSubmitting = true;
+                    document.getElementById('productForm').submit();
+                }
+            }
+        }
+    </script>
 </x-app-layout>

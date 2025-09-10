@@ -17,6 +17,38 @@ class CalendarController extends Controller
         return view('ims.calendar.index');
     }
 
+    public function stats(): JsonResponse
+    {
+        $userId = Auth::id();
+        $today = Carbon::today();
+        $thisWeek = Carbon::now()->startOfWeek();
+        $thisMonth = Carbon::now()->startOfMonth();
+
+        $stats = [
+            'total_events' => Event::where('created_by', $userId)->count(),
+            'today_events' => Event::where('created_by', $userId)
+                ->whereDate('start', $today)
+                ->count(),
+            'upcoming_events' => Event::where('created_by', $userId)
+                ->where('start', '>', Carbon::now())
+                ->where('status', 'pending')
+                ->count(),
+            'completed_events' => Event::where('created_by', $userId)
+                ->where('status', 'completed')
+                ->count(),
+            'this_week_events' => Event::where('created_by', $userId)
+                ->where('start', '>=', $thisWeek)
+                ->where('start', '<', $thisWeek->copy()->addWeek())
+                ->count(),
+            'this_month_events' => Event::where('created_by', $userId)
+                ->where('start', '>=', $thisMonth)
+                ->where('start', '<', $thisMonth->copy()->addMonth())
+                ->count(),
+        ];
+
+        return response()->json($stats);
+    }
+
     public function events(Request $request): JsonResponse
     {
         $start = $request->input('start');
@@ -40,11 +72,13 @@ class CalendarController extends Controller
             'start' => 'required|date',
             'end' => 'required|date|after:start',
             'type' => 'required|string|in:meeting,task,appointment,reminder,other',
+            'status' => 'nullable|string|in:pending,in_progress,completed,cancelled',
             'color' => 'nullable|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'all_day' => 'boolean'
         ]);
 
         $validated['created_by'] = Auth::id();
+        $validated['status'] = $validated['status'] ?? 'pending';
         $validated['color'] = $validated['color'] ?? $this->getTypeColor($validated['type']);
 
         $event = Event::create($validated);
@@ -54,12 +88,22 @@ class CalendarController extends Controller
 
     public function show(Event $event): JsonResponse
     {
+        // Ensure user can only access their own events
+        if ($event->created_by !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $event->load(['creator', 'updater']);
         return response()->json($event->toFullCalendarArray());
     }
 
     public function update(Request $request, Event $event): JsonResponse
     {
+        // Ensure user can only update their own events
+        if ($event->created_by !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
@@ -80,12 +124,22 @@ class CalendarController extends Controller
 
     public function destroy(Event $event): JsonResponse
     {
+        // Ensure user can only delete their own events
+        if ($event->created_by !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $event->delete();
         return response()->json(['message' => 'Event deleted successfully']);
     }
 
     public function move(Request $request, Event $event): JsonResponse
     {
+        // Ensure user can only move their own events
+        if ($event->created_by !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'start' => 'required|date',
             'end' => 'required|date|after:start',
@@ -99,7 +153,7 @@ class CalendarController extends Controller
 
     private function getTypeColor(string $type): string
     {
-        return match($type) {
+        return match ($type) {
             'meeting' => '#4f46e5',      // Indigo
             'task' => '#06b6d4',         // Cyan
             'appointment' => '#10b981',   // Emerald
