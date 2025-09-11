@@ -87,4 +87,35 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    /**
+     * Get user details by email for login flow.
+     */
+    public function getUserByEmail(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email']
+        ]);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No account found with this email address.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'user' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'profile_photo' => $user->profile_photo ? asset('storage/' . ltrim($user->profile_photo, '/')) : null,
+                'avatar' => $user->profile_photo 
+                    ? asset('storage/' . ltrim($user->profile_photo, '/'))
+                    : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=3b82f6&color=ffffff&size=128&rounded=true'
+            ]
+        ]);
+    }
 }

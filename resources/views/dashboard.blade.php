@@ -310,8 +310,14 @@
                         <div class="space-y-4">
                             @forelse($recentActivities as $activity)
                                 <div class="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                                    <div class="w-10 h-10 bg-{{ $activity['color'] ?? 'gray' }}-100 rounded-full flex items-center justify-center">
-                                        <i class="{{ $activity['icon'] ?? 'fas fa-circle' }} text-{{ $activity['color'] ?? 'gray' }}-600"></i>
+                                    @php
+                                        $color = $activity['color'] ?? 'gray';
+                                        $bgClass = "bg-{$color}-100";
+                                        $textClass = "text-{$color}-600";
+                                        $icon = $activity['icon'] ?? 'fas fa-circle';
+                                    @endphp
+                                    <div class="w-10 h-10 {{ $bgClass }} rounded-full flex items-center justify-center">
+                                        <i class="{{ $icon }} {{ $textClass }}"></i>
                                     </div>
                                     <div class="flex-1">
                                         <p class="text-sm text-gray-900">{{ $activity['text'] ?? 'No description' }}</p>
@@ -448,8 +454,19 @@
 
                 initCharts() {
                     try {
-                        const chartData = @json($chartData ?? ['labels' => [], 'sales' => [], 'customers' => [], 'topProducts' => [], 'topProductsSales' => []]);
-                        const orderStats = @json($orderStats ?? ['this_month' => 0, 'total' => 0, 'pending' => 0, 'completed' => 0]);
+                        const chartData = {!! json_encode($chartData ?? [
+                            'labels' => [], 
+                            'sales' => [], 
+                            'customers' => [], 
+                            'topProducts' => [], 
+                            'topProductsSales' => []
+                        ]) !!};
+                        const orderStats = {!! json_encode($orderStats ?? [
+                            'this_month' => 0, 
+                            'total' => 0, 
+                            'pending' => 0, 
+                            'completed' => 0
+                        ]) !!};
 
                         // Sales Trend Chart
                         this.initSalesChart(chartData);

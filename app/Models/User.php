@@ -32,7 +32,7 @@ class User extends Authenticatable
         'role',
         'employee_id',
         'status',
-        'profile_image',
+        'profile_photo',
         'remember_token',
         'is_verified',
         'is_active',

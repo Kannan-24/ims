@@ -87,7 +87,7 @@
                     </div>
                 @else
                     <!-- Settings Content -->
-                    <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="max-w-7xl mx-auto space-y-6">
 
                         <!-- Account Overview Card -->
                         <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
@@ -142,7 +142,7 @@
                                     <p class="text-sm text-gray-600">Ensure your account is using a strong password to stay secure</p>
                                 </div>
                             </div>
-                            <div class="max-w-xl">
+                            <div class="max-w-2xl">
                                 @include('profile.partials.update-password-form')
                             </div>
                         </div>
@@ -159,7 +159,7 @@
                                         two-factor authentication</p>
                                 </div>
                             </div>
-                            <div class="max-w-xl">
+                            <div class="w-full">
                                 @php($secret = $user->two_factor_secret)
                                 @include('profile.partials.two-factor-settings')
                             </div>
