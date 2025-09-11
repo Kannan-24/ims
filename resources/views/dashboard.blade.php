@@ -1,431 +1,672 @@
 <x-app-layout>
-    <x-slot name="title">Dashboard</x-slot>
+    <x-slot name="title">
+        {{ __('Dashboard') }} - {{ config('app.name', 'IMS') }}
+    </x-slot>
 
-    <div class="mt-20 py-6 px-4 sm:ml-64 bg-gray-900 text-white min-h-screen">
-        <!-- Welcome -->
-        <div class="text-center bg-gradient-to-r from-indigo-500 to-purple-600 p-6 rounded-lg shadow-lg mb-6">
-            <h1 class="text-3xl font-bold">Welcome Back, {{ Auth::user()->name ?? 'User' }} 👋</h1>
-            <p class="text-sm mt-2">Here's a quick look at today’s system performance.</p>
+    <div class="bg-white" x-data="dashboard()" x-init="init()">
+        <!-- Breadcrumbs -->
+        <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{{ route('dashboard') }}"
+                            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                            <i class="fas fa-home mr-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                </ol>
+            </nav>
         </div>
 
-        <!-- Metric Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-
-            <!-- Customers -->
-            <div class="flex items-center gap-4 p-5 bg-white dark:bg-gray-800 shadow rounded-2xl">
-                <div class="bg-blue-100 dark:bg-blue-800 p-3 rounded-full">
-                    <!-- Custom Customer Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600 dark:text-blue-200"
-                        viewBox="0 0 640 512" fill="currentColor">
-                        <path
-                            d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z" />
-                    </svg>
-                </div>
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-300 font-medium">Customers</p>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $totalCustomers }}</h2>
+                    <h1 class="text-2xl font-bold text-gray-900">Welcome Back, {{ Auth::user()->name ?? 'User' }} 👋</h1>
+                    <p class="text-sm text-gray-600 mt-1">Here's what's happening with your business today</p>
                 </div>
-            </div>
-
-            <!-- Orders -->
-            <div class="flex items-center gap-4 p-5 bg-white dark:bg-gray-800 shadow rounded-2xl">
-                <div class="bg-yellow-100 dark:bg-yellow-800 p-3 rounded-full">
-                    <!-- Custom Orders Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-600 dark:text-yellow-200"
-                        viewBox="0 0 384 512" fill="currentColor">
-                        <path
-                            d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM80 64l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16L80 96c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm16 96l192 0c17.7 0 32 14.3 32 32l0 64c0 17.7-14.3 32-32 32L96 352c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32zm0 32l0 64 192 0 0-64L96 256zM240 416l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-300 font-medium">Orders</p>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $totalInvoices }}</h2>
-                </div>
-            </div>
-
-            <!-- Purchases -->
-            <div class="flex items-center gap-4 p-5 bg-white dark:bg-gray-800 shadow rounded-2xl">
-                <div class="bg-green-100 dark:bg-green-800 p-3 rounded-full">
-                    <!-- Custom Purchase Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 dark:text-green-200"
-                        viewBox="0 0 576 512" fill="currentColor">
-                        <path
-                            d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-300 font-medium">Total Purchases</p>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">₹
-                        {{ number_format($totalPurchases, 2) }}</h2>
-                </div>
-            </div>
-
-            <!-- Total Sales -->
-            <div class="flex items-center gap-4 p-5 bg-white dark:bg-gray-800 shadow rounded-2xl">
-                <div class="bg-purple-100 dark:bg-purple-800 p-3 rounded-full">
-                    <!-- Custom Sales Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-600 dark:text-purple-200"
-                        viewBox="0 0 320 512" fill="currentColor">
-                        <path
-                            d="M0 64C0 46.3 14.3 32 32 32l64 0 16 0 176 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-56.2 0c9.6 14.4 16.7 30.6 20.7 48l35.6 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-35.6 0c-13.2 58.3-61.9 103.2-122.2 110.9L274.6 422c14.4 10.3 17.7 30.3 7.4 44.6s-30.3 17.7-44.6 7.4L13.4 314C2.1 306-2.7 291.5 1.5 278.2S18.1 256 32 256l80 0c32.8 0 61-19.7 73.3-48L32 208c-17.7 0-32-14.3-32-32s14.3-32 32-32l153.3 0C173 115.7 144.8 96 112 96L96 96 32 96C14.3 96 0 81.7 0 64z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-300 font-medium">Total Sales</p>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">₹ {{ number_format($totalSales, 2) }}
-                    </h2>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- AI Features Showcase -->
-        <div
-            class="bg-gradient-to-r from-blue-900/50 to-purple-900/50 backdrop-blur-xl border border-blue-500/20 p-6 rounded-2xl shadow-2xl mb-6">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center">
-                    <div
-                        class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
-                            </path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-white">AI Copilot Assistant</h3>
-                        <p class="text-blue-200">Powered by Google Gemini AI - Boost your productivity</p>
-                    </div>
-                </div>
-                <a href="{{ route('ai.copilot') }}"
-                    class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    Try AI Assistant
-                </a>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Email Generation -->
-                <div class="bg-blue-500/20 border border-blue-500/30 rounded-xl p-4 hover:bg-blue-500/30 transition-all duration-200 cursor-pointer"
-                    onclick="window.location.href='{{ route('ai.copilot') }}'">
-                    <div class="flex items-center mb-3">
-                        <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                </path>
-                            </svg>
+                <div class="flex items-center space-x-3">
+                    <!-- Quick Actions Dropdown -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open"
+                            class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
+                            <i class="fas fa-bolt w-4 h-4 mr-2"></i>
+                            Quick Actions
+                            <i class="fas fa-chevron-down w-3 h-3 ml-2"></i>
+                        </button>
+                        <div x-show="open" @click.outside="open = false"
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-10"
+                            style="display: none;">
+                            <div class="p-2">
+                                <a href="{{ route('customers.create') }}"
+                                    class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
+                                    <i class="fas fa-user-plus w-4 h-4 mr-3"></i>
+                                    Add Customer
+                                </a>
+                                <a href="{{ route('ai.copilot') }}"
+                                    class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
+                                    <i class="fas fa-robot w-4 h-4 mr-3"></i>
+                                    AI Assistant
+                                </a>
+                                <a href="{{ route('hotkeys.index') }}"
+                                    class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
+                                    <i class="fas fa-keyboard w-4 h-4 mr-3"></i>
+                                    Manage Hotkeys
+                                </a>
+                            </div>
                         </div>
-                        <h4 class="text-white font-semibold">Smart Emails</h4>
                     </div>
-                    <p class="text-blue-200 text-sm">Generate professional emails for customers, follow-ups, and
-                        business communications</p>
-                </div>
-
-                <!-- Quotation Terms -->
-                <div class="bg-green-500/20 border border-green-500/30 rounded-xl p-4 hover:bg-green-500/30 transition-all duration-200 cursor-pointer"
-                    onclick="window.location.href='{{ route('ai.copilot') }}'">
-                    <div class="flex items-center mb-3">
-                        <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h4 class="text-white font-semibold">Quotation T&C</h4>
-                    </div>
-                    <p class="text-green-200 text-sm">Create professional terms and conditions for quotations and
-                        business proposals</p>
-                </div>
-
-                <!-- Product Descriptions -->
-                <div class="bg-purple-500/20 border border-purple-500/30 rounded-xl p-4 hover:bg-purple-500/30 transition-all duration-200 cursor-pointer"
-                    onclick="window.location.href='{{ route('ai.copilot') }}'">
-                    <div class="flex items-center mb-3">
-                        <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h4 class="text-white font-semibold">Product Content</h4>
-                    </div>
-                    <p class="text-purple-200 text-sm">Generate compelling product descriptions and marketing content
-                    </p>
-                </div>
-
-                <!-- Business Documents -->
-                <div class="bg-yellow-500/20 border border-yellow-500/30 rounded-xl p-4 hover:bg-yellow-500/30 transition-all duration-200 cursor-pointer"
-                    onclick="window.location.href='{{ route('ai.copilot') }}'">
-                    <div class="flex items-center mb-3">
-                        <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                </path>
-                            </svg>
-                        </div>
-                        <h4 class="text-white font-semibold">Business Docs</h4>
-                    </div>
-                    <p class="text-yellow-200 text-sm">Create professional business proposals, reports, and
-                        documentation</p>
-                </div>
-            </div>
-
-            <!-- AI Stats -->
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold text-white" id="dashboard-ai-requests">0</div>
-                    <div class="text-sm text-gray-300">AI Requests Today</div>
-                </div>
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold text-green-400" id="dashboard-ai-success">0</div>
-                    <div class="text-sm text-gray-300">Successful Generations</div>
-                </div>
-                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold text-blue-400">24/7</div>
-                    <div class="text-sm text-gray-300">AI Availability</div>
                 </div>
             </div>
         </div>
 
+        <!-- Main Content -->
+        <div class="bg-gray-50 min-h-screen">
+            <div class="p-6">
 
-        <!-- Charts -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <!-- Monthly Sales Chart -->
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h3 class="text-xl mb-4 font-semibold text-white">Monthly Sales</h3>
-                <canvas id="monthlySalesChart" height="150"></canvas>
-            </div>
+                <!-- Stats Cards with Modern Design -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6 mb-8">
+                    <!-- Total Customers -->
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-lg border border-blue-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-sm font-semibold text-blue-700 uppercase tracking-wide">Total<br>Customers</p>
+                                    <div class="p-2.5 bg-blue-500 bg-opacity-20 rounded-lg">
+                                        <i class="fas fa-users text-blue-600 text-lg"></i>
+                                    </div>
+                                </div>
+                                <p class="text-3xl font-bold text-gray-900 mb-1">{{ number_format($totalCustomers) }}</p>
+                                <p class="text-xs text-green-600 font-medium">+{{ $customerGrowth }}% from last period</p>
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Statistics Overview Chart -->
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h3 class="text-xl mb-4 font-semibold text-white">Statistics Overview</h3>
-                <canvas id="statisticsChart" height="150"></canvas>
-            </div>
-        </div>
+                    <!-- Active Customers -->
+                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-lg border border-emerald-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-sm font-semibold text-emerald-700 uppercase tracking-wide">Active<br>Customers</p>
+                                    <div class="p-2.5 bg-emerald-500 bg-opacity-20 rounded-lg">
+                                        <i class="fas fa-user-check text-emerald-600 text-lg"></i>
+                                    </div>
+                                </div>
+                                <p class="text-3xl font-bold text-gray-900 mb-1">{{ number_format($activeCustomers) }}</p>
+                                <p class="text-xs text-emerald-600 font-medium">Last 30 days</p>
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- Demographics Overview Card -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <div class="bg-gray-800 p-4 rounded-lg shadow mb-6 col-span-2">
-                <h3 class="text-xl mb-4 font-semibold">Orders Overview</h3>
-                <table class="table-auto w-full text-left text-sm">
-                    <thead>
-                        <tr class="border-b border-gray-700">
-                            <th class="px-4 py-2">#</th>
-                            <th class="px-4 py-2">Invoice No</th>
-                            <th class="px-4 py-2">Customer</th>
-                            <th class="px-4 py-2">Total (₹)</th>
-                            <th class="px-4 py-2">Date</th>
-                            <th class="px-4 py-2">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($recentInvoicesFiltered as $invoice)
-                            <tr class="border-b border-gray-700">
-                                <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                                <td class="px-4 py-2">{{ $invoice->invoice_no }}</td>
-                                <td class="px-4 py-2">{{ $invoice->Customer->company_name }}</td>
-                                <td class="px-4 py-2">₹ {{ number_format($invoice->total, 2) }}</td>
-                                <td class="px-4 py-2">{{ $invoice->invoice_date }}</td>
-                                <td class="px-4 py-2">
-                                    @if ($invoice->payment && $invoice->payment->first())
-                                        @php
-                                            $payment = $invoice->payment->first();
-                                            $statusClass = match ($payment->status) {
-                                                'paid' => 'bg-green-600',
-                                                'partial' => 'bg-yellow-500',
-                                                'unpaid' => 'bg-red-600',
-                                                default => 'bg-gray-500',
-                                            };
-                                        @endphp
-                                        <a href="{{ route('payments.show', $payment->id) }}"
-                                            class="text-white px-2 py-1 rounded text-xs {{ $statusClass }}">
-                                            {{ ucfirst($payment->status) }}
-                                        </a>
-                                    @else
-                                        <span class="bg-gray-500 text-white px-2 py-1 rounded text-xs">Not
-                                            Available</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                    <!-- Total Products -->
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-lg border border-purple-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-sm font-semibold text-purple-700 uppercase tracking-wide">Total<br>Products</p>
+                                    <div class="p-2.5 bg-purple-500 bg-opacity-20 rounded-lg">
+                                        <i class="fas fa-boxes text-purple-600 text-lg"></i>
+                                    </div>
+                                </div>
+                                <p class="text-3xl font-bold text-gray-900 mb-1">{{ number_format($totalProducts) }}</p>
+                                <p class="text-xs text-purple-600 font-medium">In catalog</p>
+                            </div>
+                        </div>
+                    </div>
 
+                    <!-- Low Stock Products -->
+                    <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-lg border border-red-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-sm font-semibold text-red-700 uppercase tracking-wide">Low<br>Stock</p>
+                                    <div class="p-2.5 bg-red-500 bg-opacity-20 rounded-lg">
+                                        <i class="fas fa-exclamation-triangle text-red-600 text-lg"></i>
+                                    </div>
+                                </div>
+                                <p class="text-3xl font-bold text-gray-900 mb-1">{{ number_format($lowStockProducts) }}</p>
+                                <p class="text-xs text-red-600 font-medium">Needs restocking</p>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- Pagination for Orders -->
-                <div class="mt-4">
-                    {{ $recentInvoicesFiltered->links() }} <!-- Pagination Links -->
+                    <!-- Total Orders -->
+                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-lg border border-yellow-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-sm font-semibold text-yellow-700 uppercase tracking-wide">Total<br>Orders</p>
+                                    <div class="p-2.5 bg-yellow-500 bg-opacity-20 rounded-lg">
+                                        <i class="fas fa-file-invoice text-yellow-600 text-lg"></i>
+                                    </div>
+                                </div>
+                                <p class="text-3xl font-bold text-gray-900 mb-1">{{ number_format($totalInvoices) }}</p>
+                                <p class="text-xs text-yellow-600 font-medium">All time</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Revenue -->
+                    <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl shadow-lg border border-indigo-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Monthly<br>Revenue</p>
+                                    <div class="p-2.5 bg-indigo-500 bg-opacity-20 rounded-lg">
+                                        <i class="fas fa-chart-line text-indigo-600 text-lg"></i>
+                                    </div>
+                                </div>
+                                <p class="text-3xl font-bold text-gray-900 mb-1">₹{{ number_format($monthlyRevenue, 0) }}</p>
+                                <p class="text-xs {{ $revenueGrowth >= 0 ? 'text-green-600' : 'text-red-600' }} font-medium">
+                                    {{ $revenueGrowth >= 0 ? '+' : '' }}{{ number_format($revenueGrowth, 1) }}% from last month
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Revenue -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-lg border border-green-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="text-sm font-semibold text-green-700 uppercase tracking-wide">Today's<br>Revenue</p>
+                                    <div class="p-2.5 bg-green-500 bg-opacity-20 rounded-lg">
+                                        <i class="fas fa-dollar-sign text-green-600 text-lg"></i>
+                                    </div>
+                                </div>
+                                <p class="text-3xl font-bold text-gray-900 mb-1">₹{{ number_format($todaysRevenue, 0) }}</p>
+                                <p class="text-xs text-green-600 font-medium">{{ date('M d, Y') }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Demographics Overview -->
-            <div class="bg-gray-800 p-4 rounded-lg shadow mb-6">
-                <h3 class="text-xl mb-4 font-semibold">Demographics Overview</h3>
-                <canvas id="demographicsChart" height="100"></canvas>
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Sales Trend Chart -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Sales Trend</h3>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                <span class="text-sm text-gray-600">Last 6 Months</span>
+                            </div>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="salesChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Customer Growth Chart -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Customer Growth</h3>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <span class="text-sm text-gray-600">New Customers</span>
+                            </div>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="customerGrowthChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Top Products Chart -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Top Products by Sales</h3>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                <span class="text-sm text-gray-600">Last 30 Days</span>
+                            </div>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="topProductsChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Order Status Chart -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Order Status Breakdown</h3>
+                            <div class="text-sm text-gray-600">Current Status</div>
+                        </div>
+                        <div class="relative h-64">
+                            <canvas id="orderStatusChart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Features Showcase -->
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-sm p-6 mb-8 text-white">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-robot text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold">AI Copilot Assistant</h3>
+                                <p class="text-blue-100">Powered by Google Gemini AI • Boost your productivity</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('ai.copilot') }}"
+                            class="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                            Try AI Assistant →
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Email Generation -->
+                        <div class="bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition-colors cursor-pointer"
+                            onclick="window.location.href='{{ route('ai.copilot') }}'">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-envelope w-5 h-5 mr-3"></i>
+                                <h4 class="font-semibold">Smart Emails</h4>
+                            </div>
+                            <p class="text-blue-100 text-sm">Generate professional emails for customers and business communications</p>
+                        </div>
+
+                        <!-- Business Documents -->
+                        <div class="bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition-colors cursor-pointer"
+                            onclick="window.location.href='{{ route('ai.copilot') }}'">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-file-alt w-5 h-5 mr-3"></i>
+                                <h4 class="font-semibold">Documents</h4>
+                            </div>
+                            <p class="text-blue-100 text-sm">Create quotations, terms & conditions, and business proposals</p>
+                        </div>
+
+                        <!-- Content Creation -->
+                        <div class="bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition-colors cursor-pointer"
+                            onclick="window.location.href='{{ route('ai.copilot') }}'">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-lightbulb w-5 h-5 mr-3"></i>
+                                <h4 class="font-semibold">Content</h4>
+                            </div>
+                            <p class="text-blue-100 text-sm">Generate product descriptions, marketing content, and announcements</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity & Quick Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
+                            <a href="{{ route('activity-logs.index') }}"
+                                class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                View All →
+                            </a>
+                        </div>
+
+                        <div class="space-y-4">
+                            @forelse($recentActivities as $activity)
+                                <div class="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                                    <div class="w-10 h-10 bg-{{ $activity['color'] ?? 'gray' }}-100 rounded-full flex items-center justify-center">
+                                        <i class="{{ $activity['icon'] ?? 'fas fa-circle' }} text-{{ $activity['color'] ?? 'gray' }}-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm text-gray-900">{{ $activity['text'] ?? 'No description' }}</p>
+                                        <p class="text-xs text-gray-500">{{ $activity['time'] ?? 'Unknown time' }} by {{ $activity['user'] ?? 'Unknown user' }}</p>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-8">
+                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-history text-gray-400 text-xl"></i>
+                                    </div>
+                                    <p class="text-gray-500">No recent activity</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Recent Orders</h3>
+                            <a href="{{ route('invoices.index') }}"
+                                class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                View All →
+                            </a>
+                        </div>
+
+                        <div class="space-y-4">
+                            @forelse($recentOrders as $order)
+                                <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-file-invoice text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">{{ $order->invoice_no }}</p>
+                                            <p class="text-xs text-gray-500">{{ $order->customer->company_name ?? 'N/A' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-medium text-gray-900">₹{{ number_format($order->total, 0) }}</p>
+                                        <p class="text-xs text-gray-500">{{ $order->created_at->diffForHumans() }}</p>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-8">
+                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-file-invoice text-gray-400 text-xl"></i>
+                                    </div>
+                                    <p class="text-gray-500">No recent orders</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Grid -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <a href="{{ route('customers.create') }}"
+                            class="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group text-center">
+                            <div class="w-12 h-12 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-user-plus text-blue-600 text-xl"></i>
+                            </div>
+                            <p class="text-sm font-medium text-gray-900">Add Customer</p>
+                            <p class="text-xs text-gray-500 mt-1">Create new customer</p>
+                        </a>
+
+                        @if (Route::has('products.create'))
+                            <a href="{{ route('products.create') }}"
+                                class="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors group text-center">
+                                <div class="w-12 h-12 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-box text-purple-600 text-xl"></i>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">Add Product</p>
+                                <p class="text-xs text-gray-500 mt-1">Create new product</p>
+                            </a>
+                        @endif
+
+                        @if (Route::has('invoices.create'))
+                            <a href="{{ route('invoices.create') }}"
+                                class="p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors group text-center">
+                                <div class="w-12 h-12 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-file-invoice text-green-600 text-xl"></i>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">Create Order</p>
+                                <p class="text-xs text-gray-500 mt-1">New invoice/booking</p>
+                            </a>
+                        @endif
+
+                        @if (Route::has('stocks.index'))
+                            <a href="{{ route('stocks.index') }}"
+                                class="p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors group text-center">
+                                <div class="w-12 h-12 bg-yellow-100 group-hover:bg-yellow-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-warehouse text-yellow-600 text-xl"></i>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">Check Stock</p>
+                                <p class="text-xs text-gray-500 mt-1">Inventory status</p>
+                            </a>
+                        @endif
+
+                        <a href="{{ route('ai.copilot') }}"
+                            class="p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors group text-center">
+                            <div class="w-12 h-12 bg-indigo-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-robot text-indigo-600 text-xl"></i>
+                            </div>
+                            <p class="text-sm font-medium text-gray-900">AI Assistant</p>
+                            <p class="text-xs text-gray-500 mt-1">Get AI help</p>
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
+    </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const demographicsCtx = document.getElementById('demographicsChart').getContext('2d');
-                new Chart(demographicsCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Districts', 'States', 'Countries'],
-                        datasets: [{
-                            data: [{{ $districtsCount }}, {{ $statesCount }},
-                                {{ $countriesCount }}
-                            ],
-                            backgroundColor: ['#FF8C66', '#66FF8C', '#668CFF'], // Lighter colors
-                            hoverOffset: 4,
-                            borderWidth: 0,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                labels: {
-                                    font: {
-                                        size: 14
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(tooltipItem) {
-                                        return tooltipItem.label + ': ' + tooltipItem.raw;
-                                    }
-                                }
-                            }
-                        }
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        function dashboard() {
+            return {
+                init() {
+                    // Wait for Chart.js to load
+                    if (typeof Chart !== 'undefined') {
+                        this.initCharts();
+                    } else {
+                        setTimeout(() => {
+                            this.initCharts();
+                        }, 100);
                     }
-                });
+                },
 
-                const salesCtx = document.getElementById('monthlySalesChart').getContext('2d');
-                new Chart(salesCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: {!! json_encode($months) !!},
-                        datasets: [{
-                            label: 'Monthly Sales',
-                            data: {!! json_encode($monthlySales) !!},
-                            backgroundColor: '#6366f1',
-                            borderRadius: 5,
-                            borderColor: '#4f46e5',
-                            borderWidth: 2,
-                            hoverBackgroundColor: '#4f46e5',
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                ticks: {
-                                    font: {
-                                        size: 14,
-                                        weight: 'bold'
-                                    }
-                                }
+                initCharts() {
+                    try {
+                        const chartData = @json($chartData ?? ['labels' => [], 'sales' => [], 'customers' => [], 'topProducts' => [], 'topProductsSales' => []]);
+                        const orderStats = @json($orderStats ?? ['this_month' => 0, 'total' => 0, 'pending' => 0, 'completed' => 0]);
+
+                        // Sales Trend Chart
+                        this.initSalesChart(chartData);
+                        
+                        // Customer Growth Chart
+                        this.initCustomerChart(chartData);
+                        
+                        // Top Products Chart
+                        this.initTopProductsChart(chartData);
+                        
+                        // Order Status Chart
+                        this.initOrderStatusChart(orderStats);
+                        
+                    } catch (error) {
+                        console.error('Error initializing charts:', error);
+                    }
+                },
+
+                initSalesChart(chartData) {
+                    const salesCtx = document.getElementById('salesChart');
+                    if (salesCtx && Chart) {
+                        const hasSalesData = chartData.sales && chartData.sales.some(value => value > 0);
+                        
+                        new Chart(salesCtx, {
+                            type: 'line',
+                            data: {
+                                labels: chartData.labels || [],
+                                datasets: [{
+                                    label: hasSalesData ? 'Sales (₹)' : 'No Sales Data',
+                                    data: chartData.sales || [],
+                                    borderColor: hasSalesData ? 'rgb(59, 130, 246)' : 'rgba(156, 163, 175, 0.5)',
+                                    backgroundColor: hasSalesData ? 'rgba(59, 130, 246, 0.1)' : 'rgba(156, 163, 175, 0.1)',
+                                    tension: 0.4,
+                                    fill: true,
+                                    borderWidth: 2
+                                }]
                             },
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    font: {
-                                        size: 14,
-                                        weight: 'bold'
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
                                     },
-                                    callback: function(value) {
-                                        return '₹ ' + value.toLocaleString();
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return '₹' + context.parsed.y.toLocaleString('en-IN');
+                                            }
+                                        }
                                     }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                const statsCtx = document.getElementById('statisticsChart').getContext('2d');
-                new Chart(statsCtx, {
-                    type: 'line',
-                    data: {
-                        labels: {!! json_encode($months) !!},
-                        datasets: [{
-                                label: 'Sales',
-                                data: {!! json_encode($statisticsData['sales']) !!},
-                                borderColor: '#34d399',
-                                fill: false,
-                                tension: 0.1,
-                                borderWidth: 3,
-                                pointRadius: 4,
-                                pointBackgroundColor: '#34d399',
-                            },
-                            {
-                                label: 'Purchases',
-                                data: {!! json_encode($statisticsData['purchases']) !!},
-                                borderColor: '#f87171',
-                                fill: false,
-                                tension: 0.1,
-                                borderWidth: 3,
-                                pointRadius: 4,
-                                pointBackgroundColor: '#f87171',
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                ticks: {
-                                    font: {
-                                        size: 14,
-                                        weight: 'bold'
-                                    }
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    font: {
-                                        size: 14,
-                                        weight: 'bold'
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        },
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '₹' + value.toLocaleString('en-IN');
+                                            }
+                                        }
                                     },
-                                    callback: function(value) {
-                                        return '₹ ' + value.toLocaleString();
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
                                     }
                                 }
                             }
-                        }
+                        });
                     }
-                });
+                },
 
-                // Load AI usage stats
-                function loadAIStats() {
-                    const requestCount = localStorage.getItem('aiRequestCount') || '0';
-                    const successCount = localStorage.getItem('aiSuccessCount') || '0';
+                initCustomerChart(chartData) {
+                    const customerCtx = document.getElementById('customerGrowthChart');
+                    if (customerCtx && Chart) {
+                        const hasCustomerData = chartData.customers && chartData.customers.some(value => value > 0);
+                        
+                        new Chart(customerCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: chartData.labels || [],
+                                datasets: [{
+                                    label: hasCustomerData ? 'New Customers' : 'No Customer Data',
+                                    data: chartData.customers || [],
+                                    backgroundColor: hasCustomerData ? 'rgba(16, 185, 129, 0.8)' : 'rgba(156, 163, 175, 0.5)',
+                                    borderColor: hasCustomerData ? 'rgb(16, 185, 129)' : 'rgb(156, 163, 175)',
+                                    borderWidth: 1,
+                                    borderRadius: 4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        },
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                },
 
-                    document.getElementById('dashboard-ai-requests').textContent = requestCount;
-                    document.getElementById('dashboard-ai-success').textContent = successCount;
+                initTopProductsChart(chartData) {
+                    const topProductsCtx = document.getElementById('topProductsChart');
+                    if (topProductsCtx && Chart) {
+                        const hasProductData = chartData.topProducts && chartData.topProducts.length > 0;
+                        
+                        new Chart(topProductsCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: hasProductData ? chartData.topProducts : ['No Data'],
+                                datasets: [{
+                                    data: hasProductData ? chartData.topProductsSales : [1],
+                                    backgroundColor: hasProductData ? [
+                                        '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#10B981'
+                                    ] : ['rgba(156, 163, 175, 0.5)'],
+                                    borderWidth: 2,
+                                    borderColor: '#fff'
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            usePointStyle: true,
+                                            padding: 20
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return context.label + ': ' + context.parsed + ' units sold';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                },
+
+                initOrderStatusChart(orderStats) {
+                    const orderStatusCtx = document.getElementById('orderStatusChart');
+                    if (orderStatusCtx && Chart) {
+                        new Chart(orderStatusCtx, {
+                            type: 'pie',
+                            data: {
+                                labels: ['This Month', 'Previous Orders', 'Pending', 'Completed'],
+                                datasets: [{
+                                    data: [
+                                        orderStats.this_month || 0,
+                                        Math.max((orderStats.total || 0) - (orderStats.this_month || 0), 0),
+                                        orderStats.pending || 0,
+                                        orderStats.completed || 0
+                                    ],
+                                    backgroundColor: [
+                                        'rgba(59, 130, 246, 0.8)',
+                                        'rgba(156, 163, 175, 0.8)',
+                                        'rgba(245, 158, 11, 0.8)',
+                                        'rgba(16, 185, 129, 0.8)'
+                                    ],
+                                    borderColor: [
+                                        'rgb(59, 130, 246)',
+                                        'rgb(156, 163, 175)',
+                                        'rgb(245, 158, 11)',
+                                        'rgb(16, 185, 129)'
+                                    ],
+                                    borderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            usePointStyle: true,
+                                            padding: 20
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
+            };
+        }
 
-                // Load AI stats on page load
-                loadAIStats();
-
-                // Refresh AI stats every 30 seconds
-                setInterval(loadAIStats, 30000);
-            });
-        </script>
+        // Auto-refresh dashboard data every 5 minutes
+        setInterval(function() {
+            if (document.visibilityState === 'visible') {
+                window.location.reload();
+            }
+        }, 300000); // 5 minutes
+    </script>
 </x-app-layout>
