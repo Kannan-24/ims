@@ -1,4 +1,3 @@
-
 <x-app-layout>
     <div class="bg-gray-50 min-h-screen" x-data="calendarApp()" x-init="init()">
         <!-- Header -->
@@ -57,6 +56,31 @@
                         class="px-3 py-2 rounded-lg font-medium transition-colors">
                         Day
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Legend -->
+        <div class="px-6 py-3 bg-white border-b border-gray-200">
+            <div class="flex items-center space-x-6">
+                <span class="text-sm font-medium text-gray-700">Status Legend:</span>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">Pending</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">Completed</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">Cancelled</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">In Progress</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -136,30 +160,45 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
                                     <select x-model="eventForm.type"
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="meeting">Meeting</option>
-                                        <option value="task">Task</option>
-                                        <option value="event">Event</option>
-                                        <option value="other">Other</option>
+                                        <option value="meeting">📋 Meeting</option>
+                                        <option value="task">✅ Task</option>
+                                        <option value="appointment">🗓️ Appointment</option>
+                                        <option value="deadline">⚡ Deadline</option>
+                                        <option value="reminder">🔔 Reminder</option>
+                                        <option value="event">🎉 Event</option>
+                                        <option value="other">📌 Other</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                                     <select x-model="eventForm.status"
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="pending">Pending</option>
-                                        <option value="completed">Completed</option>
-                                        <option value="cancelled">Cancelled</option>
+                                        <option value="pending">🕐 Pending</option>
+                                        <option value="in_progress">🔄 In Progress</option>
+                                        <option value="completed">✅ Completed</option>
+                                        <option value="cancelled">❌ Cancelled</option>
                                     </select>
                                 </div>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Color</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                                <select x-model="eventForm.priority"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="low">🟢 Low Priority</option>
+                                    <option value="medium">🟡 Medium Priority</option>
+                                    <option value="high">🟠 High Priority</option>
+                                    <option value="urgent">🔴 Urgent</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Color Theme</label>
                                 <div class="flex items-center space-x-2">
                                     <template x-for="color in eventColors" :key="color.value">
                                         <button type="button" @click="eventForm.color = color.value"
-                                            :class="[color.class, eventForm.color === color.value ? 'ring-2 ring-gray-800' : '']"
-                                            class="w-8 h-8 rounded-full"></button>
+                                            :class="[color.class, eventForm.color === color.value ? 'ring-2 ring-gray-800 transform scale-110' : '']"
+                                            class="w-8 h-8 rounded-full transition-all duration-200 hover:scale-105"></button>
                                     </template>
                                 </div>
                             </div>
@@ -171,7 +210,7 @@
                         <div>
                             <button x-show="isEditing" @click="deleteEvent()" type="button"
                                 class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors">
-                                Delete Event
+                                <i class="fas fa-trash mr-2"></i>Delete Event
                             </button>
                         </div>
                         <div class="flex items-center space-x-3">
@@ -181,8 +220,12 @@
                             </button>
                             <button @click="saveEvent()" type="button" :disabled="loading"
                                 class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50">
-                                <span x-show="!loading">Save Event</span>
-                                <span x-show="loading">Saving...</span>
+                                <span x-show="!loading">
+                                    <i class="fas fa-save mr-2"></i>Save Event
+                                </span>
+                                <span x-show="loading">
+                                    <i class="fas fa-spinner fa-spin mr-2"></i>Saving...
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -190,7 +233,7 @@
             </div>
         </div>
 
-        <!-- Tooltip -->
+        <!-- Enhanced Tooltip -->
         <div x-show="showTooltip" 
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 transform scale-95"
@@ -201,24 +244,47 @@
              class="fixed z-50 pointer-events-none"
              :style="`left: ${tooltipPosition.x}px; top: ${tooltipPosition.y}px;`"
              style="display: none;">
-            <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-3 max-w-xs">
-                <div class="space-y-2">
-                    <div class="flex items-start space-x-2">
+            <div class="bg-white rounded-lg shadow-xl border border-gray-200 p-4 max-w-sm">
+                <div class="space-y-3">
+                    <!-- Event Title with Status Indicator -->
+                    <div class="flex items-start space-x-3">
                         <div class="w-3 h-3 rounded-full mt-1 flex-shrink-0" 
-                             :style="`background-color: ${tooltipEvent?.color || '#3b82f6'}`"></div>
+                             :style="`background-color: ${tooltipEvent?.statusColor || '#3b82f6'}`"></div>
                         <div class="flex-1 min-w-0">
                             <h4 class="text-sm font-semibold text-gray-900" x-text="tooltipEvent?.title || 'Untitled Event'"></h4>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                      :class="tooltipEvent?.statusClass"
+                                      x-text="tooltipEvent?.statusText"></span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                      :class="tooltipEvent?.priorityClass"
+                                      x-text="tooltipEvent?.priorityText"></span>
+                            </div>
                         </div>
+                    </div>
+                    
+                    <!-- Type and Description -->
+                    <div x-show="tooltipEvent?.type" class="text-xs text-gray-600">
+                        <span class="font-medium">Type:</span> <span x-text="tooltipEvent?.typeText"></span>
                     </div>
                     
                     <div x-show="tooltipEvent?.description" class="text-xs text-gray-600" x-text="tooltipEvent?.description"></div>
                     
-                    <div class="text-xs text-gray-500 space-y-1">
-                        <div>Start: <span x-text="tooltipEvent?.start || 'Not set'"></span></div>
-                        <div x-show="tooltipEvent?.end">End: <span x-text="tooltipEvent?.end"></span></div>
+                    <!-- Time Information -->
+                    <div class="text-xs text-gray-500 space-y-1 border-t pt-2">
+                        <div class="flex items-center space-x-1">
+                            <i class="fas fa-clock text-gray-400"></i>
+                            <span>Start: <span x-text="tooltipEvent?.start || 'Not set'"></span></span>
+                        </div>
+                        <div x-show="tooltipEvent?.end" class="flex items-center space-x-1">
+                            <i class="fas fa-clock text-gray-400"></i>
+                            <span>End: <span x-text="tooltipEvent?.end"></span></span>
+                        </div>
                     </div>
                     
-                    <div class="text-xs text-gray-400 italic">Click to edit</div>
+                    <div class="text-xs text-gray-400 italic border-t pt-2">
+                        <i class="fas fa-mouse-pointer mr-1"></i>Click to edit
+                    </div>
                 </div>
             </div>
         </div>
@@ -227,6 +293,105 @@
     <!-- FullCalendar CSS and JS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    
+    <!-- Custom Calendar Styles -->
+    <style>
+        .fc-event {
+            border-radius: 6px !important;
+            border: none !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            position: relative !important;
+        }
+        
+        .fc-event:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .fc-event-title {
+            font-weight: 600 !important;
+        }
+        
+        .fc-daygrid-event {
+            padding: 2px 6px !important;
+            margin: 1px 0 !important;
+        }
+        
+        .fc-timegrid-event {
+            padding: 2px 4px !important;
+        }
+        
+        .fc-event-main {
+            padding: 0 !important;
+        }
+        
+        /* Status indicators */
+        .fc-event.status-pending {
+            border-left: 4px solid #3b82f6 !important;
+        }
+        
+        .fc-event.status-in_progress {
+            border-left: 4px solid #f59e0b !important;
+        }
+        
+        .fc-event.status-completed {
+            border-left: 4px solid #10b981 !important;
+            opacity: 0.8 !important;
+        }
+        
+        .fc-event.status-cancelled {
+            border-left: 4px solid #ef4444 !important;
+            opacity: 0.6 !important;
+            text-decoration: line-through !important;
+        }
+        
+        /* Priority indicators */
+        .fc-event.priority-urgent::after {
+            content: '🔴';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            font-size: 8px;
+        }
+        
+        .fc-event.priority-high::after {
+            content: '⚠️';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            font-size: 8px;
+        }
+        
+        /* Calendar day styling */
+        .fc-daygrid-day:hover {
+            background-color: #f8fafc !important;
+        }
+        
+        .fc-day-today {
+            background-color: #eff6ff !important;
+        }
+        
+        /* Custom scrollbar for calendar */
+        .fc-scroller::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .fc-scroller::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        .fc-scroller::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .fc-scroller::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 
     <script>
         function calendarApp() {
@@ -258,17 +423,22 @@
                     end_time: '',
                     type: 'other',
                     status: 'pending',
+                    priority: 'medium',
                     color: '#3b82f6'
                 },
 
-                // Color options
+                // Enhanced color options
                 eventColors: [
                     { value: '#3b82f6', class: 'bg-blue-500' },
-                    { value: '#10b981', class: 'bg-green-500' },
-                    { value: '#f59e0b', class: 'bg-yellow-500' },
+                    { value: '#10b981', class: 'bg-emerald-500' },
+                    { value: '#f59e0b', class: 'bg-amber-500' },
                     { value: '#ef4444', class: 'bg-red-500' },
-                    { value: '#8b5cf6', class: 'bg-purple-500' },
-                    { value: '#06b6d4', class: 'bg-cyan-500' }
+                    { value: '#8b5cf6', class: 'bg-violet-500' },
+                    { value: '#06b6d4', class: 'bg-cyan-500' },
+                    { value: '#84cc16', class: 'bg-lime-500' },
+                    { value: '#f97316', class: 'bg-orange-500' },
+                    { value: '#ec4899', class: 'bg-pink-500' },
+                    { value: '#6b7280', class: 'bg-gray-500' }
                 ],
 
                 async init() {
@@ -285,11 +455,57 @@
                         events: '{{ route("calendar.events") }}',
                         selectable: true,
                         selectMirror: true,
-                        dayMaxEvents: true,
+                        dayMaxEvents: 3,
                         weekends: true,
                         editable: true,
                         eventResizableFromStart: true,
                         eventDurationEditable: true,
+                        
+                        // Enhanced event rendering
+                        eventDidMount: (info) => {
+                            const event = info.event;
+                            const element = info.el;
+                            
+                            // Add status class
+                            if (event.extendedProps.status) {
+                                element.classList.add(`status-${event.extendedProps.status}`);
+                            }
+                            
+                            // Add priority class
+                            if (event.extendedProps.priority) {
+                                element.classList.add(`priority-${event.extendedProps.priority}`);
+                            }
+                            
+                            // Add type icon to title
+                            const typeIcons = {
+                                'meeting': '📋',
+                                'task': '✅',
+                                'appointment': '👥',
+                                'deadline': '⚡',
+                                'reminder': '🔔',
+                                'event': '🎉',
+                                'other': '📌'
+                            };
+                            
+                            const icon = typeIcons[event.extendedProps.type] || '📌';
+                            const titleElement = element.querySelector('.fc-event-title');
+                            if (titleElement) {
+                                titleElement.innerHTML = `${icon} ${titleElement.innerHTML}`;
+                            }
+                            
+                            // Add status indicator
+                            const statusIcons = {
+                                'pending': '🕐',
+                                'in_progress': '🔄',
+                                'completed': '✅',
+                                'cancelled': '❌'
+                            };
+                            
+                            const statusIcon = statusIcons[event.extendedProps.status] || '🕐';
+                            if (titleElement && this.currentView !== 'dayGridMonth') {
+                                titleElement.innerHTML += ` ${statusIcon}`;
+                            }
+                        },
                         
                         select: (selectInfo) => {
                             this.openEventModal(selectInfo.startStr);
@@ -300,12 +516,10 @@
                         },
                         
                         eventMouseEnter: (info) => {
-                            console.log('Mouse enter event:', info);
                             this.showEventTooltip(info);
                         },
                         
                         eventMouseLeave: () => {
-                            console.log('Mouse leave event');
                             this.hideEventTooltip();
                         },
                         
@@ -320,8 +534,6 @@
                 },
 
                 showEventTooltip(info) {
-                    console.log('Showing tooltip for event:', info.event.title);
-                    
                     const event = info.event;
                     
                     // Format dates
@@ -358,43 +570,113 @@
                         }
                     }
                     
+                    // Get status information
+                    const statusInfo = this.getStatusInfo(event.extendedProps.status || 'pending');
+                    const priorityInfo = this.getPriorityInfo(event.extendedProps.priority || 'medium');
+                    const typeInfo = this.getTypeInfo(event.extendedProps.type || 'other');
+                    
                     this.tooltipEvent = {
                         title: event.title || 'Untitled Event',
                         description: event.extendedProps?.description || '',
                         start: startFormatted,
                         end: endFormatted,
-                        color: event.backgroundColor || event.borderColor || '#3b82f6'
+                        color: event.backgroundColor || event.borderColor || '#3b82f6',
+                        statusColor: statusInfo.color,
+                        statusClass: statusInfo.class,
+                        statusText: statusInfo.text,
+                        priorityClass: priorityInfo.class,
+                        priorityText: priorityInfo.text,
+                        type: event.extendedProps?.type,
+                        typeText: typeInfo.text
                     };
 
-                    // Position tooltip closer to the event element
+                    // Position tooltip
                     const eventRect = info.el.getBoundingClientRect();
                     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
                     
-                    // Position tooltip to the right of the event, or left if not enough space
                     let x = eventRect.right + scrollLeft + 10;
                     let y = eventRect.top + scrollTop;
                     
-                    // Check if tooltip would go off screen and adjust
-                    if (x + 300 > window.innerWidth) {
-                        x = eventRect.left + scrollLeft - 310; // Show on left side
+                    if (x + 350 > window.innerWidth) {
+                        x = eventRect.left + scrollLeft - 360;
                     }
                     
-                    // Make sure tooltip doesn't go above viewport
                     if (y < scrollTop + 10) {
                         y = scrollTop + 10;
                     }
                     
                     this.tooltipPosition = { x, y };
-                    
                     this.showTooltip = true;
-                    console.log('Tooltip should be visible now');
                 },
 
                 hideEventTooltip() {
-                    console.log('Hiding tooltip');
                     this.showTooltip = false;
                     this.tooltipEvent = null;
+                },
+
+                getStatusInfo(status) {
+                    const statusMap = {
+                        'pending': {
+                            color: '#3b82f6',
+                            class: 'bg-blue-100 text-blue-800',
+                            text: '🕐 Pending'
+                        },
+                        'in_progress': {
+                            color: '#f59e0b',
+                            class: 'bg-yellow-100 text-yellow-800',
+                            text: '🔄 In Progress'
+                        },
+                        'completed': {
+                            color: '#10b981',
+                            class: 'bg-green-100 text-green-800',
+                            text: '✅ Completed'
+                        },
+                        'cancelled': {
+                            color: '#ef4444',
+                            class: 'bg-red-100 text-red-800',
+                            text: '❌ Cancelled'
+                        }
+                    };
+                    
+                    return statusMap[status] || statusMap['pending'];
+                },
+
+                getPriorityInfo(priority) {
+                    const priorityMap = {
+                        'low': {
+                            class: 'bg-gray-100 text-gray-800',
+                            text: '🟢 Low'
+                        },
+                        'medium': {
+                            class: 'bg-blue-100 text-blue-800',
+                            text: '🟡 Medium'
+                        },
+                        'high': {
+                            class: 'bg-orange-100 text-orange-800',
+                            text: '🟠 High'
+                        },
+                        'urgent': {
+                            class: 'bg-red-100 text-red-800',
+                            text: '🔴 Urgent'
+                        }
+                    };
+                    
+                    return priorityMap[priority] || priorityMap['medium'];
+                },
+
+                getTypeInfo(type) {
+                    const typeMap = {
+                        'meeting': { text: '📋 Meeting' },
+                        'task': { text: '✅ Task' },
+                        'appointment': { text: '👥 Appointment' },
+                        'deadline': { text: '⚡ Deadline' },
+                        'reminder': { text: '🔔 Reminder' },
+                        'event': { text: '🎉 Event' },
+                        'other': { text: '📌 Other' }
+                    };
+                    
+                    return typeMap[type] || typeMap['other'];
                 },
 
                 changeView(viewType) {
@@ -431,7 +713,6 @@
                     try {
                         this.loading = true;
                         
-                        // Fetch fresh event data from database
                         const response = await fetch(`{{ url('ims/calendar/events') }}/${event.id}`);
                         if (!response.ok) {
                             throw new Error('Failed to fetch event data');
@@ -442,7 +723,6 @@
                         this.isEditing = true;
                         this.modalTitle = 'Edit Event';
                         
-                        // Use fresh data from database with proper date handling
                         const startDate = new Date(eventData.start);
                         const endDate = eventData.end ? new Date(eventData.end) : null;
                         
@@ -456,6 +736,7 @@
                             end_time: (endDate && !eventData.allDay) ? endDate.toTimeString().substring(0, 5) : '',
                             type: eventData.extendedProps?.type || 'other',
                             status: eventData.extendedProps?.status || 'pending',
+                            priority: eventData.extendedProps?.priority || 'medium',
                             color: eventData.backgroundColor || '#3b82f6'
                         };
                         
@@ -481,6 +762,7 @@
                             type: this.eventForm.type,
                             color: this.eventForm.color,
                             status: this.eventForm.status,
+                            priority: this.eventForm.priority,
                             all_day: !this.eventForm.start_time && !this.eventForm.end_time
                         };
 
@@ -523,7 +805,7 @@
                 },
 
                 async deleteEvent() {
-                    if (!confirm('Are you sure you want to delete this event?')) {
+                    if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
                         return;
                     }
 
@@ -569,18 +851,33 @@
                         end_time: '',
                         type: 'other',
                         status: 'pending',
+                        priority: 'medium',
                         color: '#3b82f6'
                     };
                 },
 
                 showNotification(message, type = 'info') {
+                    const icons = {
+                        'success': '✅',
+                        'error': '❌',
+                        'info': 'ℹ️',
+                        'warning': '⚠️'
+                    };
+                    
                     const notification = document.createElement('div');
-                    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full ${
+                    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full max-w-sm ${
                         type === 'success' ? 'bg-green-500 text-white' : 
                         type === 'error' ? 'bg-red-500 text-white' : 
+                        type === 'warning' ? 'bg-yellow-500 text-white' :
                         'bg-blue-500 text-white'
                     }`;
-                    notification.textContent = message;
+                    
+                    notification.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg">${icons[type] || icons['info']}</span>
+                            <span class="font-medium">${message}</span>
+                        </div>
+                    `;
                     
                     document.body.appendChild(notification);
                     
@@ -595,7 +892,7 @@
                                 document.body.removeChild(notification);
                             }
                         }, 300);
-                    }, 3000);
+                    }, 4000);
                 }
             }
         }

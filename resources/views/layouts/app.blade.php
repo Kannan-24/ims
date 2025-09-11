@@ -341,8 +341,6 @@
                         }
                     }
                     
-                    // Show brief notification
-                    showHotkeyNotification(combination, hotkey);
                 }
             }
 
@@ -350,40 +348,6 @@
             function openSearchModal() {
                 // You can implement a global search modal here
                 alert('Global search functionality would open here.\nImplement your search modal in this function.');
-            }
-
-            // Show brief hotkey activation notification
-            function showHotkeyNotification(combination, hotkey) {
-                // Add to notification panel if available
-                if (window.addNotification) {
-                    window.addNotification({
-                        title: 'Hotkey Activated',
-                        message: `Triggered: ${combination} - ${hotkey.action_name || 'Unknown Action'}`,
-                        type: 'success'
-                    });
-                } else {
-                    // Fallback: show brief toast notification
-                    const notification = document.createElement('div');
-                    notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm font-medium transform transition-all duration-300 translate-x-0';
-                    notification.innerHTML = `
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-keyboard text-green-200"></i>
-                            <span>Triggered: <kbd class="bg-green-700 px-1 py-0.5 rounded text-xs">${combination}</kbd></span>
-                        </div>
-                    `;
-                    
-                    document.body.appendChild(notification);
-                    
-                    // Remove after 2 seconds
-                    setTimeout(() => {
-                        notification.style.transform = 'translateX(100%)';
-                        setTimeout(() => {
-                            if (notification.parentNode) {
-                                notification.parentNode.removeChild(notification);
-                            }
-                        }, 300);
-                    }, 2000);
-                }
             }
 
             // Initialize when DOM is ready
