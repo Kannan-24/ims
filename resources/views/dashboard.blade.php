@@ -69,7 +69,7 @@
             <div class="p-6">
 
                 <!-- Stats Cards with Modern Design -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6 mb-8">
                     <!-- Total Customers -->
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-lg border border-blue-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-start justify-between">
@@ -86,22 +86,6 @@
                         </div>
                     </div>
 
-                    <!-- Active Customers -->
-                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-lg border border-emerald-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <p class="text-sm font-semibold text-emerald-700 uppercase tracking-wide">Active<br>Customers</p>
-                                    <div class="p-2.5 bg-emerald-500 bg-opacity-20 rounded-lg">
-                                        <i class="fas fa-user-check text-emerald-600 text-lg"></i>
-                                    </div>
-                                </div>
-                                <p class="text-3xl font-bold text-gray-900 mb-1">{{ number_format($activeCustomers) }}</p>
-                                <p class="text-xs text-emerald-600 font-medium">Last 30 days</p>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Total Products -->
                     <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-lg border border-purple-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-start justify-between">
@@ -114,38 +98,6 @@
                                 </div>
                                 <p class="text-3xl font-bold text-gray-900 mb-1">{{ number_format($totalProducts) }}</p>
                                 <p class="text-xs text-purple-600 font-medium">In catalog</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Low Stock Products -->
-                    <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-lg border border-red-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <p class="text-sm font-semibold text-red-700 uppercase tracking-wide">Low<br>Stock</p>
-                                    <div class="p-2.5 bg-red-500 bg-opacity-20 rounded-lg">
-                                        <i class="fas fa-exclamation-triangle text-red-600 text-lg"></i>
-                                    </div>
-                                </div>
-                                <p class="text-3xl font-bold text-gray-900 mb-1">{{ number_format($lowStockProducts) }}</p>
-                                <p class="text-xs text-red-600 font-medium">Needs restocking</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Total Orders -->
-                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-lg border border-yellow-200 p-6 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <p class="text-sm font-semibold text-yellow-700 uppercase tracking-wide">Total<br>Orders</p>
-                                    <div class="p-2.5 bg-yellow-500 bg-opacity-20 rounded-lg">
-                                        <i class="fas fa-file-invoice text-yellow-600 text-lg"></i>
-                                    </div>
-                                </div>
-                                <p class="text-3xl font-bold text-gray-900 mb-1">{{ number_format($totalInvoices) }}</p>
-                                <p class="text-xs text-yellow-600 font-medium">All time</p>
                             </div>
                         </div>
                     </div>
@@ -240,57 +192,6 @@
                         </div>
                         <div class="relative h-64">
                             <canvas id="orderStatusChart" class="w-full h-full"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI Features Showcase -->
-                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-sm p-6 mb-8 text-white">
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
-                                <i class="fas fa-robot text-white text-xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold">AI Copilot Assistant</h3>
-                                <p class="text-blue-100">Powered by Google Gemini AI • Boost your productivity</p>
-                            </div>
-                        </div>
-                        <a href="{{ route('ai.copilot') }}"
-                            class="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-                            Try AI Assistant →
-                        </a>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <!-- Email Generation -->
-                        <div class="bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition-colors cursor-pointer"
-                            onclick="window.location.href='{{ route('ai.copilot') }}'">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-envelope w-5 h-5 mr-3"></i>
-                                <h4 class="font-semibold">Smart Emails</h4>
-                            </div>
-                            <p class="text-blue-100 text-sm">Generate professional emails for customers and business communications</p>
-                        </div>
-
-                        <!-- Business Documents -->
-                        <div class="bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition-colors cursor-pointer"
-                            onclick="window.location.href='{{ route('ai.copilot') }}'">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-file-alt w-5 h-5 mr-3"></i>
-                                <h4 class="font-semibold">Documents</h4>
-                            </div>
-                            <p class="text-blue-100 text-sm">Create quotations, terms & conditions, and business proposals</p>
-                        </div>
-
-                        <!-- Content Creation -->
-                        <div class="bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition-colors cursor-pointer"
-                            onclick="window.location.href='{{ route('ai.copilot') }}'">
-                            <div class="flex items-center mb-3">
-                                <i class="fas fa-lightbulb w-5 h-5 mr-3"></i>
-                                <h4 class="font-semibold">Content</h4>
-                            </div>
-                            <p class="text-blue-100 text-sm">Generate product descriptions, marketing content, and announcements</p>
                         </div>
                     </div>
                 </div>
