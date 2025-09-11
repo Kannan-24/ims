@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Helpers\ActivityLogger;
+use Illuminate\Support\Facades\Schema;
 
 class ReportController extends Controller
 {
@@ -66,10 +67,59 @@ class ReportController extends Controller
         }
     }
 
-    // ---------- Index ----------
     public function index()
     {
-        return view('ims.reports.index');
+        $totalCustomers  = Customer::count();
+        $totalSuppliers  = Supplier::count();
+        $totalInvoices   = Invoice::count();
+        $totalQuotations = Quotation::count();
+        $totalPurchases  = Purchase::count();
+        $totalStocks     = Stock::count();
+        $totalPayments   = Payment::count();
+
+        // Determine correct total column dynamically
+        $monthlyRevenue = 0;
+        if (Schema::hasColumn('invoices', 'total_amount')) {
+            $monthlyRevenue = Invoice::whereYear('invoice_date', now()->year)
+                ->whereMonth('invoice_date', now()->month)
+                ->sum('total_amount');
+        } elseif (Schema::hasColumn('invoices', 'grand_total')) {
+            $monthlyRevenue = Invoice::whereYear('invoice_date', now()->year)
+                ->whereMonth('invoice_date', now()->month)
+                ->sum('grand_total');
+        } elseif (Schema::hasColumn('invoices', 'total')) {
+            $monthlyRevenue = Invoice::whereYear('invoice_date', now()->year)
+                ->whereMonth('invoice_date', now()->month)
+                ->sum('total');
+        }
+
+        ActivityLogger::log(
+            'View',
+            'Reports Dashboard',
+            'Accessed reports dashboard'
+        );
+
+        return view('ims.reports.index', compact(
+            'totalCustomers',
+            'totalSuppliers',
+            'totalInvoices',
+            'totalQuotations',
+            'totalPurchases',
+            'totalStocks',
+            'totalPayments',
+            'monthlyRevenue'
+        ));
+    }
+
+    public function help()
+    {
+        ActivityLogger::log(
+            'View',
+            'Reports Help',
+            'Accessed reports help page'
+        );
+
+        return view('ims.reports.help');
     }
 
     // ---------- Customer ----------

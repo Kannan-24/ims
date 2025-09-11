@@ -70,7 +70,9 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
 
     // Reports Routes
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/help', [ReportController::class, 'help'])->name('reports.help');
     Route::get('/reports/{id}', [ReportController::class, 'show']);
+
 
     // Customer Reports Routes
     Route::get('/reports/customers', [ReportController::class, 'customers'])->name('reports.customers');
