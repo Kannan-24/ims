@@ -24,7 +24,7 @@ class SupplierController extends Controller
                 ->orWhere('contact_person', 'like', "%{$search}%");
         }
 
-        $suppliers = $query->get();
+        $suppliers = $query->paginate(10);
 
         return view('ims.suppliers.index', compact('suppliers'));
     }
@@ -44,40 +44,81 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         // Validate the incoming request.
-        $request->validate([
-            'supplier_name' => 'required|max:100',
+                $request->validate([
+            'company_name' => 'required|max:255',
             'contact_person' => 'required|max:100',
             'email' => 'required|email|unique:suppliers|max:100',
-            'phone_number' => 'required|max:20',
+            'phone' => 'required|max:20',
             'address' => 'required',
             'city' => 'required|max:100',
             'state' => 'required|max:100',
-            'postal_code' => 'required|max:20',
+            'postal_code' => 'nullable|max:20',
             'country' => 'required|max:100',
-            'gst' => 'required|max:50',
+            'website' => 'nullable|url|max:255',
+            'supplier_id' => 'nullable|max:50',
+            'gst' => 'nullable|max:50',
         ]);
 
+        // Generate supplier ID
         $lastSupplier = Supplier::latest('id')->first();
         $lastSupplierId = $lastSupplier ? $lastSupplier->supplier_id : 'SKMS00';
 
         preg_match('/\d+/', $lastSupplierId, $matches);
         $lastNumber = $matches ? (int) $matches[0] : 0;
 
-        $newSupplierId = 'SKMS' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT);
+        $newSupplierId = $request->supplier_id ?: ('SKMS' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT));
 
-        Supplier::create([
+        $supplier = Supplier::create([
             'supplier_id' => $newSupplierId,
-            'name' => $request->supplier_name,
+            'name' => $request->company_name, // Use company_name for name field
+            'company_name' => $request->company_name,
             'contact_person' => $request->contact_person,
             'email' => $request->email,
-            'phone_number' => $request->phone_number,
+            'phone_number' => $request->phone, // Map phone to phone_number
+            'phone' => $request->phone,
             'address' => $request->address,
             'city' => $request->city,
             'state' => $request->state,
             'postal_code' => $request->postal_code,
             'country' => $request->country,
-            'gst' => $request->gst,
+            'website' => $request->website,
+            'gst' => $request->gst, // Add GST field
         ]);
+
+        // Generate supplier ID
+        $lastSupplier = Supplier::latest('id')->first();
+        $lastSupplierId = $lastSupplier ? $lastSupplier->supplier_id : 'SKMS00';
+
+        preg_match('/\d+/', $lastSupplierId, $matches);
+        $lastNumber = $matches ? (int) $matches[0] : 0;
+
+        $newSupplierId = $request->supplier_id ?: ('SKMS' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT));
+
+        $supplier = Supplier::create([
+            'supplier_id' => $newSupplierId,
+            'name' => $request->company_name, // Use company_name for name field
+            'company_name' => $request->company_name,
+            'contact_person' => $request->contact_person,
+            'email' => $request->email,
+            'phone_number' => $request->phone, // Map phone to phone_number
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'city' => $request->city,
+            'state' => $request->state,
+            'postal_code' => $request->postal_code,
+            'country' => $request->country,
+            'website' => $request->website,
+            'gst' => $request->gst, // Add GST field
+        ]);
+
+        // Handle new contact persons
+        if ($request->has('new_contacts')) {
+            foreach ($request->new_contacts as $contact) {
+                if (!empty($contact['name']) && !empty($contact['phone'])) {
+                    $supplier->contactPersons()->create($contact);
+                }
+            }
+        }
 
         // Redirect back with a success message
         return redirect()->route('suppliers.index')->with('success', 'Supplier created successfully.');
@@ -88,10 +129,19 @@ class SupplierController extends Controller
      */
     public function show(Supplier $supplier)
     {
-        // Load assigned products
-        $supplier->load('products');
+        // Load assigned products with their stocks from purchases
+        $supplier->load(['products.stocks' => function($query) use ($supplier) {
+            $query->where('supplier_id', $supplier->id);
+        }]);
+        
+        // Get purchase transactions for this supplier
+        $transactions = \App\Models\ims\Purchase::where('supplier_id', $supplier->id)
+            ->with(['purchaseItems.product'])
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
 
-        return view('ims.suppliers.show', compact('supplier'));
+        return view('ims.suppliers.show', compact('supplier', 'transactions'));
     }
 
 
@@ -111,33 +161,69 @@ class SupplierController extends Controller
     {
         // Validate the incoming request.
         $request->validate([
-            'supplier_id' => 'required|max:50|unique:suppliers,supplier_id,' . $supplier->id,
-            'supplier_name' => 'required|max:100',
+            'supplier_id' => 'nullable|max:50|unique:suppliers,supplier_id,' . $supplier->id,
+            'company_name' => 'required|max:100',
             'contact_person' => 'required|max:100',
             'email' => 'required|email|max:100|unique:suppliers,email,' . $supplier->id,
-            'phone_number' => 'required|max:20',
+            'phone' => 'required|max:20',
             'address' => 'required',
             'city' => 'required|max:100',
             'state' => 'required|max:100',
-            'postal_code' => 'required|max:20',
+            'postal_code' => 'nullable|max:20',
             'country' => 'required|max:100',
-            'gst' => 'required|max:50',
+            'website' => 'nullable|url|max:255',
+            'gst' => 'nullable|max:50',
+            'existing_contacts.*.name' => 'required|max:100',
+            'existing_contacts.*.phone' => 'required|max:20',
+            'existing_contacts.*.email' => 'nullable|email|max:100',
+            'existing_contacts.*.position' => 'nullable|max:100',
+            'new_contacts.*.name' => 'required|max:100',
+            'new_contacts.*.phone' => 'required|max:20',
+            'new_contacts.*.email' => 'nullable|email|max:100',
+            'new_contacts.*.position' => 'nullable|max:100',
         ]);
 
         // Update the supplier with the new data.
         $supplier->update([
-            'supplier_id' => $request->supplier_id,
-            'name' => $request->supplier_name,
+            'supplier_id' => $request->supplier_id ?: $supplier->supplier_id,
+            'name' => $request->company_name,
+            'company_name' => $request->company_name,
             'contact_person' => $request->contact_person,
             'email' => $request->email,
-            'phone_number' => $request->phone_number,
+            'phone_number' => $request->phone,
+            'phone' => $request->phone,
             'address' => $request->address,
             'city' => $request->city,
             'state' => $request->state,
             'postal_code' => $request->postal_code,
             'country' => $request->country,
+            'website' => $request->website,
             'gst' => $request->gst,
         ]);
+
+        // Handle deleted contact persons
+        if ($request->has('deleted_contacts')) {
+            \App\Models\SupplierContactPerson::whereIn('id', $request->deleted_contacts)->delete();
+        }
+
+        // Handle existing contact persons updates
+        if ($request->has('existing_contacts')) {
+            foreach ($request->existing_contacts as $contactId => $contactData) {
+                if (!empty($contactData['name']) && !empty($contactData['phone'])) {
+                    \App\Models\SupplierContactPerson::where('id', $contactId)
+                        ->update($contactData);
+                }
+            }
+        }
+
+        // Handle new contact persons
+        if ($request->has('new_contacts')) {
+            foreach ($request->new_contacts as $contact) {
+                if (!empty($contact['name']) && !empty($contact['phone'])) {
+                    $supplier->contactPersons()->create($contact);
+                }
+            }
+        }
 
         // Redirect back with a success message.
         return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully.');
@@ -177,5 +263,29 @@ class SupplierController extends Controller
             ],
             'gst' => $supplier->gst,
         ]);
+    }
+
+    /**
+     * Display help page for suppliers.
+     */
+    public function help()
+    {
+        return view('ims.suppliers.help');
+    }
+
+    /**
+     * Get next supplier ID for auto-generation.
+     */
+    public function getNextId()
+    {
+        $lastSupplier = Supplier::latest('id')->first();
+        $lastSupplierId = $lastSupplier ? $lastSupplier->supplier_id : 'SKMS00';
+
+        preg_match('/\d+/', $lastSupplierId, $matches);
+        $lastNumber = $matches ? (int) $matches[0] : 0;
+
+        $nextId = 'SKMS' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT);
+
+        return response()->json(['nextId' => $nextId]);
     }
 }

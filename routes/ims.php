@@ -114,6 +114,8 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::resource('customers', CustomerController::class);
 
     // Supplier Routes
+    Route::get('suppliers/help', [SupplierController::class, 'help'])->name('suppliers.help');
+    Route::get('suppliers/next-id', [SupplierController::class, 'getNextId'])->name('suppliers.next-id');
     Route::resource('suppliers', SupplierController::class);
 
     // Product Routes

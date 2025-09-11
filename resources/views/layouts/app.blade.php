@@ -374,6 +374,9 @@
         })();
     </script>
     
+    <!-- Additional Scripts -->
+    @stack('scripts')
+    
     <!-- Fixed Bottom-Right Hotkey Indicator -->
     @include('components.hotkey-indicator')
 </body>

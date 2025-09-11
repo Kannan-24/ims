@@ -12,15 +12,18 @@ class Supplier extends Model
     protected $fillable = [
         'supplier_id',
         'name',
+        'company_name',
         'contact_person',
         'email',
         'phone_number',
+        'phone',
         'address',
         'city',
         'state',
         'postal_code',
         'country',
         'gst',
+        'website',
     ];
 
     public function productSuppliers()
@@ -41,5 +44,10 @@ class Supplier extends Model
     public function purchases()
     {
         return $this->hasMany(Purchase::class);
+    }
+
+    public function contactPersons()
+    {
+        return $this->hasMany(\App\Models\SupplierContactPerson::class);
     }
 }

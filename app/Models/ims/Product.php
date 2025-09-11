@@ -33,6 +33,11 @@ class Product extends Model
         return $this->hasMany(PurchaseItem::class);
     }
 
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class);
+    }
+    
     public function stock()
     {
         return $this->hasMany(Stock::class);
@@ -42,5 +47,7 @@ class Product extends Model
     {
         return $this->hasMany(Service::class);
     }
+
+
     
 }

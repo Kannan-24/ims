@@ -103,6 +103,50 @@ class Hotkey extends Model
                 'description' => 'Open Settings',
                 'action_url' => '/settings',
                 'action_type' => 'navigate'
+            ],
+            // Supplier Management Hotkeys
+            [
+                'action_name' => 'Suppliers List',
+                'hotkey_combination' => 'Ctrl+Shift+S',
+                'description' => 'Navigate to Suppliers List',
+                'action_url' => '/ims/suppliers',
+                'action_type' => 'navigate'
+            ],
+            [
+                'action_name' => 'New Supplier',
+                'hotkey_combination' => 'Ctrl+Shift+N',
+                'description' => 'Create New Supplier',
+                'action_url' => '/ims/suppliers/create',
+                'action_type' => 'navigate'
+            ],
+            [
+                'action_name' => 'Supplier Help',
+                'hotkey_combination' => 'Ctrl+Shift+H',
+                'description' => 'Open Supplier Help Page',
+                'action_url' => '/ims/suppliers/help',
+                'action_type' => 'navigate'
+            ],
+            [
+                'action_name' => 'Search Suppliers',
+                'hotkey_combination' => 'Ctrl+F',
+                'description' => 'Focus on Supplier Search',
+                'action_url' => '#',
+                'action_type' => 'function'
+            ],
+            // Customer Management Hotkeys
+            [
+                'action_name' => 'Customers List',
+                'hotkey_combination' => 'Ctrl+Shift+U',
+                'description' => 'Navigate to Customers List',
+                'action_url' => '/ims/customers',
+                'action_type' => 'navigate'
+            ],
+            [
+                'action_name' => 'New Customer',
+                'hotkey_combination' => 'Ctrl+Shift+M',
+                'description' => 'Create New Customer',
+                'action_url' => '/ims/customers/create',
+                'action_type' => 'navigate'
             ]
         ];
     }
