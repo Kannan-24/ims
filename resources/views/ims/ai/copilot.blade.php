@@ -386,79 +386,6 @@
                         prompt: 'Create engaging marketing content for {{ config("app.company_name", config("app.name", "your company")) }} that highlights our key services and value proposition.'
                     }
                 ],
-                actionCategories: [
-                    {
-                        name: 'Customer Relations',
-                        icon: 'fas fa-users',
-                        actions: [
-                            {
-                                emoji: '👋',
-                                title: 'Welcome Email',
-                                description: 'New customer welcome',
-                                prompt: 'Write a professional welcome email for a new customer'
-                            },
-                            {
-                                emoji: '💰',
-                                title: 'Payment Follow-up',
-                                description: 'Invoice reminders',
-                                prompt: 'Write a follow-up email for pending invoice payment'
-                            },
-                            {
-                                emoji: '📝',
-                                title: 'Feedback Request',
-                                description: 'Get client feedback',
-                                prompt: 'Create a feedback request email for clients after service delivery'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Business Documents',
-                        icon: 'fas fa-file-alt',
-                        actions: [
-                            {
-                                emoji: '📋',
-                                title: 'Quotation T&C',
-                                description: 'Business terms',
-                                prompt: 'Create professional quotation terms and conditions for business services'
-                            },
-                            {
-                                emoji: '🧾',
-                                title: 'Send Invoice',
-                                description: 'Invoice with payment instructions',
-                                prompt: 'Draft an invoice for a customer including payment details and terms'
-                            },
-                            {
-                                emoji: '💼',
-                                title: 'Business Proposal',
-                                description: 'Professional templates',
-                                prompt: 'Generate a business proposal template'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Marketing & Communication',
-                        icon: 'fas fa-megaphone',
-                        actions: [
-                            {
-                                emoji: '🎯',
-                                title: 'Product Description',
-                                description: 'Marketing content',
-                                prompt: 'Create a professional product description for marketing purposes'
-                            },
-                            {
-                                emoji: '📢',
-                                title: 'Company Announcement',
-                                description: 'Product launch/update',
-                                prompt: 'Draft a company announcement about a new product launch or important update'
-                            },
-                            {
-                                emoji: '🎉',
-                                title: 'Greeting Message',
-                                description: 'Event/Partnership greetings',
-                                prompt: 'Write an official greeting message for a company event or new partnership'
-                            }
-                        ]
-                ],
 
                 // Messages array
                 messages: [],
@@ -522,11 +449,6 @@
 
                 setPrompt(prompt) {
                     this.currentPrompt = prompt;
-                    document.getElementById('prompt').focus();
-                },
-
-                setPrompt(prompt) {
-                    this.currentPrompt = prompt;
                     this.showQuickActions = false;
                     document.getElementById('prompt').focus();
                 },
@@ -561,34 +483,11 @@
                 },
 
                 setAIStatus(status, message) {
-                    const statusEl = document.getElementById('aiStatus');
-                    switch (status) {
-                        case 'testing':
-                            statusEl.innerHTML = `
-                                <div class="inline-flex items-center px-3 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                                    <i class="fas fa-spinner animate-spin mr-2"></i>
-                                    ${message}
-                                </div>
-                            `;
-                            break;
-                        case 'error':
-                            statusEl.innerHTML = `
-                                <div class="inline-flex items-center px-3 py-2 bg-red-100 text-red-800 rounded-full text-sm">
-                                    <div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
-                                    ${message}
-                                </div>
-                            `;
-                            break;
-                        case 'ready':
-                        default:
-                            statusEl.innerHTML = `
-                                <div class="inline-flex items-center px-3 py-2 bg-green-100 text-green-800 rounded-full text-sm">
-                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                                    Ready
-                                </div>
-                            `;
-                            break;
-                    }
+                    // Status updates for debugging - since we removed the status indicator element
+                    console.log(`AI Status: ${status} - ${message}`);
+                    
+                    // You could update the header status badge here if needed
+                    // For now, we'll just log it
                 },
 
                 clearChat() {
