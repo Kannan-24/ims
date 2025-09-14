@@ -13,7 +13,7 @@
 <aside class="fixed top-0 left-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300 ease-in-out"
        :class="{
            'w-64': !sidebarCollapsed || (sidebarCollapsed && sidebarHovering),
-           'w-16': sidebarCollapsed && !sidebarHovering,
+           'w-24': sidebarCollapsed && !sidebarHovering,
            'translate-x-0': sidebarOpen,
            '-translate-x-full lg:translate-x-0': !sidebarOpen
        }"
@@ -54,46 +54,6 @@
                 <i class="fas fa-th-large nav-icon {{ request()->routeIs('dashboard') ? 'text-white' : 'text-gray-500' }}"></i>
                 <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Dashboard</span>
             </a>
-
-            <!-- Tools & Utilities Group -->
-            <div class="nav-group">
-                <div class="nav-group-header" 
-                     x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)"
-                     @click="toggleGroup('tools')"
-                     :class="isGroupOpen('tools') ? 'text-blue-600' : 'text-gray-600'">
-                    <div class="flex items-center justify-between cursor-pointer">
-                        <div class="flex items-center space-x-2">
-                            <i class="fas fa-tools text-sm"></i>
-                            <span class="text-xs font-semibold uppercase tracking-wider">Tools & Utilities</span>
-                        </div>
-                        <i class="fas fa-chevron-down text-xs transition-transform duration-200"
-                           :class="isGroupOpen('tools') ? 'rotate-180' : ''"></i>
-                    </div>
-                </div>
-                
-                <div class="nav-group-items" x-show="isGroupOpen('tools')" x-collapse>
-                    <a href="{{ route('calendar.index') }}" class="nav-subitem {{ request()->routeIs('calendar.*') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-alt nav-icon"></i>
-                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Calendar</span>
-                    </a>
-                    <a href="{{ route('chat.index') }}" class="nav-subitem {{ request()->routeIs('chat.*') ? 'active' : '' }}">
-                        <i class="fas fa-comments nav-icon"></i>
-                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Chat</span>
-                    </a>
-                    <a href="{{ route('hotkeys.index') }}" class="nav-subitem {{ request()->routeIs('hotkeys.*') ? 'active' : '' }}">
-                        <i class="fas fa-keyboard nav-icon"></i>
-                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Hotkeys</span>
-                    </a>
-                    <a href="{{ route('notes.index') }}" class="nav-subitem {{ request()->routeIs('notes.*') ? 'active' : '' }}">
-                        <i class="fas fa-sticky-note nav-icon"></i>
-                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Notes</span>
-                    </a>
-                    <a href="{{ route('contact-book.index') }}" class="nav-subitem {{ request()->routeIs('contact-book.*') ? 'active' : '' }}">
-                        <i class="fas fa-address-book nav-icon"></i>
-                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Contact Book</span>
-                    </a>
-                </div>
-            </div>
 
             <!-- User Management Group -->
             <div class="nav-group">
@@ -220,6 +180,47 @@
                         <i class="fas fa-envelope nav-icon"></i>
                         <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Emails</span>
                     </a>
+                    <a href="{{ route('chat.index') }}" class="nav-subitem {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                           <i class="fas fa-comments nav-icon"></i>
+                           <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Chat</span>
+                       </a>
+                </div>
+
+            </div>
+            
+            <!-- Tools & Utilities Group -->
+            <div class="nav-group">
+                <div class="nav-group-header" 
+                     x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)"
+                     @click="toggleGroup('tools')"
+                     :class="isGroupOpen('tools') ? 'text-blue-600' : 'text-gray-600'">
+                    <div class="flex items-center justify-between cursor-pointer">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-tools text-sm"></i>
+                            <span class="text-xs font-semibold uppercase tracking-wider">Tools & Utilities</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-xs transition-transform duration-200"
+                           :class="isGroupOpen('tools') ? 'rotate-180' : ''"></i>
+                    </div>
+                </div>
+                
+                <div class="nav-group-items" x-show="isGroupOpen('tools')" x-collapse>
+                    <a href="{{ route('calendar.index') }}" class="nav-subitem {{ request()->routeIs('calendar.*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-alt nav-icon"></i>
+                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Calendar</span>
+                    </a>
+                    <a href="{{ route('hotkeys.index') }}" class="nav-subitem {{ request()->routeIs('hotkeys.*') ? 'active' : '' }}">
+                        <i class="fas fa-keyboard nav-icon"></i>
+                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Hotkeys</span>
+                    </a>
+                    <a href="{{ route('notes.index') }}" class="nav-subitem {{ request()->routeIs('notes.*') ? 'active' : '' }}">
+                        <i class="fas fa-sticky-note nav-icon"></i>
+                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Notes</span>
+                    </a>
+                    <a href="{{ route('contact-book.index') }}" class="nav-subitem {{ request()->routeIs('contact-book.*') ? 'active' : '' }}">
+                        <i class="fas fa-address-book nav-icon"></i>
+                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Contact Book</span>
+                    </a>
                 </div>
             </div>
 
@@ -250,23 +251,24 @@
                     </a>
                 </div>
             </div>
-
         </nav>
 
         <!-- Sidebar Footer -->
         <div class="p-2 border-t border-gray-200 bg-red-500">
             <form method="POST" action="{{ route('logout') }}" class="w-full">
-                @csrf
-                <div class="flex items-center justify-between"
-                     :class="(sidebarCollapsed && !sidebarHovering) ? 'justify-center' : ''">
-                    <button type="submit"
-                            @click="sidebarOpen = false"
-                            class="flex items-center w-full rounded-lg p-2 text-gray-100 transition-colors"
-                            title="Logout">
-                        <i class="fas fa-sign-out-alt nav-icon text-gray-100"></i>
-                        <span class="ml-2 text-sm" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Logout</span>
-                    </button>
-                </div>
+            @csrf
+            <div class="flex items-center"
+                 :class="(sidebarCollapsed && !sidebarHovering) ? 'justify-center' : 'justify-between'">
+                <button type="submit"
+                    @click="sidebarOpen = false"
+                    :class="(sidebarCollapsed && !sidebarHovering) 
+                    ? 'flex items-center justify-center w-full rounded-lg p-2 text-gray-100 transition-colors' 
+                    : 'flex items-center w-full rounded-lg px-3 py-2 text-gray-100 transition-colors'"
+                    title="Logout">
+                <i class="fas fa-sign-out-alt nav-icon text-gray-100"></i>
+                <span class="ml-2 text-sm" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Logout</span>
+                </button>
+            </div>
             </form>
         </div>
     </div>

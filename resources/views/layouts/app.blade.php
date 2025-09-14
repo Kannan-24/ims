@@ -37,7 +37,7 @@
     <!-- Main Content -->
     <div class="transition-all duration-300 ease-in-out" 
          :class="[
-             (sidebarCollapsed && !sidebarHovering) ? 'lg:ml-16' : 'lg:ml-64',
+             (sidebarCollapsed && !sidebarHovering) ? 'lg:ml-24' : 'lg:ml-64',
              $store.notifications && $store.notifications.panelOpen ? 'blur-sm' : ''
          ]">
         
