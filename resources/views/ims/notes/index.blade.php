@@ -48,45 +48,11 @@
 
         <!-- Statistics Cards -->
         <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white border border-gray-200 rounded-lg p-6">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <span class="text-xl">📄</span>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Total Notes</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $stats['total'] }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                            <span class="text-xl">📌</span>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Pinned Notes</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $stats['pinned'] }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg p-6">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                            <span class="text-xl">✨</span>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Recent (7 days)</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $stats['recent'] }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Search and Filters -->
             <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <!-- Left Side: Search -->
                     <div class="flex-1 max-w-md">
                         <form method="GET" action="{{ route('notes.index') }}" class="relative">
                             <input type="text" 
@@ -101,6 +67,8 @@
                             <button type="submit" class="sr-only">Search</button>
                         </form>
                     </div>
+
+                    <!-- Center: Filter Buttons -->
                     <div class="flex items-center space-x-3">
                         <a href="{{ route('notes.index', ['pinned' => 'true']) }}" 
                            class="inline-flex items-center px-4 py-2 {{ request('pinned') === 'true' ? 'bg-orange-100 text-orange-800 border-orange-300' : 'bg-gray-100 text-gray-700 border-gray-300' }} border rounded-lg hover:bg-orange-200 transition-colors">
@@ -113,14 +81,35 @@
                             All Notes
                         </a>
                     </div>
+
+                    <!-- Right Side: View Mode Toggle -->
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                            <button @click="setViewMode('list')" 
+                                    :class="viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'"
+                                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors">
+                                <i class="fas fa-list mr-2"></i>List
+                            </button>
+                            <button @click="setViewMode('grid')" 
+                                    :class="viewMode === 'grid' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'"
+                                    class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors">
+                                <i class="fas fa-th-large mr-2"></i>Grid
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Notes Grid -->
+            <!-- Notes Display -->
             @if($notes->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Grid View -->
+                <div x-show="viewMode === 'grid'" 
+                     x-transition:enter="transition-opacity duration-200"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @foreach($notes as $note)
-                        <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow" 
+                        <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 grid-card" 
                              x-data="{ isLoading: false }">
                             <!-- Note Header -->
                             <div class="p-4 border-b border-gray-200">
@@ -180,7 +169,7 @@
                             <div class="p-4">
                                 <div class="text-sm text-gray-700 line-clamp-4">
                                     @if($note->content)
-                                        {!! nl2br(e(Str::limit($note->content, 200))) !!}
+                                        {!! nl2br(e(Str::limit($note->content, 150))) !!}
                                     @else
                                         <em class="text-gray-400">No content</em>
                                     @endif
@@ -201,6 +190,110 @@
                             </div>
                         </div>
                     @endforeach
+                </div>
+
+                <!-- List View -->
+                <div x-show="viewMode === 'list'" 
+                     x-transition:enter="transition-opacity duration-200"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Note
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                                    Content Preview
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Date
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($notes as $note)
+                                <tr class="hover:bg-gray-50 transition-colors" x-data="{ isLoading: false }">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ \Str::limit($note->title, 50) }}
+                                                </div>
+                                                <div class="text-xs text-gray-500">
+                                                    Updated {{ $note->updated_at->diffForHumans() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 hidden lg:table-cell">
+                                        <div class="text-sm text-gray-700 line-clamp-2">
+                                            @if($note->content)
+                                                {{ \Str::limit(strip_tags($note->content), 100) }}
+                                            @else
+                                                <em class="text-gray-400">No content</em>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center space-x-2">
+                                            @if($note->is_pinned)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                    <span class="mr-1">📌</span>Pinned
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    <span class="mr-1">📝</span>Note
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <div class="flex flex-col">
+                                            <span>{{ $note->created_at->format('M d, Y') }}</span>
+                                            <span class="text-xs text-gray-500">{{ $note->created_at->format('h:i A') }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <a href="{{ route('notes.show', $note->id) }}" 
+                                               class="text-blue-600 hover:text-blue-900" title="View Note">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('notes.edit', $note->id) }}" 
+                                               class="text-green-600 hover:text-green-900" title="Edit Note">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button @click="togglePin({{ $note->id }}, {{ $note->is_pinned ? 'false' : 'true' }})" 
+                                                    class="text-orange-600 hover:text-orange-900" 
+                                                    title="{{ $note->is_pinned ? 'Unpin' : 'Pin' }} Note"
+                                                    :disabled="isLoading">
+                                                <i class="fas fa-thumbtack"></i>
+                                            </button>
+                                            <form action="{{ route('notes.destroy', $note->id) }}" 
+                                                  method="POST" 
+                                                  onsubmit="return confirm('Are you sure you want to delete this note?')"
+                                                  class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" 
+                                                        class="text-red-600 hover:text-red-900" title="Delete Note">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- Pagination -->
@@ -239,21 +332,67 @@
     <script>
         function notesApp() {
             return {
+                viewMode: localStorage.getItem('notesViewMode') || 'grid', // Initialize from localStorage immediately
+
                 init() {
+                    // Ensure viewMode is properly set from localStorage or default to grid
+                    const savedViewMode = localStorage.getItem('notesViewMode');
+                    if (savedViewMode && (savedViewMode === 'list' || savedViewMode === 'grid')) {
+                        this.viewMode = savedViewMode;
+                    } else {
+                        this.viewMode = 'grid';
+                        localStorage.setItem('notesViewMode', 'grid');
+                    }
+
                     // Hotkey bindings
                     document.addEventListener('keydown', (e) => {
-                        // Ctrl+N - New Note
-                        if (e.ctrlKey && e.key === 'n') {
-                            e.preventDefault();
-                            window.location.href = '{{ route("notes.create") }}';
-                        }
-                        
-                        // Ctrl+F - Focus Search
-                        if (e.ctrlKey && e.key === 'f') {
-                            e.preventDefault();
-                            this.$refs.searchInput?.focus();
+                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                        switch(e.key.toLowerCase()) {
+                            case 'n':
+                                if (e.ctrlKey) {
+                                    e.preventDefault();
+                                    window.location.href = '{{ route("notes.create") }}';
+                                }
+                                break;
+                            case 'f':
+                                if (e.ctrlKey) {
+                                    e.preventDefault();
+                                    this.$refs.searchInput?.focus();
+                                }
+                                break;
+                            case 'v':
+                                e.preventDefault();
+                                this.toggleViewMode();
+                                break;
+                            case 'g':
+                                e.preventDefault();
+                                this.setViewMode('grid');
+                                break;
+                            case 'l':
+                                e.preventDefault();
+                                this.setViewMode('list');
+                                break;
                         }
                     });
+
+                    // Force Alpine to update the DOM after initialization
+                    this.$nextTick(() => {
+                        console.log('Notes app initialized with view mode:', this.viewMode);
+                    });
+                },
+
+                // View Mode Functions
+                setViewMode(mode) {
+                    if (mode === 'list' || mode === 'grid') {
+                        this.viewMode = mode;
+                        localStorage.setItem('notesViewMode', mode);
+                    }
+                },
+
+                toggleViewMode() {
+                    const newMode = this.viewMode === 'list' ? 'grid' : 'list';
+                    this.setViewMode(newMode);
                 },
 
                 async togglePin(noteId, isPinned) {
@@ -318,11 +457,75 @@
     </script>
 
     <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
         .line-clamp-4 {
             display: -webkit-box;
             -webkit-line-clamp: 4;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        /* Grid card hover effects */
+        .grid-card {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .grid-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Enhanced table row hover */
+        tbody tr:hover {
+            background-color: #f8fafc;
+            border-left: 4px solid #3b82f6;
+        }
+
+        /* Smooth transitions for view changes */
+        .transition-opacity {
+            transition-property: opacity;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Responsive grid adjustments */
+        @media (max-width: 768px) {
+            .xl\:grid-cols-4 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .xl\:grid-cols-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        
+        @media (min-width: 1025px) and (max-width: 1280px) {
+            .xl\:grid-cols-4 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        /* Improved button states */
+        .bg-white.shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Active view button styling */
+        button:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+        
+        button:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
         }
     </style>
 </x-app-layout>

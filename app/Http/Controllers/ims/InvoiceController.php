@@ -125,6 +125,53 @@ class InvoiceController extends Controller
             }
         }
 
+        // Calculate totals from products and services
+        $totalSubtotal = 0;
+        $totalCgst = 0;
+        $totalSgst = 0;
+        $totalIgst = 0;
+        
+        // Calculate product totals
+        if ($request->has('products')) {
+            foreach ($request->products as $product) {
+                if (isset($product['product_id'])) {
+                    $productModel = Product::findOrFail($product['product_id']);
+                    $quantity = (int)$product['quantity'];
+                    $unitPrice = (float)str_replace(',', '', $product['unit_price']);
+                    $subtotal = $quantity * $unitPrice;
+                    $totalSubtotal += $subtotal;
+                    
+                    $gstPercentage = $productModel->gst_percentage;
+                    $isIgst = $productModel->is_igst;
+                    
+                    if ($isIgst) {
+                        $totalIgst += ($subtotal * $gstPercentage) / 100;
+                    } else {
+                        $totalCgst += ($subtotal * $gstPercentage) / 200;
+                        $totalSgst += ($subtotal * $gstPercentage) / 200;
+                    }
+                }
+            }
+        }
+        
+        // Calculate service totals
+        if ($request->has('services')) {
+            foreach ($request->services as $service) {
+                if (isset($service['service_id'])) {
+                    $quantity = (int)$service['quantity'];
+                    $unitPrice = (float)str_replace(',', '', $service['unit_price']);
+                    $subtotal = $quantity * $unitPrice;
+                    $totalSubtotal += $subtotal;
+                    
+                    $gstTotal = (float)str_replace(',', '', $service['gst_total'] ?? 0);
+                    $totalCgst += $gstTotal / 2;
+                    $totalSgst += $gstTotal / 2;
+                }
+            }
+        }
+        
+        $grandTotal = $totalSubtotal + $totalCgst + $totalSgst + $totalIgst;
+
         $invoice = Invoice::create([
             'customer_id' => $request->customer,
             'contactperson_id' => $request->contact_person,
@@ -134,12 +181,12 @@ class InvoiceController extends Controller
             'order_no' => $orderNo,
             'order_no_text' => $request->order_no_text,
             'terms_condition' => $request->terms_condition,
-            'sub_total' => (float)str_replace(',', '', $request->product_subtotal ?? 0) + (float)str_replace(',', '', $request->service_subtotal ?? 0),
-            'cgst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0) + ($totalServiceGst / 2),
-            'sgst' => (float)str_replace(',', '', $request->product_total_sgst ?? 0) + ($totalServiceGst / 2),
-            'igst' => (float)str_replace(',', '', $request->product_total_igst ?? 0),
-            'gst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0) + (float)str_replace(',', '', $request->product_total_sgst ?? 0) + (float)str_replace(',', '', $request->product_total_igst ?? 0) + $totalServiceGst,
-            'total' => (float)str_replace(',', '', $request->grand_total ?? 0),
+            'sub_total' => $totalSubtotal,
+            'cgst' => $totalCgst,
+            'sgst' => $totalSgst,
+            'igst' => $totalIgst,
+            'gst' => $totalCgst + $totalSgst + $totalIgst,
+            'total' => $grandTotal,
         ]);
 
         // Store products
@@ -147,18 +194,41 @@ class InvoiceController extends Controller
             foreach ($request->products as $product) {
                 if (isset($product['product_id'])) {
                     $productModel = Product::findOrFail($product['product_id']);
+                    
+                    // Calculate individual GST values for this product
+                    $quantity = (int)$product['quantity'];
+                    $unitPrice = (float)str_replace(',', '', $product['unit_price']);
+                    $subtotal = $quantity * $unitPrice;
+                    
+                    // Get GST percentage from product
+                    $gstPercentage = $productModel->gst_percentage;
+                    $isIgst = $productModel->is_igst;
+                    
+                    $cgstAmount = 0;
+                    $sgstAmount = 0;
+                    $igstAmount = 0;
+                    
+                    if ($isIgst) {
+                        $igstAmount = ($subtotal * $gstPercentage) / 100;
+                    } else {
+                        $cgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                        $sgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                    }
+                    
+                    $totalGst = $cgstAmount + $sgstAmount + $igstAmount;
+                    
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
                         'product_id' => $product['product_id'],
                         'service_id' => null,
-                        'quantity' => (int)$product['quantity'],
-                        'unit_price' => (float)str_replace(',', '', $product['unit_price']),
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
                         'unit_type' => $productModel->unit_type,
-                        'cgst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0),
-                        'sgst' => (float)str_replace(',', '', $request->product_total_sgst ?? 0),
-                        'igst' => (float)str_replace(',', '', $request->product_total_igst ?? 0),
-                        'gst' => (float)str_replace(',', '', ($request->product_total_cgst ?? 0) + ($request->product_total_sgst ?? 0) + ($request->product_total_igst ?? 0)),
-                        'total' => (float)str_replace(',', '', $product['total']),
+                        'cgst' => $cgstAmount,
+                        'sgst' => $sgstAmount,
+                        'igst' => $igstAmount,
+                        'gst' => $totalGst,
+                        'total' => $subtotal + $totalGst,
                         'type' => 'product',
                     ]);
 
@@ -284,6 +354,57 @@ class InvoiceController extends Controller
             }
         }
 
+        // Calculate totals from items instead of using frontend values
+        $subTotal = 0;
+        $totalCgst = 0;
+        $totalSgst = 0;
+        $totalIgst = 0;
+        
+        // Calculate product totals
+        if ($request->has('products') && is_array($request->products)) {
+            foreach ($request->products as $product) {
+                if (isset($product['product_id']) && !empty($product['product_id'])) {
+                    $productModel = Product::findOrFail($product['product_id']);
+                    
+                    $quantity = (int)$product['quantity'];
+                    $unitPrice = (float)$product['unit_price'];
+                    $itemSubtotal = $quantity * $unitPrice;
+                    $subTotal += $itemSubtotal;
+                    
+                    // Calculate GST
+                    $gstPercentage = $productModel->gst_percentage;
+                    $isIgst = $productModel->is_igst;
+                    
+                    if ($isIgst) {
+                        $totalIgst += ($itemSubtotal * $gstPercentage) / 100;
+                    } else {
+                        $totalCgst += ($itemSubtotal * $gstPercentage) / 200;
+                        $totalSgst += ($itemSubtotal * $gstPercentage) / 200;
+                    }
+                }
+            }
+        }
+        
+        // Calculate service totals
+        if ($request->has('services') && is_array($request->services)) {
+            foreach ($request->services as $service) {
+                if (isset($service['service_id']) && !empty($service['service_id'])) {
+                    $quantity = (int)$service['quantity'];
+                    $unitPrice = (float)$service['unit_price'];
+                    $itemSubtotal = $quantity * $unitPrice;
+                    $subTotal += $itemSubtotal;
+                    
+                    // For services, use the provided GST values (they are calculated correctly)
+                    $totalCgst += (float)($service['cgst'] ?? 0);
+                    $totalSgst += (float)($service['sgst'] ?? 0);
+                    $totalIgst += (float)($service['igst'] ?? 0);
+                }
+            }
+        }
+        
+        $totalGst = $totalCgst + $totalSgst + $totalIgst;
+        $grandTotal = $subTotal + $totalGst;
+
         $invoice->update([
             'customer_id' => $request->customer,
             'contactperson_id' => $request->contact_person,
@@ -291,14 +412,12 @@ class InvoiceController extends Controller
             'invoice_date' => $request->invoice_date,
             'order_date' => $request->order_date,
             'order_no' => $request->order_no,
-            'sub_total' => $request->grand_sub_total,
-            'cgst' => ($request->product_total_cgst ?? 0) + ($request->service_total_cgst ?? 0),
-            'sgst' => ($request->product_total_sgst ?? 0) + ($request->service_total_sgst ?? 0),
-            'igst' => ($request->product_total_igst ?? 0) + ($request->service_total_igst ?? 0),
-            'gst' => (($request->product_total_cgst ?? 0) + ($request->service_total_cgst ?? 0)) +
-                (($request->product_total_sgst ?? 0) + ($request->service_total_sgst ?? 0)) +
-                (($request->product_total_igst ?? 0) + ($request->service_total_igst ?? 0)),
-            'total' => $request->grand_total,
+            'sub_total' => $subTotal,
+            'cgst' => $totalCgst,
+            'sgst' => $totalSgst,
+            'igst' => $totalIgst,
+            'gst' => $totalGst,
+            'total' => $grandTotal,
         ]);
 
         // Delete old items and add new ones
@@ -309,19 +428,41 @@ class InvoiceController extends Controller
             foreach ($request->products as $product) {
                 if (isset($product['product_id']) && !empty($product['product_id'])) {
                     $productModel = Product::findOrFail($product['product_id']);
+                    
+                    // Calculate individual GST values for this product
+                    $quantity = (int)$product['quantity'];
+                    $unitPrice = (float)$product['unit_price'];
+                    $subtotal = $quantity * $unitPrice;
+                    
+                    // Get GST percentage from product
+                    $gstPercentage = $productModel->gst_percentage;
+                    $isIgst = $productModel->is_igst;
+                    
+                    $cgstAmount = 0;
+                    $sgstAmount = 0;
+                    $igstAmount = 0;
+                    
+                    if ($isIgst) {
+                        $igstAmount = ($subtotal * $gstPercentage) / 100;
+                    } else {
+                        $cgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                        $sgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                    }
+                    
+                    $totalGst = $cgstAmount + $sgstAmount + $igstAmount;
 
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
                         'product_id' => $product['product_id'],
                         'service_id' => null,
-                        'quantity' => $product['quantity'],
-                        'unit_price' => $product['unit_price'],
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
                         'unit_type' => $productModel->unit_type,
-                        'cgst' => $product['cgst'] ?? 0,
-                        'sgst' => $product['sgst'] ?? 0,
-                        'igst' => $product['igst'] ?? 0,
-                        'gst' => ($product['cgst'] ?? 0) + ($product['sgst'] ?? 0) + ($product['igst'] ?? 0),
-                        'total' => $product['total'],
+                        'cgst' => $cgstAmount,
+                        'sgst' => $sgstAmount,
+                        'igst' => $igstAmount,
+                        'gst' => $totalGst,
+                        'total' => $subtotal + $totalGst,
                         'type' => 'product',
                     ]);
 

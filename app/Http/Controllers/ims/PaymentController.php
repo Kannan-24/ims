@@ -33,7 +33,7 @@ class PaymentController extends Controller
             });
         }
 
-        $payments = $query->latest()->get();
+        $payments = $query->latest()->paginate(10)->withQueryString();
 
         if (request()->ajax()) {
             return response()->json([

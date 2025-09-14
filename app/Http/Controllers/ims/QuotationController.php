@@ -126,18 +126,41 @@ class QuotationController extends Controller
             foreach ($request->products as $product) {
                 if (isset($product['product_id'])) {
                     $productModel = Product::findOrFail($product['product_id']);
+                    
+                    // Calculate individual GST values for this product
+                    $quantity = (int)$product['quantity'];
+                    $unitPrice = (float)str_replace(',', '', $product['unit_price']);
+                    $subtotal = $quantity * $unitPrice;
+                    
+                    // Get GST percentage from product
+                    $gstPercentage = $productModel->gst_percentage;
+                    $isIgst = $productModel->is_igst;
+                    
+                    $cgstAmount = 0;
+                    $sgstAmount = 0;
+                    $igstAmount = 0;
+                    
+                    if ($isIgst) {
+                        $igstAmount = ($subtotal * $gstPercentage) / 100;
+                    } else {
+                        $cgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                        $sgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                    }
+                    
+                    $totalGst = $cgstAmount + $sgstAmount + $igstAmount;
+                    
                     QuotationItem::create([
                         'quotation_id' => $quotation->id,
                         'product_id' => $product['product_id'],
                         'service_id' => null,
-                        'quantity' => (int)$product['quantity'],
-                        'unit_price' => (float)str_replace(',', '', $product['unit_price']),
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
                         'unit_type' => $productModel->unit_type,
-                        'cgst' => (float)str_replace(',', '', $request->product_total_cgst ?? 0),
-                        'sgst' => (float)str_replace(',', '', $request->product_total_sgst ?? 0),
-                        'igst' => (float)str_replace(',', '', $request->product_total_igst ?? 0),
-                        'gst' => (float)str_replace(',', '', ($request->product_total_cgst ?? 0) + ($request->product_total_sgst ?? 0) + ($request->product_total_igst ?? 0)),
-                        'total' => (float)str_replace(',', '', $product['total']),
+                        'cgst' => $cgstAmount,
+                        'sgst' => $sgstAmount,
+                        'igst' => $igstAmount,
+                        'gst' => $totalGst,
+                        'total' => $subtotal + $totalGst,
                         'type' => 'product',
                     ]);
                 }
@@ -242,18 +265,41 @@ class QuotationController extends Controller
             foreach ($request->products as $product) {
                 if (isset($product['product_id']) && !empty($product['product_id'])) {
                     $productModel = Product::findOrFail($product['product_id']);
+                    
+                    // Calculate individual GST values for this product
+                    $quantity = (int)$product['quantity'];
+                    $unitPrice = (float)$product['unit_price'];
+                    $subtotal = $quantity * $unitPrice;
+                    
+                    // Get GST percentage from product
+                    $gstPercentage = $productModel->gst_percentage;
+                    $isIgst = $productModel->is_igst;
+                    
+                    $cgstAmount = 0;
+                    $sgstAmount = 0;
+                    $igstAmount = 0;
+                    
+                    if ($isIgst) {
+                        $igstAmount = ($subtotal * $gstPercentage) / 100;
+                    } else {
+                        $cgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                        $sgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                    }
+                    
+                    $totalGst = $cgstAmount + $sgstAmount + $igstAmount;
+                    
                     QuotationItem::create([
                         'quotation_id' => $quotation->id,
                         'product_id' => $product['product_id'],
                         'service_id' => null,
-                        'quantity' => $product['quantity'],
-                        'unit_price' => $product['unit_price'],
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
                         'unit_type' => $productModel->unit_type,
-                        'cgst' => $product['cgst'] ?? 0,
-                        'sgst' => $product['sgst'] ?? 0,
-                        'igst' => $product['igst'] ?? 0,
-                        'gst' => ($product['cgst'] ?? 0) + ($product['sgst'] ?? 0) + ($product['igst'] ?? 0),
-                        'total' => (float)str_replace(',', '', $product['total']),
+                        'cgst' => $cgstAmount,
+                        'sgst' => $sgstAmount,
+                        'igst' => $igstAmount,
+                        'gst' => $totalGst,
+                        'total' => $subtotal + $totalGst,
                         'type' => 'product',
                     ]);
                 }

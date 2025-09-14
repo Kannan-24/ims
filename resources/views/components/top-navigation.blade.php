@@ -1,5 +1,5 @@
-<header class="fixed top-0 right-0 z-50 bg-white border-b border-gray-200 h-16 transition-all duration-300 ease-in-out lg:left-56 left-0"
-        :class="{ 'lg:left-16': sidebarCollapsed && !sidebarHovering, 'lg:left-56': !sidebarCollapsed || (sidebarCollapsed && sidebarHovering) }">
+<header class="fixed top-0 right-0 z-50 bg-white border-b border-gray-200 h-16 transition-all duration-300 ease-in-out lg:left-64 left-0"
+        :class="{ 'lg:left-16': sidebarCollapsed && !sidebarHovering, 'lg:left-64': !sidebarCollapsed || (sidebarCollapsed && sidebarHovering) }">
     <div class="flex items-center justify-between h-full px-6">
         <!-- Left side: Menu toggle and search -->
         <div class="flex items-center space-x-4">

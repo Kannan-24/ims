@@ -57,68 +57,6 @@
 
         <!-- Statistics Cards -->
         <div class="px-6 py-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Total Emails -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-envelope text-blue-600 text-xl"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Total Emails</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $emails->count() }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Draft Emails -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-edit text-orange-600 text-xl"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Draft Emails</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $drafts }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Today's Emails -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-paper-plane text-green-600 text-xl"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Today's Emails</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $emails->where('created_at', '>=', now()->startOfDay())->count() }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Unique Recipients -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-users text-purple-600 text-xl"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Unique Recipients</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $emails->pluck('to')->unique()->count() }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Search and Filter Bar -->
             <div class="bg-white border border-gray-200 rounded-lg p-4 mb-6 shadow-sm">
                 <!-- Top Controls -->
@@ -149,13 +87,13 @@
                     <!-- Right Side: View Controls -->
                     <div class="flex items-center space-x-3">
                         <div class="flex items-center bg-gray-100 rounded-lg p-1">
-                            <button @click="viewMode = 'list'" 
-                                    :class="viewMode === 'list' ? 'bg-white shadow-sm' : ''"
+                            <button @click="setViewMode('list')" 
+                                    :class="viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'"
                                     class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors">
                                 <i class="fas fa-list mr-2"></i>List
                             </button>
-                            <button @click="viewMode = 'grid'" 
-                                    :class="viewMode === 'grid' ? 'bg-white shadow-sm' : ''"
+                            <button @click="setViewMode('grid')" 
+                                    :class="viewMode === 'grid' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'"
                                     class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors">
                                 <i class="fas fa-th-large mr-2"></i>Grid
                             </button>
@@ -217,7 +155,11 @@
                     </div>
                 @else
                     <!-- List View -->
-                    <div x-show="viewMode === 'list'" class="overflow-x-auto">
+                    <div x-show="viewMode === 'list'" 
+                         x-transition:enter="transition-opacity duration-200"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -316,8 +258,6 @@
                                                        class="text-green-600 hover:text-green-900" title="Edit Draft">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                @else
-                                                    
                                                 @endif
                                                 <button @click="deleteEmail({{ $email->id }})" 
                                                         class="text-red-600 hover:text-red-900" title="Delete">
@@ -332,10 +272,14 @@
                     </div>
 
                     <!-- Grid View -->
-                    <div x-show="viewMode === 'grid'" class="p-6">
+                    <div x-show="viewMode === 'grid'" 
+                         x-transition:enter="transition-opacity duration-200"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             @foreach ($emails as $email)
-                                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer"
+                                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer grid-card"
                                      :class="selectedEmails.includes({{ $email->id }}) ? 'ring-2 ring-blue-500 bg-blue-50' : ''"
                                      @click="toggleEmailSelection({{ $email->id }})">
                                     <!-- Header -->
@@ -393,8 +337,6 @@
                                                    class="text-green-600 hover:text-green-900 text-sm" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                            @else
-                                                
                                             @endif
                                             <button @click.stop="deleteEmail({{ $email->id }})" 
                                                     class="text-red-600 hover:text-red-900 text-sm" title="Delete">
@@ -408,7 +350,14 @@
                     </div>
                 @endif
             </div>
-                                    
+
+            <!-- Pagination -->
+            @if($emails->hasPages())
+                <div class="mt-6">
+                    {{ $emails->links() }}
+                </div>
+            @endif
+        </div>
 
         <!-- Help Modal -->
         <div x-show="showHelp" 
@@ -536,14 +485,20 @@
         function emailManagement() {
             return {
                 showHelp: false,
-                viewMode: 'list', // 'list' or 'grid'
+                viewMode: localStorage.getItem('emailViewMode') || 'list', // Initialize from localStorage immediately
                 selectedEmails: [],
                 selectAll: false,
                 sortBy: 'date_desc',
 
                 init() {
-                    // Restore view mode from localStorage
-                    this.viewMode = localStorage.getItem('emailViewMode') || 'list';
+                    // Ensure viewMode is properly set from localStorage or default to list
+                    const savedViewMode = localStorage.getItem('emailViewMode');
+                    if (savedViewMode && (savedViewMode === 'list' || savedViewMode === 'grid')) {
+                        this.viewMode = savedViewMode;
+                    } else {
+                        this.viewMode = 'list';
+                        localStorage.setItem('emailViewMode', 'list');
+                    }
                     
                     // Keyboard shortcuts
                     document.addEventListener('keydown', (e) => {
@@ -560,7 +515,10 @@
                                 break;
                             case 's':
                                 e.preventDefault();
-                                document.querySelector('input[name="search"]').focus();
+                                const searchInput = document.querySelector('input[name="search"]');
+                                if (searchInput) {
+                                    searchInput.focus();
+                                }
                                 break;
                             case 'h':
                                 e.preventDefault();
@@ -587,12 +545,25 @@
                                 break;
                         }
                     });
+
+                    // Force Alpine to update the DOM after initialization
+                    this.$nextTick(() => {
+                        // This ensures the view is properly rendered after initialization
+                        console.log('Email Management initialized with view mode:', this.viewMode);
+                    });
                 },
 
                 // View Mode Functions
+                setViewMode(mode) {
+                    if (mode === 'list' || mode === 'grid') {
+                        this.viewMode = mode;
+                        localStorage.setItem('emailViewMode', mode);
+                    }
+                },
+
                 toggleViewMode() {
-                    this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
-                    localStorage.setItem('emailViewMode', this.viewMode);
+                    const newMode = this.viewMode === 'list' ? 'grid' : 'list';
+                    this.setViewMode(newMode);
                 },
 
                 // Selection Functions
@@ -710,8 +681,11 @@
             }
         }
 
+        // Additional function to handle table sorting if needed
         function sortTable(columnIndex) {
             const table = document.getElementById('emailTable');
+            if (!table) return;
+            
             const rows = Array.from(table.rows);
             const isNumeric = columnIndex === 0;
             const isDate = columnIndex === 3;
@@ -784,17 +758,45 @@
             border-left: 4px solid #3b82f6;
         }
         
+        /* Smooth transitions for view changes */
+        .transition-opacity {
+            transition-property: opacity;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
         /* Responsive grid adjustments */
         @media (max-width: 768px) {
-            .grid-cols-4 {
+            .xl\:grid-cols-4 {
                 grid-template-columns: repeat(1, minmax(0, 1fr));
             }
         }
         
         @media (min-width: 769px) and (max-width: 1024px) {
-            .grid-cols-4 {
+            .xl\:grid-cols-4 {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
+        
+        @media (min-width: 1025px) and (max-width: 1280px) {
+            .xl\:grid-cols-4 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        
+        /* Improved button states */
+        .bg-white.shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Active view button styling */
+        button:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+        
+        button:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
     </style>
-</x-app-layout>
+</x-app-layout>e

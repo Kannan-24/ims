@@ -49,56 +49,6 @@
             </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="px-6 py-4 bg-gray-50">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-boxes text-blue-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Total Stock Entries</p>
-                            <p class="text-xl font-bold text-gray-900">{{ $stocks->total() }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-chart-line text-green-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Total Quantity</p>
-                            <p class="text-xl font-bold text-gray-900">{{ number_format($stocks->sum('quantity')) }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-shopping-cart text-yellow-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Total Sold</p>
-                            <p class="text-xl font-bold text-gray-900">{{ number_format($stocks->sum('sold')) }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-warehouse text-purple-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Available Stock</p>
-                            <p class="text-xl font-bold text-gray-900">{{ number_format($stocks->sum('quantity') - $stocks->sum('sold')) }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Content -->
         <div class="p-6">
             <!-- Stock Table -->
@@ -131,25 +81,26 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Product</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Batch Code</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Batch Code & Entry Type</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Supplier</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Entry Type</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Quantity</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Sold</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Available</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Price</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Date</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Actions</th>
                             </tr>
                         </thead>
@@ -159,7 +110,8 @@
                                     :class="selectedRowIndex === {{ $loop->index }} ? 'bg-blue-50 ring-2 ring-blue-500' : ''">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                            <div
+                                                class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
                                                 <i class="fas fa-box text-blue-600"></i>
                                             </div>
                                             <div>
@@ -167,43 +119,38 @@
                                                     {{ $stock->product->name ?? 'N/A' }}
                                                 </div>
                                                 <div class="text-sm text-gray-500">
-                                                    {{ $stock->product->sku ?? 'N/A' }}
+                                                    {{ $stock->product->hsn_code ?? 'N/A' }}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
-                                            {{ $stock->batch_code }}
-                                        </span>
+                                        <div class="flex items-center">
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ $stock->batch_code ?? 'N/A' }}
+                                                </div>
+                                                <div class="text-sm text-gray-500 mt-1">
+                                                    <span
+                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $stock->entry_type === 'purchase' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
+                                                        <i
+                                                            class="fas {{ $stock->entry_type === 'purchase' ? 'fa-shopping-cart' : 'fa-edit' }} mr-1"></i>
+                                                        {{ ucfirst($stock->entry_type) }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900">{{ $stock->supplier->name ?? 'N/A' }}</div>
-                                        <div class="text-sm text-gray-500">{{ $stock->supplier->supplier_id ?? 'N/A' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                            {{ $stock->entry_type === 'purchase' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
-                                            <i class="fas {{ $stock->entry_type === 'purchase' ? 'fa-shopping-cart' : 'fa-edit' }} mr-1"></i>
-                                            {{ ucfirst($stock->entry_type) }}
-                                        </span>
+                                        <div class="text-sm text-gray-500">
+                                            {{ $stock->supplier->contact_person ?? 'N/A' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ number_format($stock->quantity) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ number_format($stock->sold) }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @php
-                                            $available = $stock->quantity - $stock->sold;
-                                        @endphp
-                                        <span class="text-sm font-medium {{ $available <= 0 ? 'text-red-600' : ($available <= 10 ? 'text-yellow-600' : 'text-green-600') }}">
-                                            {{ number_format($available) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        ₹{{ number_format($stock->price, 2) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ $stock->created_at->format('M d, Y') }}
@@ -218,20 +165,21 @@
                                                 title="View Stock Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            @if($stock->entry_type !== 'purchase')
+                                            @if ($stock->entry_type !== 'purchase')
                                                 <a href="{{ route('stocks.edit', $stock) }}"
                                                     class="text-indigo-600 hover:text-indigo-900 transition-colors"
                                                     title="Edit Stock">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             @endif
-                                            <form action="{{ route('stocks.destroy', $stock) }}" method="POST" class="inline">
+                                            <form action="{{ route('stocks.destroy', $stock) }}" method="POST"
+                                                class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" 
-                                                        class="text-red-600 hover:text-red-900 transition-colors"
-                                                        title="Delete Stock"
-                                                        onclick="return confirm('Are you sure you want to delete this stock entry?')">
+                                                <button type="submit"
+                                                    class="text-red-600 hover:text-red-900 transition-colors"
+                                                    title="Delete Stock"
+                                                    onclick="return confirm('Are you sure you want to delete this stock entry?')">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
@@ -243,8 +191,10 @@
                                     <td colspan="10" class="px-6 py-8 text-center">
                                         <div class="flex flex-col items-center">
                                             <i class="fas fa-box-open text-gray-400 text-4xl mb-4"></i>
-                                            <h3 class="text-lg font-medium text-gray-900 mb-2">No stock entries found</h3>
-                                            <p class="text-gray-500 mb-4">Get started by adding your first stock entry.</p>
+                                            <h3 class="text-lg font-medium text-gray-900 mb-2">No stock entries found
+                                            </h3>
+                                            <p class="text-gray-500 mb-4">Get started by adding your first stock entry.
+                                            </p>
                                             <a href="{{ route('stocks.create') }}"
                                                 class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
                                                 <i class="fas fa-plus w-4 h-4 mr-2"></i>
@@ -259,10 +209,10 @@
                 </div>
 
                 <!-- Pagination -->
-                @if($stocks->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200">
-                    {{ $stocks->links() }}
-                </div>
+                @if ($stocks->hasPages())
+                    <div class="px-6 py-4 border-t border-gray-200">
+                        {{ $stocks->links() }}
+                    </div>
                 @endif
             </div>
         </div>
@@ -313,7 +263,8 @@
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-gray-700">View Details</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Enter</kbd>
+                                    <kbd
+                                        class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Enter</kbd>
                                 </div>
                             </div>
                         </div>
@@ -328,7 +279,8 @@
                             <div class="space-y-3">
                                 <div>
                                     <h4 class="font-medium text-gray-900">Stock Overview</h4>
-                                    <p class="text-sm text-gray-600">View total products, quantities, sold items, and available stock.</p>
+                                    <p class="text-sm text-gray-600">View total products, quantities, sold items, and
+                                        available stock.</p>
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-900">Manual Entry</h4>
@@ -338,11 +290,13 @@
                             <div class="space-y-3">
                                 <div>
                                     <h4 class="font-medium text-gray-900">Stock Status</h4>
-                                    <p class="text-sm text-gray-600">Visual indicators for stock levels: In Stock, Low Stock, Critical.</p>
+                                    <p class="text-sm text-gray-600">Visual indicators for stock levels: In Stock, Low
+                                        Stock, Critical.</p>
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-900">Product Details</h4>
-                                    <p class="text-sm text-gray-600">Click on any row to view detailed stock information.</p>
+                                    <p class="text-sm text-gray-600">Click on any row to view detailed stock
+                                        information.</p>
                                 </div>
                             </div>
                         </div>
@@ -408,18 +362,18 @@
                         // Handle Ctrl+N for new stock
                         if (e.ctrlKey && e.key.toLowerCase() === 'n') {
                             e.preventDefault();
-                            window.location.href = '{{ route("stocks.create") }}';
+                            window.location.href = '{{ route('stocks.create') }}';
                             return;
                         }
 
                         switch (e.key.toLowerCase()) {
                             case 'n':
                                 e.preventDefault();
-                                window.location.href = '{{ route("stocks.create") }}';
+                                window.location.href = '{{ route('stocks.create') }}';
                                 break;
                             case 'm':
                                 e.preventDefault();
-                                window.location.href = '{{ route("stocks.manual.create") }}';
+                                window.location.href = '{{ route('stocks.manual.create') }}';
                                 break;
                             case 's':
                                 e.preventDefault();

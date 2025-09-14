@@ -25,7 +25,7 @@ class EmailController extends Controller
     }
     public function index()
     {
-        $emails = Email::latest()->get();
+        $emails = Email::latest()->paginate(20);
         $drafts = Email::drafts()->count();
         return view('ims.emails.index', compact('emails', 'drafts'));
     }
