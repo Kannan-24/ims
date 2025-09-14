@@ -56,6 +56,7 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/with/{user}', [ChatController::class, 'chatWithUser'])->name('chat.with');
     Route::get('/chat/users', [ChatController::class, 'getUsersWithMessages'])->name('chat.users');
+    Route::get('/chat/messages/{user}', [ChatController::class, 'getMessages'])->name('chat.messages');
     Route::get('/chat/history/{user}', [ChatController::class, 'getChatHistory'])->name('chat.history');
     Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::post('/chat/mark-read/{user}', [ChatController::class, 'markAsRead'])->name('chat.mark-read');

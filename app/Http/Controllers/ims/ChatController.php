@@ -58,6 +58,28 @@ class ChatController extends Controller
     }
 
     /**
+     * Get messages for professional chat interface
+     */
+    public function getMessages(User $user)
+    {
+        $messages = Message::betweenUsers(Auth::id(), $user->id)
+                          ->with(['sender:id,name,profile_photo', 'receiver:id,name,profile_photo'])
+                          ->orderBy('created_at', 'asc')
+                          ->get();
+
+        // Mark messages as read
+        Message::where('sender_id', $user->id)
+               ->where('receiver_id', Auth::id())
+               ->where('is_read', false)
+               ->update(['is_read' => true]);
+
+        return response()->json([
+            'messages' => $messages,
+            'lastMessageId' => $messages->last()?->id ?? 0
+        ]);
+    }
+
+    /**
      * Send a new message
      */
     public function sendMessage(Request $request)
