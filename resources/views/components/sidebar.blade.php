@@ -76,6 +76,10 @@
                         <i class="fas fa-calendar-alt nav-icon"></i>
                         <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Calendar</span>
                     </a>
+                    <a href="{{ route('chat.index') }}" class="nav-subitem {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                        <i class="fas fa-comments nav-icon"></i>
+                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Chat</span>
+                    </a>
                     <a href="{{ route('hotkeys.index') }}" class="nav-subitem {{ request()->routeIs('hotkeys.*') ? 'active' : '' }}">
                         <i class="fas fa-keyboard nav-icon"></i>
                         <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Hotkeys</span>

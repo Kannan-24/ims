@@ -18,6 +18,8 @@ use App\Http\Controllers\ims\ActivityLogController;
 use App\Http\Controllers\ims\DeliveryChallanController;
 use App\Http\Controllers\ims\NotesController;
 use App\Http\Controllers\ims\ContactBookController;
+use App\Http\Controllers\ims\ChatController;
+use App\Http\Controllers\ims\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -50,6 +52,16 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::patch('/hotkeys/bulk/activate', [HotkeyController::class, 'bulkActivate'])->name('hotkeys.bulk.activate');
     Route::patch('/hotkeys/bulk/deactivate', [HotkeyController::class, 'bulkDeactivate'])->name('hotkeys.bulk.deactivate');
 
+    // Chat Routes
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/with/{user}', [ChatController::class, 'chatWithUser'])->name('chat.with');
+    Route::get('/chat/users', [ChatController::class, 'getUsersWithMessages'])->name('chat.users');
+    Route::get('/chat/history/{user}', [ChatController::class, 'getChatHistory'])->name('chat.history');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::post('/chat/mark-read/{user}', [ChatController::class, 'markAsRead'])->name('chat.mark-read');
+    Route::post('/chat/typing', [ChatController::class, 'typing'])->name('chat.typing');
+    Route::get('/chat/new-messages', [ChatController::class, 'getNewMessages'])->name('chat.new-messages');
+    Route::get('/chat/download/{message}', [ChatController::class, 'downloadAttachment'])->name('chat.download');
 
     // Payment Routes
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
@@ -112,6 +124,9 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
 
     // User Routes
     Route::resource('users', UserController::class);
+    Route::get('users/{user}/profile', [UserProfileController::class, 'show'])->name('users.profile');
+    Route::get('users/{user}/start-chat', [UserProfileController::class, 'startChat'])->name('users.start-chat');
+    Route::get('users/{user}/qr-code', [UserProfileController::class, 'showQRCode'])->name('users.qr-code');
 
     // Customer Routes
     Route::resource('customers', CustomerController::class);
@@ -159,11 +174,11 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::get('/emails/drafts', [EmailController::class, 'drafts'])->name('emails.drafts');
     Route::get('/emails/documents', [EmailController::class, 'getAvailableDocuments'])->name('emails.documents');
     Route::post('/emails/generate-attachment', [EmailController::class, 'generateAndAttachDocument'])->name('emails.generate-attachment');
-    
+
     // Bulk operations for emails
     Route::post('/emails/bulk-delete', [EmailController::class, 'bulkDelete'])->name('emails.bulk-delete');
     Route::post('/emails/mark-read', [EmailController::class, 'markAsRead'])->name('emails.mark-read');
-    
+
     // Email resource routes (must come after specific routes)
     Route::resource('emails', EmailController::class);
 
@@ -183,5 +198,4 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::get('/contact-book', [ContactBookController::class, 'index'])->name('contact-book.index');
     Route::get('/contact-book/contacts', [ContactBookController::class, 'getContacts'])->name('contact-book.contacts');
     Route::post('/contact-book/export-to-email', [ContactBookController::class, 'exportToEmail'])->name('contact-book.export-to-email');
-
 });

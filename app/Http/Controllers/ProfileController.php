@@ -46,7 +46,6 @@ class ProfileController extends Controller
             'gender' => 'nullable|in:Male,Female,Other',
             'dob' => 'nullable|date',
             'doj' => 'nullable|date',
-            'designation' => 'nullable|string|max:255',
             'role' => 'nullable|string|max:255',
         ]);
 

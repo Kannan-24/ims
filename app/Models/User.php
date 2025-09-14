@@ -96,4 +96,28 @@ class User extends Authenticatable
     {
         $this->notify(new \App\Notifications\CustomResetPassword($token));
     }
+
+    /**
+     * Messages sent by this user
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    /**
+     * Messages received by this user
+     */
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
+
+    /**
+     * Get unread message count for this user
+     */
+    public function getUnreadMessageCountAttribute()
+    {
+        return $this->receivedMessages()->where('is_read', false)->count();
+    }
 }
