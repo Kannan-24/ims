@@ -24,7 +24,7 @@ class UserController extends Controller
                 ->orWhere('role', 'like', "%{$search}%");
         }
 
-        $users = $query->get();
+        $users = $query->paginate(20);
 
         return view('ims.users.index', compact('users'));
     }
@@ -34,7 +34,27 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('ims.users.create');
+        $nextEmployeeId = $this->getNextEmployeeId();
+        return view('ims.users.create', compact('nextEmployeeId'));
+    }
+
+    /**
+     * Get the next employee ID
+     */
+    public function getNextEmployeeId()
+    {
+        $lastUser = User::latest('id')->first();
+        
+        if (!$lastUser || !$lastUser->employee_id) {
+            return 'SKME001';
+        }
+        
+        // Extract number from employee_id (format: SKME001, SKME002, etc.)
+        $lastEmployeeId = $lastUser->employee_id;
+        $lastNumber = intval(substr($lastEmployeeId, 4));
+        $nextNumber = $lastNumber + 1;
+        
+        return 'SKME' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -56,12 +76,11 @@ class UserController extends Controller
             'role' => 'required|string|max:255',
         ]);
 
-        $lastUser = User::latest('id')->first();
-        $lastEmployeeId = $lastUser ? intval(substr($lastUser->employee_id, 4)) : 0;
-        $newEmployeeId = 'SKME' . str_pad($lastEmployeeId + 1, 3, '0', STR_PAD_LEFT);
+        // Auto-generate employee ID
+        $newEmployeeId = $this->getNextEmployeeId();
 
-    // Generate a secure temporary password meeting policy requirements
-    $defaultPassword = $this->generateTemporaryPassword();
+        // Generate a secure temporary password meeting policy requirements
+        $defaultPassword = $this->generateTemporaryPassword();
 
         $user = User::create([
             'employee_id' => $newEmployeeId,
@@ -79,12 +98,11 @@ class UserController extends Controller
             'must_change_password' => true,
             'password_expires_at' => now()->addDays(config('password_policy.expiry_days')),
             'last_password_changed_at' => null,
-
         ]);
 
         Mail::to($user->email)->send(new UserCreatedMail($user, $defaultPassword));
 
-        return redirect()->route('users.index')->with('success', 'User created successfully and email sent.');
+        return redirect()->route('users.show', $user)->with('success', 'User created successfully with Employee ID: ' . $newEmployeeId . '. Email sent to user.');
     }
 
 
@@ -93,7 +111,11 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return view('ims.users.show', compact('user'));
+        // Get navigation data
+        $previousUser = User::where('id', '<', $user->id)->orderBy('id', 'desc')->first();
+        $nextUser = User::where('id', '>', $user->id)->orderBy('id', 'asc')->first();
+        
+        return view('ims.users.show', compact('user', 'previousUser', 'nextUser'));
     }
 
     /**
@@ -138,7 +160,7 @@ class UserController extends Controller
             'role' => $request->role,
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('users.show', $user)->with('success', 'User updated successfully.');
     }
 
     /**

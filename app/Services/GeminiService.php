@@ -267,16 +267,15 @@ The email should be ready to send with minimal editing needed.";
         try {
             // Get document data
             $documentData = $this->getDocumentData($documentType, $documentId);
-            
+
             if (!$documentData) {
                 return $this->getFallbackEmailContentWithDetails($emailType, $userDetails, $companyDetails);
             }
 
             // Build context-aware prompt
             $prompt = $this->buildEmailPrompt($documentData, $emailType, $customPrompt, $userDetails, $companyDetails);
-            
-            return $this->generateContent($prompt);
 
+            return $this->generateContent($prompt);
         } catch (\Exception $e) {
             Log::error('Gemini AI Email Generation Error: ' . $e->getMessage());
             return $this->getFallbackEmailContentWithDetails($emailType, $userDetails, $companyDetails);
@@ -360,10 +359,10 @@ The email should be ready to send with minimal editing needed.";
         $senderRole = $userDetails['designation'] ?? $userDetails['role'] ?? 'Representative';
         $senderPhone = $userDetails['phone'] ?? '';
         $senderEmail = $userDetails['email'] ?? '';
-        
+
         $companyName = $companyDetails['name'] ?? config('app.name', 'Company');
         $companyEmail = $companyDetails['email'] ?? config('mail.from.address', '');
-        
+
         $prompt = "Generate a professional business email for sending a {$documentData['type']} to a customer.
 
 Document Details:
@@ -435,37 +434,24 @@ The email should be ready to send with minimal editing needed.";
 
     private function getFallbackEmailContentWithDetails($emailType, $userDetails, $companyDetails)
     {
-        $senderName = $userDetails['name'] ?? 'Team Member';
-        $senderRole = $userDetails['designation'] ?? $userDetails['role'] ?? 'Representative';
-        $senderPhone = $userDetails['phone'] ?? '';
-        $senderEmail = $userDetails['email'] ?? '';
-        
-        $companyName = $companyDetails['name'] ?? config('app.name', 'Company');
+        // Use the company's standard email template
+        return "Dear Sir,
 
-        $signature = "\n\nBest regards,\n\n{$senderName}\n{$senderRole}\n{$companyName}";
-        
-        if ($senderPhone) {
-            $signature .= "\nPhone: {$senderPhone}";
-        }
-        if ($senderEmail) {
-            $signature .= "\nEmail: {$senderEmail}";
-        }
+Good Afternoon,
 
-        return "Dear Sir/Madam,
+As discussed, please find the attached quotation for your requirements.
 
-Good afternoon,
+We kindly request you to confirm your valuable order with us at your earliest convenience.
 
-We hope this email finds you well.
+We assure you of our best service and support at all times.
 
-Please find attached the requested document for your review. We have prepared this document as per your requirements and request you to review the details.
+Thank you and regards,
 
-Should you have any questions or require any modifications, please feel free to contact us.
-
-We look forward to your confirmation and continuing our business relationship.
-
-Thank you for choosing our services.{$signature}
-
-Note: This email was generated using AI assistance. Please review before sending.";
+R. Radhika
+Partner
+SKM and Company
+8870820449
+skmandcompany@yahoo.in";
     }
 
     private function getFallbackEmailContent(array $documentData, string $emailType): string

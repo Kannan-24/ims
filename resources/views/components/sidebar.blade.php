@@ -64,7 +64,6 @@
                     ['name' => 'Delivery Challans', 'route' => 'delivery-challans.index', 'icon' => 'fas fa-shipping-fast'],
                     ['name' => 'Payments', 'route' => 'payments.index', 'icon' => 'fas fa-credit-card'],
                     ['name' => 'Emails', 'route' => 'emails.index', 'icon' => 'fas fa-envelope'],
-                    ['name' => 'AI Assistant', 'route' => 'ai.copilot', 'icon' => 'fas fa-robot'],
                     ['name' => 'Reports', 'route' => 'reports.index', 'icon' => 'fas fa-chart-bar'],
                     ['name' => 'Activity Logs', 'route' => 'activity-logs.index', 'icon' => 'fas fa-history'],
                 ];

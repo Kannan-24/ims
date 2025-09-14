@@ -48,7 +48,17 @@ class SendEmail extends Mailable
         $attachments = json_decode($this->email->attachments);
         if ($attachments) {
             foreach ($attachments as $path) {
-                $email->attach(storage_path('app/public/' . $path));
+                $fullPath = storage_path('app/public/' . $path);
+                
+                // Check if file exists before trying to attach
+                if (file_exists($fullPath)) {
+                    $email->attach($fullPath);
+                } else {
+                    \Log::error('Attachment file not found', [
+                        'path' => $path,
+                        'email_id' => $this->email->id
+                    ]);
+                }
             }
         }
 

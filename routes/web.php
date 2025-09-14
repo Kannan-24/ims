@@ -20,6 +20,10 @@ Route::middleware(['auth','2fa'])->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/update-photo', [ProfileController::class, 'updateProfilePhoto'])->name('profile.update.photo');
+    
+    // QR Code Routes
+    Route::get('/profile/qr/{user}', [ProfileController::class, 'generateQRCode'])->name('profile.qr');
+    Route::get('/profile/qr/{user}/download', [ProfileController::class, 'downloadQRCode'])->name('profile.qr.download');
 
     // Account Settings Routes
     Route::get('/account-settings', [AccountSettingsController::class, 'index'])->name('account.settings');
@@ -29,6 +33,9 @@ Route::middleware(['auth','2fa'])->group(function () {
     Route::patch('/account-settings/password', [AccountSettingsController::class, 'updatePassword'])->name('account.update.password');
     Route::delete('/account-settings/delete', [AccountSettingsController::class, 'destroy'])->name('account.destroy');
 });
+
+// Public Profile Route (no authentication required)
+Route::get('/profile/public/{user}', [ProfileController::class, 'publicProfile'])->name('profile.public');
 
 
 require __DIR__ . '/auth.php';

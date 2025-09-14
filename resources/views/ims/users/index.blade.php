@@ -1,91 +1,201 @@
-<x-app-layout :users="$users">
-
+<x-app-layout>
     <x-slot name="title">
-        {{ __('User List') }} - {{ config('app.name', 'ATMS') }}
+        {{ __('User Management') }} - {{ config('app.name', 'IMS') }}
     </x-slot>
 
-    <!-- Main Content Section -->
-    <div class="py-6 mt-20 ml-4 sm:ml-64">
-        <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="bg-white min-h-screen" x-data="userIndexManager()" x-init="init()">
+        <!-- Breadcrumbs -->
+        <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{{ route('dashboard') }}"
+                            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                            <i class="fas fa-home mr-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                            <span class="text-sm font-medium text-gray-500">User Management</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
 
-            <!-- Breadcrumb Navigation -->
-            <x-bread-crumb-navigation />
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">User Management</h1>
+                    <p class="text-sm text-gray-600 mt-1">Manage system users and their permissions</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- Help Button -->
+                    <a href="#"
+                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
+                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
+                        Help
+                    </a>
+                    <!-- New User Button -->
+                    <a href="{{ route('users.create') }}"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        <i class="fas fa-plus w-4 h-4 mr-2"></i>
+                        Add User
+                    </a>
+                </div>
+            </div>
+        </div>
 
-            <div class="overflow-hidden bg-gray-800 rounded-lg shadow-xl">
-                <div class="bg-gray-800 p-4 rounded-lg shadow-md">
-                    <form method="GET" action="{{ route('users.index') }}"
-                        class="flex flex-wrap items-center gap-4">
-
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="Search Employee ID, Name, Email, or Role"
-                            class="flex-1 min-w-[200px] px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-
-                        <button type="submit"
-                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-semibold">Filter</button>
-                        <a href="{{ route('users.index') }}"
-                            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded font-semibold">Reset</a>
+        <!-- Content -->
+        <div class="p-6">
+            <!-- Search and Filters -->
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
+                <div class="p-4">
+                    <form method="GET" action="{{ route('users.index') }}" class="flex flex-wrap items-center gap-4">
+                        <div class="flex-1 min-w-[300px]">
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Search by name, email, employee ID, or role..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button type="submit"
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                            <a href="{{ route('users.index') }}"
+                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-times mr-2"></i>Reset
+                            </a>
+                        </div>
                     </form>
                 </div>
-                <div class="p-4 overflow-x-auto">
-                    @if ($users->isEmpty())
-                        <div class="text-center text-gray-300">
-                            {{ __('No users found.') }}
+            </div>
+
+            <!-- Users Table -->
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-900">Users List</h2>
+                        <div class="text-sm text-gray-500">
+                            Total: {{ $users->total() }} users
                         </div>
-                    @else
-                        <table class="min-w-full text-left border-collapse table-auto">
-                            <thead>
-                                <tr class="text-sm text-gray-300 bg-gray-700 uppercase tracking-wider">
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(0)">#
+                    </div>
+                </div>
+
+                @if ($users->isEmpty())
+                    <div class="text-center py-12">
+                        <i class="fas fa-users text-gray-300 text-4xl mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No users found</h3>
+                        <p class="text-gray-500 mb-6">Get started by creating your first user.</p>
+                        <a href="{{ route('users.create') }}"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+                            <i class="fas fa-plus mr-2"></i>Add First User
+                        </a>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        #
                                     </th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(1)">
-                                        Employee ID</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 cursor-pointer" onclick="sortTable(2)">
-                                        Name</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600">Email</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600">Phone</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600">Role</th>
-                                    <th class="px-6 py-4 border-b-2 border-gray-600 text-center">Actions</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        User Details
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Contact Information
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Roles
+                                    </th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
                                 </tr>
                             </thead>
-                            <tbody class="text-sm text-gray-300 divide-y divide-gray-700" id="userTable">
+                            <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($users as $user)
-                                    <tr class="hover:bg-gray-700 transition duration-200">
-                                        <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                                        <td class="px-6 py-4">{{ $user->employee_id }}</td>
-                                        <td class="px-6 py-4">{{ $user->name }}</td>
-                                        <td class="px-6 py-4">{{ $user->email }}</td>
-                                        <td class="px-6 py-4">{{ $user->phone }}</td>
-                                        <td class="px-6 py-4">{{ $user->role }}</td>
-                                        <td class="px-6 py-4 flex justify-center gap-3">
-                                            <a href="{{ route('users.show', $user) }}"
-                                                class="text-blue-400 hover:text-blue-600 transition duration-300"
-                                                title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('users.edit', $user) }}"
-                                                class="text-yellow-400 hover:text-yellow-600 transition duration-300"
-                                                title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('users.destroy', $user) }}" method="POST"
-                                                class="inline">
-                                                @csrf @method('DELETE')
-                                                <button type="submit"
-                                                    class="text-red-400 hover:text-red-600 transition duration-300"
-                                                    title="Delete"
-                                                    onclick="return confirm('Are you sure you want to delete this user?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                                    <span class="text-white font-semibold text-sm">
+                                                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                                                    </span>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                                    <div class="text-sm text-gray-500">ID: {{ $user->employee_id ?? 'N/A' }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">{{ $user->email }}</div>
+                                            <div class="text-sm text-gray-500">{{ $user->phone ?? 'No phone' }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                                {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-800' : 
+                                                   ($user->role === 'manager' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
+                                                {{ ucfirst($user->role ?? 'user') }}
+                                            </span>
+                                        </td>
+                                        
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div class="flex items-center justify-end space-x-2">
+                                                <a href="{{ route('users.show', $user) }}"
+                                                    class="text-blue-600 hover:text-blue-900 transition-colors"
+                                                    title="View User Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('users.edit', $user) }}"
+                                                    class="text-indigo-600 hover:text-indigo-900 transition-colors"
+                                                    title="Edit User">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" 
+                                                            class="text-red-600 hover:text-red-900 transition-colors"
+                                                            title="Delete User"
+                                                            onclick="return confirm('Are you sure you want to delete this user?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    @if($users->hasPages())
+                        <div class="px-6 py-4 border-t border-gray-200">
+                            {{ $users->links() }}
+                        </div>
                     @endif
-                </div>
+                @endif
             </div>
         </div>
     </div>
 
+    <script>
+        function userIndexManager() {
+            return {
+                init() {
+                    // Initialize any needed functionality
+                }
+            }
+        }
+    </script>
 </x-app-layout>

@@ -15,7 +15,6 @@ use App\Http\Controllers\ims\PaymentController;
 use App\Http\Controllers\ims\EmailController;
 use App\Http\Controllers\ims\ReportController;
 use App\Http\Controllers\ims\ActivityLogController;
-use App\Http\Controllers\ims\AIContentController;
 use App\Http\Controllers\ims\DeliveryChallanController;
 use Illuminate\Support\Facades\Route;
 
@@ -69,9 +68,9 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::get('/purchases/get-products/{supplier}', [PurchaseController::class, 'getProductsBySupplier']);
 
     // Reports Routes
-    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/help', [ReportController::class, 'help'])->name('reports.help');
     Route::get('/reports/{id}', [ReportController::class, 'show']);
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
 
 
     // Customer Reports Routes
@@ -130,6 +129,9 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::resource('purchases', PurchaseController::class);
 
     // Stock Routes
+    Route::get('stocks/help', [StockController::class, 'help'])->name('stocks.help');
+    Route::get('stocks/manual/create', [StockController::class, 'manualCreate'])->name('stocks.manual.create');
+    Route::post('stocks/manual', [StockController::class, 'manualStore'])->name('stocks.manual.store');
     Route::resource('stocks', StockController::class);
 
     // Quotation Routes
@@ -150,15 +152,14 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::put('/delivery-challans/{id}/status', [DeliveryChallanController::class, 'updateStatus'])->name('delivery-challans.update-status');
     Route::delete('/delivery-challans/{id}', [DeliveryChallanController::class, 'destroy'])->name('delivery-challans.destroy');
 
-
-
-    // Email Routes
+    // Email Routes - Specific routes MUST come before resource routes
+    Route::get('/emails/help', [EmailController::class, 'help'])->name('emails.help');
+    Route::get('/emails/drafts', [EmailController::class, 'drafts'])->name('emails.drafts');
+    Route::get('/emails/documents', [EmailController::class, 'getAvailableDocuments'])->name('emails.documents');
+    Route::post('/emails/generate-attachment', [EmailController::class, 'generateAndAttachDocument'])->name('emails.generate-attachment');
+    
+    // Email resource routes (must come after specific routes)
     Route::resource('emails', EmailController::class);
-    Route::get('/emails/draft/create', [EmailController::class, 'createDraft'])->name('emails.draft.create');
-    Route::get('/emails/drafts/list', [EmailController::class, 'drafts'])->name('emails.drafts');
-    Route::post('/emails/ai/generate', [EmailController::class, 'generateAIContent'])->name('emails.ai.generate');
-    Route::post('/emails/ai/regenerate', [EmailController::class, 'regenerateEmailContent'])->name('emails.ai.regenerate');
-    Route::get('/emails/ai/documents', [EmailController::class, 'getAvailableDocuments'])->name('emails.ai.documents');
 
     // Activity Log Routes
     Route::get('/activity-logs/clear', [ActivityLogController::class, 'destroyAll'])->name('activity-logs.destroyAll');
@@ -168,10 +169,4 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])->name('activity-logs.destroy');
     Route::get('/activity-logs/{id}/delete', [ActivityLogController::class, 'destroy'])->name('activity-logs.delete');
 
-    //ai 
-    Route::view('/ai-copilot', 'ims.ai.copilot')->name('ai.copilot');
-    Route::view('/ai-debug', 'ims.ai.debug')->name('ai.debug');
-    Route::post('/generate-content', [AIContentController::class, 'generate']);
-    Route::get('/ai-usage-stats', [AIContentController::class, 'getUsageStats'])->name('ai.usage-stats');
-    Route::get('/ai-test-connection', [AIContentController::class, 'testConnection'])->name('ai.test-connection');
 });

@@ -3,169 +3,276 @@
         {{ __('Invoice Details') }} - {{ config('app.name', 'SKM') }}
     </x-slot>
 
-    <div class="py-6 mt-20 ml-4 sm:ml-64">
+        <div class="py-6 mt-20 ml-4 sm:ml-64">
         <div class="w-full mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <x-bread-crumb-navigation />
+            <!-- Breadcrumb Navigation -->
+            <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-6">
+                <a href="{{ route('dashboard') }}" class="hover:text-blue-600 transition-colors">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+                <a href="{{ route('invoices.index') }}" class="hover:text-blue-600 transition-colors">
+                    📄 Invoices
+                </a>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+                <span class="text-gray-800 font-medium">Invoice Details</span>
+            </nav>
 
-            <div class="p-8 bg-gray-800 border border-gray-700 rounded-lg shadow-lg relative">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-3xl font-bold text-gray-200">Invoice Details</h2>
-                    <div class="flex gap-2">
+            <!-- Header Card -->
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800 flex items-center">
+                            📄 Invoice Details
+                        </h1>
+                        <p class="text-gray-600 mt-1">View and manage invoice information</p>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
                         <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
-                            class="flex items-center px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition">
+                            class="flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-md">
                             <i class="fas fa-file-pdf mr-2"></i>PDF
                         </a>
                         <a href="{{ route('invoices.qr-view', $invoice->id) }}" target="_blank"
-                            class="flex items-center px-4 py-2 text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition">
+                            class="flex items-center px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
                             <i class="fas fa-qrcode mr-2"></i>QR View
                         </a>
                         <button onclick="generateDeliveryChallan({{ $invoice->id }})"
-                            class="flex items-center px-4 py-2 text-white bg-purple-500 rounded-lg hover:bg-purple-600 transition">
+                            class="flex items-center px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors shadow-md">
                             <i class="fas fa-truck mr-2"></i>Delivery Challan
                         </button>
+                        <a href="{{ route('emails.create') }}?invoice_id={{ $invoice->id }}"
+                            class="flex items-center px-4 py-2 text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition-colors shadow-md">
+                            <i class="fas fa-envelope mr-2"></i>Email Invoice
+                        </a>
                         <a href="{{ route('invoices.edit', $invoice->id) }}"
-                            class="flex items-center px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition">
-                            Edit
+                            class="flex items-center px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-md">
+                            <i class="fas fa-edit mr-2"></i>Edit
                         </a>
                         <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST"
                             onsubmit="return confirm('Are you sure you want to delete this invoice?');" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="flex items-center px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition">
-                                Delete
+                                class="flex items-center px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-md">
+                                <i class="fas fa-trash mr-2"></i>Delete
                             </button>
                         </form>
                     </div>
                 </div>
+            </div>
 
-                <hr class="my-6 border-gray-600">
-
-                <div class="space-y-4 text-gray-300">
-                    <p><strong>Order No:</strong> {{ $invoice->order_no ?? 'N/A' }}</p>
-                    <p><strong>Invoice No:</strong> {{ $invoice->invoice_no }}</p>
-                    <p><strong>Invoice Date:</strong> {{ $invoice->invoice_date }}</p>
-                    <p><strong>Order Date:</strong> {{ $invoice->order_date }}</p>
-                </div>
-
-                <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Customer Details</h3>
-                <div class="space-y-4 text-gray-300">
-                    <p><strong>Name:</strong> {{ $invoice->customer->company_name }}</p>
-                    <p><strong>GST Number:</strong> {{ $invoice->customer->gst_number ?? 'N/A' }}</p>
-                    <p><strong>Address:</strong> {{ $invoice->customer->address }},
-                        {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }},
-                        {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
-                    <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Contact Person Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @foreach ($invoice->customer->contactPersons as $contactPerson)
-                            @if ($contactPerson->id == $invoice->contactperson_id)
-                                <div
-                                    class="p-6 rounded-lg shadow-md bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600 transition">
-                                    <p class="text-lg font-semibold">{{ $contactPerson->name }}</p>
-                                    <p class="text-sm mt-1"><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
-                                    <p class="text-sm"><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
-                                    <p><strong>Address:</strong> {{ $invoice->customer->address }},
-                                        {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }},
-                                        {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
-                                </div>
-                            @endif
-                        @endforeach
+            <!-- Invoice Overview Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-hashtag text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Invoice No</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $invoice->invoice_no }}</p>
+                        </div>
                     </div>
                 </div>
 
-                <hr class="my-6 border-gray-600">
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-calendar text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Invoice Date</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $invoice->invoice_date }}</p>
+                        </div>
+                    </div>
+                </div>
 
-                @if ($invoice->items->where('type', 'product')->isNotEmpty())
-                    <h3 class="text-2xl font-bold text-gray-200 mb-4">Products</h3>
-                    <div class="overflow-x-auto mt-4">
-                        <table class="min-w-full bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
-                            <thead class="bg-gray-700 text-gray-300">
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-shopping-cart text-purple-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Order No</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $invoice->order_no ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-calendar-alt text-orange-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Order Date</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $invoice->order_date }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Information Card -->
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-building text-blue-600 mr-2"></i>
+                    Customer Details
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Company Name</p>
+                            <p class="text-gray-900">{{ $invoice->customer->company_name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">GST Number</p>
+                            <p class="text-gray-900">{{ $invoice->customer->gst_number ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Address</p>
+                            <p class="text-gray-900">{{ $invoice->customer->address }}, {{ $invoice->customer->city }} - {{ $invoice->customer->zip_code }}, {{ $invoice->customer->state }}, {{ $invoice->customer->country }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Person Card -->
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-user text-green-600 mr-2"></i>
+                    Contact Person Details
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach ($invoice->customer->contactPersons as $contactPerson)
+                        @if ($contactPerson->id == $invoice->contactperson_id)
+                            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <p class="text-lg font-semibold text-gray-900">{{ $contactPerson->name }}</p>
+                                <p class="text-sm text-gray-600 mt-1"><strong>Phone:</strong> {{ $contactPerson->phone_no }}</p>
+                                <p class="text-sm text-gray-600"><strong>Email:</strong> {{ $contactPerson->email ?? 'N/A' }}</p>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            @if ($invoice->items->where('type', 'product')->isNotEmpty())
+                <!-- Products Card -->
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-box text-blue-600 mr-2"></i>
+                        Products
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                            <thead class="bg-gray-50 text-gray-700">
                                 <tr>
-                                    <th class="px-6 py-4 text-left">#</th>
-                                    <th class="px-6 py-4 text-left">Product Name</th>
-                                    <th class="px-6 py-4 text-left">Quantity</th>
-                                    <th class="px-6 py-4 text-left">Unit Type</th>
-                                    <th class="px-6 py-4 text-left">Unit Price</th>
-                                    <th class="px-6 py-4 text-left">CGST</th>
-                                    <th class="px-6 py-4 text-left">SGST</th>
-                                    <th class="px-6 py-4 text-left">IGST</th>
-                                    <th class="px-6 py-4 text-left">Total</th>
+                                    <th class="px-6 py-4 text-left font-medium">#</th>
+                                    <th class="px-6 py-4 text-left font-medium">Product Name</th>
+                                    <th class="px-6 py-4 text-left font-medium">Quantity</th>
+                                    <th class="px-6 py-4 text-left font-medium">Unit Type</th>
+                                    <th class="px-6 py-4 text-left font-medium">Unit Price</th>
+                                    <th class="px-6 py-4 text-left font-medium">CGST</th>
+                                    <th class="px-6 py-4 text-left font-medium">SGST</th>
+                                    <th class="px-6 py-4 text-left font-medium">IGST</th>
+                                    <th class="px-6 py-4 text-left font-medium">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($invoice->items->where('type', 'product') as $product)
-                                    <tr class="border-t border-gray-700 hover:bg-gray-700 text-gray-300">
+                                    <tr class="border-t border-gray-200 hover:bg-gray-50 text-gray-900">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                                        <td class="px-6 py-4">{{ $product->product->name }}</td>
+                                        <td class="px-6 py-4 font-medium">{{ $product->product->name }}</td>
                                         <td class="px-6 py-4">{{ $product->quantity }}</td>
                                         <td class="px-6 py-4">{{ $product->unit_type }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($product->unit_price, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($product->cgst, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($product->sgst, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($product->igst, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($product->total, 2) }}</td>
+                                        <td class="px-6 py-4 font-semibold">₹{{ number_format($product->total, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                @endif
+                </div>
+            @endif
 
-                @if ($invoice->items->where('type', 'service')->isNotEmpty())
-                    <h3 class="text-2xl font-bold text-gray-200 mb-4 mt-8">Services</h3>
-                    <div class="overflow-x-auto mt-4">
-                        <table class="min-w-full bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
-                            <thead class="bg-gray-700 text-gray-300">
+            @if ($invoice->items->where('type', 'service')->isNotEmpty())
+                <!-- Services Card -->
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-cogs text-green-600 mr-2"></i>
+                        Services
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                            <thead class="bg-gray-50 text-gray-700">
                                 <tr>
-                                    <th class="px-6 py-4 text-left">#</th>
-                                    <th class="px-6 py-4 text-left">Service Name</th>
-                                    <th class="px-6 py-4 text-left">Quantity</th>
-                                    <th class="px-6 py-4 text-left">Unit Price</th>
-                                    <th class="px-6 py-4 text-left">CGST</th>
-                                    <th class="px-6 py-4 text-left">SGST</th>
-                                    <th class="px-6 py-4 text-left">Total</th>
+                                    <th class="px-6 py-4 text-left font-medium">#</th>
+                                    <th class="px-6 py-4 text-left font-medium">Service Name</th>
+                                    <th class="px-6 py-4 text-left font-medium">Quantity</th>
+                                    <th class="px-6 py-4 text-left font-medium">Unit Price</th>
+                                    <th class="px-6 py-4 text-left font-medium">CGST</th>
+                                    <th class="px-6 py-4 text-left font-medium">SGST</th>
+                                    <th class="px-6 py-4 text-left font-medium">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($invoice->items->where('type', 'service') as $service)
-                                    <tr class="border-t border-gray-700 hover:bg-gray-700 text-gray-300">
+                                    <tr class="border-t border-gray-200 hover:bg-gray-50 text-gray-900">
                                         <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                                        <td class="px-6 py-4">{{ $service->service->name }}</td>
+                                        <td class="px-6 py-4 font-medium">{{ $service->service->name }}</td>
                                         <td class="px-6 py-4">{{ $service->quantity }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($service->unit_price, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($service->cgst, 2) }}</td>
                                         <td class="px-6 py-4">₹{{ number_format($service->sgst, 2) }}</td>
-                                        <td class="px-6 py-4">₹{{ number_format($service->total, 2) }}</td>
+                                        <td class="px-6 py-4 font-semibold">₹{{ number_format($service->total, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                @endif
+                </div>
+            @endif
 
-                <div class="mt-8">
-                    <h3 class="text-2xl font-bold text-gray-200 mb-4">Summary</h3>
-                    <table class="w-full bg-gray-800 border border-gray-700 rounded-lg shadow-sm text-gray-300">
-                        <tbody>
-                            <tr class="border-t border-gray-700">
-                                <td class="px-4 py-2 font-semibold">Subtotal:</td>
-                                <td class="px-4 py-2">₹{{ number_format($invoice->sub_total, 2) }}</td>
+            <!-- Invoice Summary Card -->
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-calculator text-purple-600 mr-2"></i>
+                    Invoice Summary
+                </h3>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <table class="w-full">
+                        <tbody class="text-gray-700">
+                            <tr class="border-b border-gray-200">
+                                <td class="py-3 font-medium">Subtotal:</td>
+                                <td class="py-3 text-right">₹{{ number_format($invoice->sub_total, 2) }}</td>
                             </tr>
-                            <tr class="border-t border-gray-700">
-                                <td class="px-4 py-2 font-semibold">CGST:</td>
-                                <td class="px-4 py-2">₹{{ number_format($invoice->cgst, 2) }}</td>
+                            <tr class="border-b border-gray-200">
+                                <td class="py-3 font-medium">CGST:</td>
+                                <td class="py-3 text-right">₹{{ number_format($invoice->cgst, 2) }}</td>
                             </tr>
-                            <tr class="border-t border-gray-700">
-                                <td class="px-4 py-2 font-semibold">SGST:</td>
-                                <td class="px-4 py-2">₹{{ number_format($invoice->sgst, 2) }}</td>
+                            <tr class="border-b border-gray-200">
+                                <td class="py-3 font-medium">SGST:</td>
+                                <td class="py-3 text-right">₹{{ number_format($invoice->sgst, 2) }}</td>
                             </tr>
-                            <tr class="border-t border-gray-700">
-                                <td class="px-4 py-2 font-semibold">IGST:</td>
-                                <td class="px-4 py-2">₹{{ number_format($invoice->igst, 2) }}</td>
+                            <tr class="border-b border-gray-200">
+                                <td class="py-3 font-medium">IGST:</td>
+                                <td class="py-3 text-right">₹{{ number_format($invoice->igst, 2) }}</td>
                             </tr>
-                            <tr class="border-t border-gray-700">
-                                <td class="px-4 py-2 font-bold text-xl">Grand Total:</td>
-                                <td class="px-4 py-2 font-bold text-xl">₹{{ number_format($invoice->total, 2) }}</td>
+                            <tr class="border-t-2 border-gray-300">
+                                <td class="py-4 font-bold text-lg text-gray-900">Grand Total:</td>
+                                <td class="py-4 font-bold text-lg text-gray-900 text-right">₹{{ number_format($invoice->total, 2) }}</td>
                             </tr>
                         </tbody>
                     </table>

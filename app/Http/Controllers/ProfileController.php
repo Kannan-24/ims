@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
 use App\Models\User;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProfileController extends Controller
 {
@@ -57,7 +59,6 @@ class ProfileController extends Controller
     /**
      * Update only the profile image.
      */
-
     public function updateProfilePhoto(Request $request)
     {
         $request->validate([
@@ -84,5 +85,58 @@ class ProfileController extends Controller
         $user->save();
 
         return redirect()->route('profile.show')->with('status', 'Profile image updated successfully!');
+    }
+
+    /**
+     * Generate QR Code for user profile
+     */
+    public function generateQRCode(User $user)
+    {
+        // Generate URL for public profile
+        $profileUrl = route('profile.public', $user);
+        
+        // Generate QR code using GD (not Imagick)
+        $qrCode = QrCode::size(300)
+            ->format('png')
+            ->backgroundColor(255, 255, 255)
+            ->color(0, 0, 0)
+            ->generate($profileUrl);
+
+        return response($qrCode, 200, [
+            'Content-Type' => 'image/png',
+        ]);
+    }
+
+    /**
+     * Download QR Code for user profile
+     */
+    public function downloadQRCode(User $user)
+    {
+        // Generate URL for public profile
+        $profileUrl = route('profile.public', $user);
+        
+        // Generate QR code using GD (not Imagick)
+        $qrCode = QrCode::size(300)
+            ->format('png')
+            ->backgroundColor(255, 255, 255)
+            ->color(0, 0, 0)
+            ->generate($profileUrl);
+
+        $fileName = 'profile-qr-' . $user->employee_id . '.png';
+
+        return response($qrCode, 200, [
+            'Content-Type' => 'image/png',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+
+    /**
+     * Show public profile page (accessible without authentication)
+     */
+    public function publicProfile(User $user)
+    {
+        return view('profile.public', [
+            'user' => $user,
+        ]);
     }
 }

@@ -47,11 +47,6 @@
                                     <i class="fas fa-user-plus w-4 h-4 mr-3"></i>
                                     Add Customer
                                 </a>
-                                <a href="{{ route('ai.copilot') }}"
-                                    class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
-                                    <i class="fas fa-robot w-4 h-4 mr-3"></i>
-                                    AI Assistant
-                                </a>
                                 <a href="{{ route('hotkeys.index') }}"
                                     class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
                                     <i class="fas fa-keyboard w-4 h-4 mr-3"></i>
@@ -278,7 +273,7 @@
                 <!-- Quick Actions Grid -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
                     <h3 class="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                         <a href="{{ route('customers.create') }}"
                             class="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group text-center">
                             <div class="w-12 h-12 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center mx-auto mb-3">
@@ -320,15 +315,6 @@
                                 <p class="text-xs text-gray-500 mt-1">Inventory status</p>
                             </a>
                         @endif
-
-                        <a href="{{ route('ai.copilot') }}"
-                            class="p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors group text-center">
-                            <div class="w-12 h-12 bg-indigo-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-robot text-indigo-600 text-xl"></i>
-                            </div>
-                            <p class="text-sm font-medium text-gray-900">AI Assistant</p>
-                            <p class="text-xs text-gray-500 mt-1">Get AI help</p>
-                        </a>
                     </div>
                 </div>
 

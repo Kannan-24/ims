@@ -141,6 +141,7 @@ class PurchaseController extends Controller
                 'unit_type' => $unitType,
                 'quantity' => $product['quantity'],
                 'batch_code' => $batchCode,
+                'entry_type' => 'purchase',
             ]);
         }
 
@@ -294,6 +295,7 @@ class PurchaseController extends Controller
                 'unit_type' => Product::find($product['product_id'])->unit_type ?? 'unit',
                 'quantity' => $product['quantity'],
                 'batch_code' => $batchCode,
+                'entry_type' => 'purchase',
             ]);
         }
 
