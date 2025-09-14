@@ -44,7 +44,7 @@ class QuotationController extends Controller
             $query->whereDate('quotation_date', '<=', $to);
         }
 
-        $quotations = $query->latest()->get();
+        $quotations = $query->latest()->paginate(15);
 
         return view('ims.quotations.index', compact('quotations'));
     }

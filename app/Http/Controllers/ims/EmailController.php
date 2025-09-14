@@ -1238,4 +1238,91 @@ This is a system-generated email. Please verify all details before processing.";
             ], 500);
         }
     }
+
+    /**
+     * Bulk delete emails
+     */
+    public function bulkDelete(Request $request)
+    {
+        try {
+            $request->validate([
+                'email_ids' => 'required|array',
+                'email_ids.*' => 'integer|exists:emails,id'
+            ]);
+
+            $emailIds = $request->input('email_ids');
+            $deletedCount = Email::whereIn('id', $emailIds)->delete();
+
+            ActivityLogger::log(
+                'Bulk Email Deletion',
+                'emails',
+                null,
+                "Deleted {$deletedCount} emails",
+                ['email_ids' => $emailIds]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully deleted {$deletedCount} email(s)",
+                'deleted_count' => $deletedCount
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error in bulk delete emails', [
+                'error' => $e->getMessage(),
+                'request' => $request->all()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to delete emails: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mark emails as read
+     */
+    public function markAsRead(Request $request)
+    {
+        try {
+            $request->validate([
+                'email_ids' => 'required|array',
+                'email_ids.*' => 'integer|exists:emails,id'
+            ]);
+
+            $emailIds = $request->input('email_ids');
+            
+            // Assuming you have a 'read_at' or 'is_read' column
+            // If not, you might need to add this column to your emails table
+            $updatedCount = Email::whereIn('id', $emailIds)
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
+
+            ActivityLogger::log(
+                'Bulk Mark as Read',
+                'emails',
+                null,
+                "Marked {$updatedCount} emails as read",
+                ['email_ids' => $emailIds]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully marked {$updatedCount} email(s) as read",
+                'updated_count' => $updatedCount
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error marking emails as read', [
+                'error' => $e->getMessage(),
+                'request' => $request->all()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to mark emails as read: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

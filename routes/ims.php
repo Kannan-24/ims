@@ -16,6 +16,8 @@ use App\Http\Controllers\ims\EmailController;
 use App\Http\Controllers\ims\ReportController;
 use App\Http\Controllers\ims\ActivityLogController;
 use App\Http\Controllers\ims\DeliveryChallanController;
+use App\Http\Controllers\ims\NotesController;
+use App\Http\Controllers\ims\ContactBookController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -158,6 +160,10 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::get('/emails/documents', [EmailController::class, 'getAvailableDocuments'])->name('emails.documents');
     Route::post('/emails/generate-attachment', [EmailController::class, 'generateAndAttachDocument'])->name('emails.generate-attachment');
     
+    // Bulk operations for emails
+    Route::post('/emails/bulk-delete', [EmailController::class, 'bulkDelete'])->name('emails.bulk-delete');
+    Route::post('/emails/mark-read', [EmailController::class, 'markAsRead'])->name('emails.mark-read');
+    
     // Email resource routes (must come after specific routes)
     Route::resource('emails', EmailController::class);
 
@@ -168,5 +174,14 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::get('/activity-logs/{id}', [ActivityLogController::class, 'show'])->name('activity-logs.show');
     Route::delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])->name('activity-logs.destroy');
     Route::get('/activity-logs/{id}/delete', [ActivityLogController::class, 'destroy'])->name('activity-logs.delete');
+
+    // Notes Routes
+    Route::patch('/notes/{note}/toggle-pin', [NotesController::class, 'togglePin'])->name('notes.toggle-pin');
+    Route::resource('notes', NotesController::class);
+
+    // Contact Book Routes
+    Route::get('/contact-book', [ContactBookController::class, 'index'])->name('contact-book.index');
+    Route::get('/contact-book/contacts', [ContactBookController::class, 'getContacts'])->name('contact-book.contacts');
+    Route::post('/contact-book/export-to-email', [ContactBookController::class, 'exportToEmail'])->name('contact-book.export-to-email');
 
 });

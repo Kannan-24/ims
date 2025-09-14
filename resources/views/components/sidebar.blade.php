@@ -64,6 +64,8 @@
                     ['name' => 'Delivery Challans', 'route' => 'delivery-challans.index', 'icon' => 'fas fa-shipping-fast'],
                     ['name' => 'Payments', 'route' => 'payments.index', 'icon' => 'fas fa-credit-card'],
                     ['name' => 'Emails', 'route' => 'emails.index', 'icon' => 'fas fa-envelope'],
+                    ['name' => 'Notes', 'route' => 'notes.index', 'icon' => 'fas fa-sticky-note'],
+                    ['name' => 'Contact Book', 'route' => 'contact-book.index', 'icon' => 'fas fa-address-book'],
                     ['name' => 'Reports', 'route' => 'reports.index', 'icon' => 'fas fa-chart-bar'],
                     ['name' => 'Activity Logs', 'route' => 'activity-logs.index', 'icon' => 'fas fa-history'],
                 ];

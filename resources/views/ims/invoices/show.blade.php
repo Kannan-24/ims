@@ -302,41 +302,136 @@
                 @endif
             </div>
 
-            <!-- Summary Tab -->
+            {{-- summary --}}
             <div x-show="activeTab === 'summary'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
                 <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
                     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                            <i class="fas fa-calculator text-purple-600 mr-2"></i>
-                            Invoice Summary
+                            <i class="fas fa-calculator text-gray-600 mr-2"></i>
+                            Product and Service Summary
                         </h3>
                     </div>
                     <div class="p-6 bg-white">
-                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <table class="w-full">
-                                <tbody class="text-gray-700">
-                                    <tr class="border-b border-gray-200">
-                                        <td class="py-3 font-medium">Subtotal:</td>
-                                        <td class="py-3 text-right">₹{{ number_format($invoice->sub_total, 2) }}</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-200">
-                                        <td class="py-3 font-medium">CGST:</td>
-                                        <td class="py-3 text-right">₹{{ number_format($invoice->cgst, 2) }}</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-200">
-                                        <td class="py-3 font-medium">SGST:</td>
-                                        <td class="py-3 text-right">₹{{ number_format($invoice->sgst, 2) }}</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-200">
-                                        <td class="py-3 font-medium">IGST:</td>
-                                        <td class="py-3 text-right">₹{{ number_format($invoice->igst, 2) }}</td>
-                                    </tr>
-                                    <tr class="border-t-2 border-gray-300">
-                                        <td class="py-4 font-bold text-lg text-gray-900">Grand Total:</td>
-                                        <td class="py-4 font-bold text-lg text-gray-900 text-right">₹{{ number_format($invoice->total, 2) }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="space-y-6">
+                            <!-- Product Summary -->
+                            @if ($invoice->items->where('type', 'product')->isNotEmpty())
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <h4 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                                        <i class="fas fa-box text-gray-600 mr-2"></i>
+                                        Product Summary
+                                    </h4>
+                                    @php
+                                        $productItems = $invoice->items->where('type', 'product');
+                                        $productSubtotal = $productItems->sum(function($item) {
+                                            return $item->quantity * $item->unit_price;
+                                        });
+                                        $productCgst = $productItems->sum('cgst');
+                                        $productSgst = $productItems->sum('sgst');
+                                        $productIgst = $productItems->sum('igst');
+                                        $productTotal = $productItems->sum('total');
+                                    @endphp
+                                    <table class="w-full">
+                                        <tbody class="text-gray-700">
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 font-medium">Product Subtotal:</td>
+                                                <td class="py-2 text-right">₹{{ number_format($productSubtotal, 2) }}</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 font-medium">CGST:</td>
+                                                <td class="py-2 text-right">₹{{ number_format($productCgst, 2) }}</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 font-medium">SGST:</td>
+                                                <td class="py-2 text-right">₹{{ number_format($productSgst, 2) }}</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 font-medium">IGST:</td>
+                                                <td class="py-2 text-right">₹{{ number_format($productIgst, 2) }}</td>
+                                            </tr>
+                                            <tr class="border-t-2 border-gray-400 bg-gray-100">
+                                                <td class="py-3 font-bold text-lg text-gray-900">Product Total:</td>
+                                                <td class="py-3 font-bold text-lg text-gray-900 text-right">₹{{ number_format($productTotal, 2) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+
+                            <!-- Service Summary -->
+                            @if ($invoice->items->where('type', 'service')->isNotEmpty())
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <h4 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                                        <i class="fas fa-cogs text-gray-600 mr-2"></i>
+                                        Service Summary
+                                    </h4>
+                                    @php
+                                        $serviceItems = $invoice->items->where('type', 'service');
+                                        $serviceSubtotal = $serviceItems->sum(function($item) {
+                                            return $item->quantity * $item->unit_price;
+                                        });
+                                        $serviceCgst = $serviceItems->sum('cgst');
+                                        $serviceSgst = $serviceItems->sum('sgst');
+                                        $serviceIgst = $serviceItems->sum('igst');
+                                        $serviceTotal = $serviceItems->sum('total');
+                                    @endphp
+                                    <table class="w-full">
+                                        <tbody class="text-gray-700">
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 font-medium">Service Subtotal:</td>
+                                                <td class="py-2 text-right">₹{{ number_format($serviceSubtotal, 2) }}</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 font-medium">CGST:</td>
+                                                <td class="py-2 text-right">₹{{ number_format($serviceCgst, 2) }}</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 font-medium">SGST:</td>
+                                                <td class="py-2 text-right">₹{{ number_format($serviceSgst, 2) }}</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-200">
+                                                <td class="py-2 font-medium">IGST:</td>
+                                                <td class="py-2 text-right">₹{{ number_format($serviceIgst, 2) }}</td>
+                                            </tr>
+                                            <tr class="border-t-2 border-gray-400 bg-gray-100">
+                                                <td class="py-3 font-bold text-lg text-gray-900">Service Total:</td>
+                                                <td class="py-3 font-bold text-lg text-gray-900 text-right">₹{{ number_format($serviceTotal, 2) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+
+                            <!-- Combined Summary -->
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-300">
+                                <h4 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-calculator text-gray-600 mr-2"></i>
+                                    Combined Summary
+                                </h4>
+                                <table class="w-full">
+                                    <tbody class="text-gray-700">
+                                        <tr class="border-b border-gray-200">
+                                            <td class="py-2 font-medium">Total Subtotal:</td>
+                                            <td class="py-2 text-right">₹{{ number_format($invoice->sub_total, 2) }}</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-200">
+                                            <td class="py-2 font-medium">Total CGST:</td>
+                                            <td class="py-2 text-right">₹{{ number_format($invoice->cgst, 2) }}</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-200">
+                                            <td class="py-2 font-medium">Total SGST:</td>
+                                            <td class="py-2 text-right">₹{{ number_format($invoice->sgst, 2) }}</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-200">
+                                            <td class="py-2 font-medium">Total IGST:</td>
+                                            <td class="py-2 text-right">₹{{ number_format($invoice->igst, 2) }}</td>
+                                        </tr>
+                                        <tr class="border-t-4 border-gray-500 bg-gray-200">
+                                            <td class="py-4 font-bold text-xl text-gray-900">Grand Total:</td>
+                                            <td class="py-4 font-bold text-xl text-gray-900 text-right">₹{{ number_format($invoice->total, 2) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -430,3 +525,4 @@
         </script>
     </div>
 </x-app-layout>
+

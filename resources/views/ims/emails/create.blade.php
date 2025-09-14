@@ -115,10 +115,18 @@
 
                 <!-- Recipients Section -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                        <i class="fas fa-users text-blue-600 mr-2"></i>
-                        Recipients
-                    </h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-users text-blue-600 mr-2"></i>
+                            Recipients
+                        </h3>
+                        <button type="button" @click="openContactBook('to')"
+                                class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                                title="Open Contact Book (Ctrl+T for TO, Ctrl+Shift+C for CC, Ctrl+Shift+B for BCC)">
+                            <i class="fas fa-address-book w-4 h-4 mr-2"></i>
+                            Contact Book
+                        </button>
+                    </div>
                     <div class="grid grid-cols-1 gap-4">
                         <!-- To Field -->
                         <div>
@@ -127,7 +135,13 @@
                                 <input type="text" name="to" id="to" required
                                     value="{{ old('to', isset($emailData['to']) ? $emailData['to'] : '') }}"
                                     placeholder="recipient@example.com, another@example.com"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    x-ref="toInput">
+                                <button type="button" @click="openContactBook('to')"
+                                        class="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm font-medium rounded-lg transition-colors"
+                                        title="Open Contact Book for TO field (Ctrl+T)">
+                                    <i class="fas fa-address-book"></i>
+                                </button>
                             </div>
                             <p class="mt-1 text-sm text-gray-500">Separate multiple email addresses with commas</p>
                         </div>
@@ -136,17 +150,33 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">CC (Carbon Copy)</label>
-                                <input type="text" name="cc" id="cc"
-                                    value="{{ old('cc', isset($emailData['cc']) ? $emailData['cc'] : '') }}"
-                                    placeholder="cc@example.com"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <div class="flex space-x-2">
+                                    <input type="text" name="cc" id="cc"
+                                        value="{{ old('cc', isset($emailData['cc']) ? $emailData['cc'] : '') }}"
+                                        placeholder="cc@example.com"
+                                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        x-ref="ccInput">
+                                    <button type="button" @click="openContactBook('cc')"
+                                            class="px-3 py-2 bg-green-100 hover:bg-green-200 text-green-700 text-sm font-medium rounded-lg transition-colors"
+                                            title="Open Contact Book for CC field (Ctrl+Shift+C)">
+                                        <i class="fas fa-address-book"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">BCC (Blind Carbon Copy)</label>
-                                <input type="text" name="bcc" id="bcc"
-                                    value="{{ old('bcc', isset($emailData['bcc']) ? $emailData['bcc'] : '') }}"
-                                    placeholder="bcc@example.com"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <div class="flex space-x-2">
+                                    <input type="text" name="bcc" id="bcc"
+                                        value="{{ old('bcc', isset($emailData['bcc']) ? $emailData['bcc'] : '') }}"
+                                        placeholder="bcc@example.com"
+                                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        x-ref="bccInput">
+                                    <button type="button" @click="openContactBook('bcc')"
+                                            class="px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 text-sm font-medium rounded-lg transition-colors"
+                                            title="Open Contact Book for BCC field (Ctrl+Shift+B)">
+                                        <i class="fas fa-address-book"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -381,8 +411,50 @@ skmandcompany@yahoo.in') }}</textarea>
                             <li>• Separate multiple recipients with commas</li>
                             <li>• Save drafts frequently while composing</li>
                             <li>• Use document attachment feature for invoices/quotations</li>
+                            <li>• Click contact book buttons to add emails from your contacts</li>
                         </ul>
                     </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">
+                            <i class="fas fa-keyboard text-blue-600 mr-2"></i>Keyboard Shortcuts
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Contact Book (TO)</span>
+                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Ctrl+T</kbd>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Contact Book (CC)</span>
+                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Ctrl+Shift+C</kbd>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Contact Book (BCC)</span>
+                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Ctrl+Shift+B</kbd>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700">Close Modals</span>
+                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Esc</kbd>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">
+                            <i class="fas fa-address-book text-green-600 mr-2"></i>Contact Book Features
+                        </h4>
+                        <ul class="space-y-1 text-gray-600">
+                            <li>• Search contacts by name, email, or type</li>
+                            <li>• Filter by Customer, Supplier, or Contact Person</li>
+                            <li>• Add emails to TO, CC, or BCC fields individually</li>
+                            <li>• Supports multiple email addresses per field</li>
+                        </ul>
+                    </div>
+                    
                     <div>
                         <h4 class="font-semibold text-gray-900 mb-2">Document Attachment</h4>
                         <p class="text-gray-600">Generate and attach professional PDF documents for your invoices or quotations.</p>
@@ -395,6 +467,179 @@ skmandcompany@yahoo.in') }}</textarea>
                         <i class="fas fa-external-link-alt mr-2"></i>
                         Full Documentation
                     </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Book Modal -->
+        <div x-show="showContactBook" 
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+             style="display: none;">
+            <div x-show="showContactBook"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 transform scale-100"
+                 x-transition:leave-end="opacity-0 transform scale-95"
+                 class="bg-white rounded-lg w-full max-w-4xl mx-4 max-h-[80vh] overflow-hidden">
+                
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-address-book text-blue-600 mr-2"></i>
+                        Contact Book
+                        <span x-show="selectedField" class="ml-2 px-2 py-1 text-xs font-medium rounded-full"
+                              :class="{
+                                  'bg-blue-100 text-blue-800': selectedField === 'to',
+                                  'bg-green-100 text-green-800': selectedField === 'cc',
+                                  'bg-purple-100 text-purple-800': selectedField === 'bcc'
+                              }">
+                            Adding to <span x-text="selectedField ? selectedField.toUpperCase() : ''"></span>
+                        </span>
+                    </h3>
+                    <button @click="closeContactBook()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="flex-1">
+                            <input type="text" 
+                                   x-model="contactSearch"
+                                   @input="searchContacts()"
+                                   placeholder="Search contacts..."
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <select x-model="contactFilter" @change="searchContacts()"
+                                class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="all">All Types</option>
+                            <option value="Customer">Customers</option>
+                            <option value="Supplier">Suppliers</option>
+                            <option value="Contact Person">Contact Persons</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Multi-select Controls -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <label class="flex items-center">
+                                <input type="checkbox" x-model="isMultiSelectMode" 
+                                       @change="isMultiSelectMode ? null : (selectedContacts = [])"
+                                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm font-medium text-gray-700">Multi-select mode</span>
+                            </label>
+                            <span x-show="selectedContacts.length > 0" 
+                                  class="text-sm text-blue-600 font-medium">
+                                <span x-text="selectedContacts.length"></span> selected
+                            </span>
+                        </div>
+                        <div x-show="selectedContacts.length > 0" class="flex items-center space-x-2">
+                            <button @click="addSelectedContactsToField()" 
+                                    class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg">
+                                Add Selected
+                            </button>
+                            <button @click="selectedContacts = []" 
+                                    class="px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium rounded-lg">
+                                Clear Selection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact List -->
+                <div class="overflow-y-auto" style="max-height: 400px;">
+                    <div x-show="contactLoading" class="p-8 text-center">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>
+                        Loading contacts...
+                    </div>
+                    
+                    <div x-show="!contactLoading && contacts.length === 0" class="p-8 text-center text-gray-500">
+                        No contacts found matching your criteria.
+                    </div>
+
+                    <div x-show="!contactLoading && contacts.length > 0" class="divide-y divide-gray-200">
+                        <template x-for="contact in contacts" :key="contact.id">
+                            <div class="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                                 :class="selectedContacts.includes(contact.id) ? 'bg-blue-50 border-l-4 border-blue-500' : ''"
+                                 @click="isMultiSelectMode ? toggleContactSelection(contact) : selectContact(contact)">
+                                <div class="flex items-center">
+                                    <!-- Multi-select checkbox -->
+                                    <div x-show="isMultiSelectMode" class="flex-shrink-0 mr-3">
+                                        <input type="checkbox" 
+                                               :checked="selectedContacts.includes(contact.id)"
+                                               @click.stop
+                                               @change="toggleContactSelection(contact)"
+                                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    </div>
+                                    
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <div class="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <span x-text="contact.type_icon" class="text-lg"></span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900" x-text="contact.name"></div>
+                                                <div class="text-sm text-gray-500" x-text="contact.email || 'No email'"></div>
+                                                <div x-show="contact.phone" class="text-xs text-gray-400" x-text="contact.phone"></div>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                                      :class="{
+                                                          'bg-green-100 text-green-800': contact.type === 'Customer',
+                                                          'bg-purple-100 text-purple-800': contact.type === 'Supplier',
+                                                          'bg-blue-100 text-blue-800': contact.type === 'Contact Person'
+                                                      }">
+                                                    <span x-text="contact.type"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div x-show="contact.parent" class="text-xs text-gray-400 mt-1">
+                                            <span x-text="contact.parent"></span>
+                                        </div>
+                                        <div x-show="contact.location" class="text-xs text-gray-400 mt-1">
+                                            <i class="fas fa-map-marker-alt mr-1"></i>
+                                            <span x-text="contact.location"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-6 border-t border-gray-200 bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm text-gray-600">
+                            <span x-show="!isMultiSelectMode">
+                                Click on a contact to add their email to the <span x-text="selectedField ? selectedField.toUpperCase() : 'TO'"></span> field
+                            </span>
+                            <span x-show="isMultiSelectMode">
+                                Select multiple contacts and click "Add Selected" to add them to the <span x-text="selectedField ? selectedField.toUpperCase() : 'TO'"></span> field
+                            </span>
+                        </p>
+                        <div class="flex items-center space-x-3">
+                            <a href="{{ route('contact-book.index') }}" target="_blank"
+                               class="text-sm text-blue-600 hover:text-blue-800">
+                                Open Full Contact Book
+                            </a>
+                            <button @click="closeContactBook()" 
+                                    class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg">
+                                Close
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -454,6 +699,16 @@ skmandcompany@yahoo.in') }}</textarea>
         function emailComposer() {
             return {
                 showHelp: false,
+                showContactBook: false,
+                selectedField: 'to', // Track which field we're adding to (to, cc, bcc)
+                
+                // Contact book functionality
+                contacts: [],
+                contactSearch: '',
+                contactFilter: 'all',
+                contactLoading: false,
+                selectedContacts: [], // Track multiple selected contacts
+                isMultiSelectMode: false, // Toggle for multi-select mode
                 
                 // Document attachment feature
                 addDocumentChecked: false,
@@ -464,6 +719,166 @@ skmandcompany@yahoo.in') }}</textarea>
                 loadingDocuments: false,
                 generatingDocument: false,
                 generatedAttachments: [],
+
+                init() {
+                    // Check for recipients parameter in URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const recipients = urlParams.get('recipients');
+                    if (recipients) {
+                        this.$refs.toInput.value = recipients;
+                    }
+
+                    // Add keyboard shortcuts
+                    document.addEventListener('keydown', (e) => {
+                        // Only trigger shortcuts when not typing in inputs
+                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.getAttribute('contenteditable')) {
+                            return;
+                        }
+
+                        // Ctrl/Cmd + T: Open contact book for TO field
+                        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 't') {
+                            e.preventDefault();
+                            this.openContactBook('to');
+                        }
+                        
+                        // Ctrl/Cmd + Shift + C: Open contact book for CC field
+                        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'c') {
+                            e.preventDefault();
+                            this.openContactBook('cc');
+                        }
+                        
+                        // Ctrl/Cmd + Shift + B: Open contact book for BCC field
+                        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'b') {
+                            e.preventDefault();
+                            this.openContactBook('bcc');
+                        }
+
+                        // Escape: Close contact book
+                        if (e.key === 'Escape' && this.showContactBook) {
+                            e.preventDefault();
+                            this.closeContactBook();
+                        }
+                    });
+                },
+
+                // Contact book methods
+                async searchContacts() {
+                    this.contactLoading = true;
+                    
+                    try {
+                        const response = await fetch('/ims/contact-book/contacts?' + new URLSearchParams({
+                            search: this.contactSearch,
+                            type: this.contactFilter
+                        }));
+                        
+                        const data = await response.json();
+                        this.contacts = data.contacts.filter(contact => contact.email); // Only show contacts with email
+                    } catch (error) {
+                        console.error('Error fetching contacts:', error);
+                        this.contacts = [];
+                    } finally {
+                        this.contactLoading = false;
+                    }
+                },
+
+                // Contact Book Methods
+                openContactBook(field = 'to') {
+                    this.selectedField = field;
+                    this.showContactBook = true;
+                    this.searchContacts();
+                },
+
+                closeContactBook() {
+                    this.showContactBook = false;
+                    this.selectedField = 'to';
+                    this.contactSearch = '';
+                    this.contactFilter = 'all';
+                    this.selectedContacts = [];
+                    this.isMultiSelectMode = false;
+                },
+
+                toggleContactSelection(contact) {
+                    if (!contact.email) return;
+                    
+                    const index = this.selectedContacts.findIndex(id => id === contact.id);
+                    if (index > -1) {
+                        this.selectedContacts.splice(index, 1);
+                    } else {
+                        this.selectedContacts.push(contact.id);
+                    }
+                },
+
+                addSelectedContactsToField() {
+                    if (this.selectedContacts.length === 0) return;
+                    
+                    const selectedEmails = this.contacts
+                        .filter(contact => this.selectedContacts.includes(contact.id) && contact.email)
+                        .map(contact => contact.email);
+                    
+                    if (selectedEmails.length === 0) return;
+                    
+                    // Determine target input
+                    let targetInput;
+                    switch(this.selectedField) {
+                        case 'cc':
+                            targetInput = this.$refs.ccInput;
+                            break;
+                        case 'bcc':
+                            targetInput = this.$refs.bccInput;
+                            break;
+                        case 'to':
+                        default:
+                            targetInput = this.$refs.toInput;
+                            break;
+                    }
+                    
+                    const currentValue = targetInput.value.trim();
+                    const newEmails = selectedEmails.join(', ');
+                    
+                    if (currentValue) {
+                        targetInput.value = currentValue + ', ' + newEmails;
+                    } else {
+                        targetInput.value = newEmails;
+                    }
+                    
+                    // Close modal and reset
+                    this.closeContactBook();
+                    targetInput.focus();
+                },
+
+                selectContact(contact) {
+                    if (!contact.email) return;
+                    
+                    // Determine which input to update based on selectedField
+                    let targetInput;
+                    switch(this.selectedField) {
+                        case 'cc':
+                            targetInput = this.$refs.ccInput;
+                            break;
+                        case 'bcc':
+                            targetInput = this.$refs.bccInput;
+                            break;
+                        case 'to':
+                        default:
+                            targetInput = this.$refs.toInput;
+                            break;
+                    }
+                    
+                    const currentValue = targetInput.value.trim();
+                    
+                    if (currentValue) {
+                        // Add comma and space if there's existing content
+                        targetInput.value = currentValue + ', ' + contact.email;
+                    } else {
+                        targetInput.value = contact.email;
+                    }
+                    
+                    // Close modal
+                    this.closeContactBook();
+                    
+                    // Focus back to input
+                    targetInput.focus();
+                },
 
                 resetDocumentSelection() {
                     this.documentType = '';
