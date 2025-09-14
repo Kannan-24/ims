@@ -12,23 +12,23 @@
         <div id="userSidebar"
             class="fixed lg:relative w-full sm:w-96 lg:w-80 xl:w-96 h-full bg-white border-r border-gray-200 flex flex-col transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out z-40 lg:z-auto shadow-2xl lg:shadow-none min-h-0 overflow-hidden">
 
-            <!-- Sidebar Header -->
-            <div class="relative p-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white">
-                <div class="absolute inset-0 bg-black bg-opacity-10"></div>
+            <!-- Sidebar Header (light theme) -->
+            <div class="relative p-4 bg-gradient-to-r from-emerald-100 via-teal-100 to-cyan-100 text-gray-900">
+                <div class="absolute inset-0 bg-white/40"></div>
                 <div class="relative flex items-center justify-between">
                     <div class="flex items-center">
                         <div
-                            class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-3 backdrop-blur-sm border border-white/30">
+                            class="w-12 h-12 bg-white/60 rounded-full flex items-center justify-center mr-3 backdrop-blur-sm border border-gray-200">
                             <i class="fas fa-user-friends text-xl"></i>
                         </div>
                         <div>
                             <h2 class="text-xl font-bold tracking-wide">Contacts</h2>
-                            <p class="text-emerald-100 text-sm font-medium">{{ Auth::user()->name }}</p>
+                            <p class="text-gray-600 text-sm font-medium">{{ Auth::user()->name }}</p>
                         </div>
                     </div>
                     <!-- Close button for mobile -->
                     <button id="closeSidebar"
-                        class="lg:hidden p-2 text-white hover:bg-white/20 rounded-lg transition-colors">
+                        class="lg:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                         <i class="fas fa-times text-lg"></i>
                     </button>
                 </div>
@@ -38,34 +38,13 @@
             <div class="p-4 bg-gray-50 border-b border-gray-200">
                 <div class="relative mb-3">
                     <input type="text" id="userSearch" placeholder="Search contacts..."
-                        class="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-full focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm transition-all duration-200 shadow-sm hover:shadow-md">
+                        class="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-full focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 text-sm transition-all duration-200 shadow-sm hover:shadow-md">
                     <i class="fas fa-search absolute left-4 top-4 text-gray-400"></i>
                     <button id="clearSearch" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600 hidden">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-
-                <!-- Quick Actions -->
-                {{-- <div class="flex space-x-2">
-                    <button
-                        class="flex-1 px-3 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium hover:bg-emerald-200 transition-colors">
-                        <i class="fas fa-users mr-1"></i>Groups
-                    </button>
-                    <button
-                        class="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-200 transition-colors">
-                        <i class="fas fa-star mr-1"></i>Starred
-                    </button>
-                </div> --}}
             </div>
-
-            <!-- Online Status Indicator -->
-            {{-- <div class="px-4 py-2 bg-green-50 border-b border-green-200">
-                <div class="flex items-center text-green-700">
-                    <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                    <span class="text-xs font-medium">Online now</span>
-                    <span class="ml-auto text-xs" id="onlineCount">0 contacts</span>
-                </div>
-            </div> --}}
 
             <!-- Contacts List -->
             <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 min-h-0" id="usersList">
@@ -73,7 +52,7 @@
                     <!-- Loading state -->
                     <div id="loadingState" class="p-8 text-center">
                         <div
-                            class="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto mb-4">
+                            class="animate-spin w-8 h-8 border-4 border-emerald-300 border-t-transparent rounded-full mx-auto mb-4">
                         </div>
                         <p class="text-gray-500 text-sm">Loading contacts...</p>
                     </div>
@@ -100,12 +79,12 @@
                 <div class="text-center max-w-md px-6">
                     <div class="relative mb-8">
                         <div
-                            class="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto shadow-2xl">
-                            <i class="fas fa-comments text-3xl sm:text-4xl text-white"></i>
+                            class="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-emerald-200 via-teal-200 to-cyan-200 rounded-full flex items-center justify-center mx-auto shadow-2xl">
+                            <i class="fas fa-comments text-3xl sm:text-4xl text-emerald-800"></i>
                         </div>
                         <div
-                            class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
-                            <i class="fas fa-heart text-white text-sm"></i>
+                            class="absolute -top-2 -right-2 w-8 h-8 bg-pink-200 rounded-full flex items-center justify-center">
+                            <i class="fas fa-heart text-emerald-800 text-sm"></i>
                         </div>
                     </div>
                     <h3 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Welcome to Chat</h3>
@@ -114,7 +93,7 @@
                         <span class="block mt-2 text-sm text-gray-500">Stay connected with your team!</span>
                     </p>
                     <button id="mobileOpenSidebar"
-                        class="lg:hidden inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 transform hover:scale-105 shadow-lg">
+                        class="lg:hidden inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-300 to-teal-300 text-emerald-900 rounded-full hover:from-emerald-400 hover:to-teal-400 transition-all duration-200 transform hover:scale-105 shadow-lg">
                         <i class="fas fa-users mr-2"></i>Browse Contacts
                     </button>
                 </div>
@@ -134,7 +113,7 @@
 
                             <!-- User Avatar and Info -->
                             <div class="relative flex-shrink-0 mr-4">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg border-2 border-white"
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-300 to-teal-300 flex items-center justify-center shadow-lg border-2 border-white"
                                     id="chatUserAvatar">
                                     <i class="fas fa-user text-white"></i>
                                 </div>
@@ -153,15 +132,6 @@
 
                         <!-- Action Buttons -->
                         <div class="flex items-center space-x-1">
-                            {{-- <button
-                                class="hidden sm:flex p-2 text-gray-500 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors">
-                                <i class="fas fa-phone"></i>
-                            </button>
-                            <button
-                                class="hidden sm:flex p-2 text-gray-500 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors">
-                                <i class="fas fa-video"></i>
-                            </button> --}}
-
                             <button id="mobileProfileBtn"
                                 class="sm:hidden p-2 text-gray-500 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors">
                                 <i class="fas fa-user"></i>
@@ -219,7 +189,7 @@
 
                             <!-- Message Input Container -->
                             <div
-                                class="flex items-end border border-gray-300 rounded-3xl bg-white shadow-sm focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition-all duration-200 overflow-hidden">
+                                class="flex items-end border border-gray-300 rounded-3xl bg-white shadow-sm focus-within:ring-2 focus-within:ring-emerald-300 focus-within:border-emerald-300 transition-all duration-200 overflow-hidden">
                                 <button type="button" id="emojiBtn"
                                     class="p-3 text-gray-400 hover:text-yellow-500 transition-colors hover:bg-yellow-50">
                                     <i class="fas fa-smile text-xl"></i>
@@ -240,7 +210,7 @@
 
                         <!-- Send Button -->
                         <button type="submit"
-                            class="p-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full hover:from-emerald-700 hover:to-teal-700 focus:ring-2 focus:ring-emerald-500 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="p-3 bg-gradient-to-r from-emerald-300 to-teal-300 text-emerald-900 rounded-full hover:from-emerald-400 hover:to-teal-400 focus:ring-2 focus:ring-emerald-300 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
                             <i class="fas fa-paper-plane text-xl"></i>
                         </button>
                     </form>
@@ -248,16 +218,16 @@
             </div>
         </div>
 
-        <!-- Enhanced Profile Panel -->
-        <div class="fixed lg:relative w-full lg:w-80 xl:w-96 h-full bg-white border-l border-gray-200 transform lg:translate-x-0 translate-x-full transition-transform duration-300 ease-in-out z-50 min-h-0 shadow-2xl lg:shadow-none"
-            id="profilePanel">
+        <!-- Enhanced Profile Panel (closed by default on all screen sizes; opens only when button triggers) -->
+        <div class="fixed lg:relative w-full lg:w-80 xl:w-96 h-full bg-white border-l border-gray-200 transform translate-x-full transition-transform duration-300 ease-in-out z-50 min-h-0 shadow-2xl lg:shadow-none"
+            id="profilePanel" aria-hidden="true">
             <div class="flex flex-col h-full">
-                <!-- Profile Header -->
-                <div class="px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+                <!-- Profile Header (light) -->
+                <div class="px-6 py-4 bg-gradient-to-r from-emerald-100 to-teal-100 text-gray-900">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold">Contact Info</h3>
                         <button id="closeProfileBtn"
-                            class="p-2 text-white hover:bg-white/20 rounded-lg transition-colors">
+                            class="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                             <i class="fas fa-times text-lg"></i>
                         </button>
                     </div>
@@ -300,7 +270,7 @@
             data-user-id="">
             <div class="relative flex-shrink-0 mr-4">
                 <div
-                    class="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg user-avatar group-hover:scale-105 transition-transform duration-200">
+                    class="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-200 to-teal-300 flex items-center justify-center shadow-lg user-avatar group-hover:scale-105 transition-transform duration-200">
                     <i class="fas fa-user text-white text-lg"></i>
                 </div>
                 <!-- Unread Badge -->
@@ -340,19 +310,19 @@
         <div class="flex justify-end message-item animate-fadeIn group" data-message-id="">
             <div class="max-w-xs sm:max-w-sm lg:max-w-md">
                 <div
-                    class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white rounded-2xl rounded-br-md px-5 py-3 shadow-lg group-hover:shadow-xl transition-shadow duration-200">
+                    class="bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 text-emerald-900 rounded-2xl rounded-br-md px-5 py-3 shadow-lg group-hover:shadow-xl transition-shadow duration-200">
                     <p class="message-text leading-relaxed text-sm break-words"></p>
                     <div class="message-attachment mt-3" style="display: none;">
                         <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30">
                             <a href="#"
-                                class="text-white hover:text-emerald-100 flex items-center attachment-link group">
+                                class="text-emerald-900 hover:text-emerald-800 flex items-center attachment-link group">
                                 <div
                                     class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-3 group-hover:bg-white/30 transition-colors">
                                     <i class="fas fa-paperclip"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <span class="attachment-name text-sm font-semibold truncate block"></span>
-                                    <span class="text-xs text-emerald-100">Click to download</span>
+                                    <span class="text-xs text-emerald-700">Click to download</span>
                                 </div>
                                 <i
                                     class="fas fa-download ml-2 text-xs opacity-70 group-hover:opacity-100 transition-opacity"></i>
@@ -412,7 +382,7 @@
         <div class="text-center p-6 bg-gradient-to-b from-emerald-50 to-white border-b border-gray-200">
             <div class="relative inline-block mb-4">
                 <div
-                    class="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mx-auto shadow-2xl profile-avatar">
+                    class="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-300 to-teal-300 flex items-center justify-center mx-auto shadow-2xl profile-avatar">
                     <i class="fas fa-user text-3xl text-white"></i>
                 </div>
                 <div
@@ -422,69 +392,43 @@
             <h3 class="text-xl font-bold text-gray-900 profile-name mb-1"></h3>
             <p class="text-emerald-600 font-semibold profile-role mb-3"></p>
             <div class="flex justify-center space-x-4">
-                {{-- <button
-                    class="p-3 bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition-colors">
-                    <i class="fas fa-phone"></i>
-                </button>
-                <button class="p-3 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors">
-                    <i class="fas fa-video"></i>
-                </button>
-                <button class="p-3 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors">
-                    <i class="fas fa-envelope"></i>
-                </button>
-            </div> --}}
+            </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="p-6 space-y-6">
+            <div class="profile-field">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-envelope w-5 h-5 text-emerald-600 mr-3"></i>
+                    <label class="block text-sm font-bold text-gray-700">Email Address</label>
+                </div>
+                <p class="text-gray-900 profile-email break-words bg-gray-50 p-3 rounded-lg"></p>
             </div>
 
-            <!-- Profile Details -->
-            <div class="p-6 space-y-6">
-                <div class="profile-field">
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-envelope w-5 h-5 text-emerald-600 mr-3"></i>
-                        <label class="block text-sm font-bold text-gray-700">Email Address</label>
-                    </div>
-                    <p class="text-gray-900 profile-email break-words bg-gray-50 p-3 rounded-lg"></p>
+            <div class="profile-field">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-phone w-5 h-5 text-emerald-600 mr-3"></i>
+                    <label class="block text-sm font-bold text-gray-700">Phone Number</label>
                 </div>
-
-                <div class="profile-field">
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-phone w-5 h-5 text-emerald-600 mr-3"></i>
-                        <label class="block text-sm font-bold text-gray-700">Phone Number</label>
-                    </div>
-                    <p class="text-gray-900 profile-phone bg-gray-50 p-3 rounded-lg"></p>
-                </div>
-
-                <div class="profile-field">
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-id-badge w-5 h-5 text-emerald-600 mr-3"></i>
-                        <label class="block text-sm font-bold text-gray-700">Employee ID</label>
-                    </div>
-                    <p class="text-gray-900 profile-employee-id bg-gray-50 p-3 rounded-lg"></p>
-                </div>
-
-                <div class="profile-field">
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-calendar w-5 h-5 text-emerald-600 mr-3"></i>
-                        <label class="block text-sm font-bold text-gray-700">Joined Date</label>
-                    </div>
-                    <p class="text-gray-900 profile-joined bg-gray-50 p-3 rounded-lg"></p>
-                </div>
+                <p class="text-gray-900 profile-phone bg-gray-50 p-3 rounded-lg"></p>
             </div>
 
-            <!-- Additional Actions -->
-            {{-- <div class="p-6 bg-gray-50 border-t border-gray-200">
-            <div class="grid grid-cols-2 gap-3">
-                <button
-                    class="flex items-center justify-center p-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-star text-yellow-500 mr-2"></i>
-                    <span class="text-sm font-medium">Star</span>
-                </button>
-                <button
-                    class="flex items-center justify-center p-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-bell-slash text-gray-500 mr-2"></i>
-                    <span class="text-sm font-medium">Mute</span>
-                </button>
+            <div class="profile-field">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-id-badge w-5 h-5 text-emerald-600 mr-3"></i>
+                    <label class="block text-sm font-bold text-gray-700">Employee ID</label>
+                </div>
+                <p class="text-gray-900 profile-employee-id bg-gray-50 p-3 rounded-lg"></p>
             </div>
-        </div> --}}
+
+            <div class="profile-field">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-calendar w-5 h-5 text-emerald-600 mr-3"></i>
+                    <label class="block text-sm font-bold text-gray-700">Joined Date</label>
+                </div>
+                <p class="text-gray-900 profile-joined bg-gray-50 p-3 rounded-lg"></p>
+            </div>
+        </div>
     </template>
 
     @push('styles')
