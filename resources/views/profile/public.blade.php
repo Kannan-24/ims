@@ -223,7 +223,15 @@
                         @if($user->doj)
                             <div class="p-3 bg-gray-50 rounded-lg">
                                 <p class="text-xs text-gray-500 font-medium">Experience</p>
-                                <p class="text-sm font-semibold text-primary">{{ \Carbon\Carbon::parse($user->doj)->diffInYears(now()) }} Years at SKM</p>
+                                @php
+                                    $doj = \Carbon\Carbon::parse($user->doj);
+                                    $diff = $doj->diff(\Carbon\Carbon::now());
+                                    $parts = [];
+                                    if ($diff->y) $parts[] = $diff->y . ' year' . ($diff->y > 1 ? 's' : '');
+                                    if ($diff->m) $parts[] = $diff->m . ' month' . ($diff->m > 1 ? 's' : '');
+                                    if ($diff->d) $parts[] = $diff->d . ' day' . ($diff->d > 1 ? 's' : '');
+                                @endphp
+                                <p class="text-sm text-gray-900">{{ count($parts) ? implode(', ', $parts) : '0 days' }}</p>
                             </div>
                         @endif
                     </div>

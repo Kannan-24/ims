@@ -113,7 +113,7 @@
                             </form>
                         </div>
                         
-                        <!-- Navigation -->
+                        {{-- <!-- Navigation -->
                         <div class="flex items-center space-x-2">
                             @if($previousUser)
                                 <a href="{{ route('users.show', $previousUser->id) }}"
@@ -130,7 +130,7 @@
                                     <i class="fas fa-chevron-right ml-1"></i>
                                 </a>
                             @endif
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
@@ -243,7 +243,15 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-500 mb-1">Years of Service</label>
-                                <p class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($user->doj)->diffInYears() }} years</p>
+                                @php
+                                    $doj = \Carbon\Carbon::parse($user->doj);
+                                    $diff = $doj->diff(\Carbon\Carbon::now());
+                                    $parts = [];
+                                    if ($diff->y) $parts[] = $diff->y . ' year' . ($diff->y > 1 ? 's' : '');
+                                    if ($diff->m) $parts[] = $diff->m . ' month' . ($diff->m > 1 ? 's' : '');
+                                    if ($diff->d) $parts[] = $diff->d . ' day' . ($diff->d > 1 ? 's' : '');
+                                @endphp
+                                <p class="text-sm text-gray-900">{{ count($parts) ? implode(', ', $parts) : '0 days' }}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-500 mb-1">Last Updated</label>
@@ -317,7 +325,15 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Years of Service</label>
-                            <p class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($user->doj)->diffInYears() }} years</p>
+                            @php
+                                $doj = \Carbon\Carbon::parse($user->doj);
+                                $diff = $doj->diff(\Carbon\Carbon::now());
+                                $parts = [];
+                                if ($diff->y) $parts[] = $diff->y . ' year' . ($diff->y > 1 ? 's' : '');
+                                if ($diff->m) $parts[] = $diff->m . ' month' . ($diff->m > 1 ? 's' : '');
+                                if ($diff->d) $parts[] = $diff->d . ' day' . ($diff->d > 1 ? 's' : '');
+                            @endphp
+                            <p class="text-sm text-gray-900">{{ count($parts) ? implode(', ', $parts) : '0 days' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Work Email</label>

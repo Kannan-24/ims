@@ -93,7 +93,15 @@
                 <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-600">{{ \Carbon\Carbon::parse($user->doj)->diffInYears() }}</div>
+                            @php
+                                $doj = \Carbon\Carbon::parse($user->doj);
+                                $diff = $doj->diff(\Carbon\Carbon::now());
+                                $parts = [];
+                                if ($diff->y) $parts[] = $diff->y . ' year' . ($diff->y > 1 ? 's' : '');
+                                if ($diff->m) $parts[] = $diff->m . ' month' . ($diff->m > 1 ? 's' : '');
+                                if ($diff->d) $parts[] = $diff->d . ' day' . ($diff->d > 1 ? 's' : '');
+                            @endphp
+                            <p class="text-sm text-gray-900">{{ count($parts) ? implode(', ', $parts) : '0 days' }}</p>
                             <div class="text-xs text-gray-500">Years Experience</div>
                         </div>
                         <div class="text-center">
@@ -257,7 +265,15 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-500 mb-1">Years of Service</label>
-                                <p class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($user->doj)->diffInYears() }} years</p>
+                                @php
+                                    $doj = \Carbon\Carbon::parse($user->doj);
+                                    $diff = $doj->diff(\Carbon\Carbon::now());
+                                    $parts = [];
+                                    if ($diff->y) $parts[] = $diff->y . ' year' . ($diff->y > 1 ? 's' : '');
+                                    if ($diff->m) $parts[] = $diff->m . ' month' . ($diff->m > 1 ? 's' : '');
+                                    if ($diff->d) $parts[] = $diff->d . ' day' . ($diff->d > 1 ? 's' : '');
+                                @endphp
+                                <p class="text-sm text-gray-900">{{ count($parts) ? implode(', ', $parts) : '0 days' }}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-500 mb-1">Work Email</label>
