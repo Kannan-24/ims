@@ -302,7 +302,6 @@
 VERSION:3.0
 FN:{{ $user->name }}
 ORG:SKM and Company
-TITLE:{{ $user->designation ?? '' }}
 EMAIL:{{ $user->email }}
 TEL:{{ $user->phone ?? '' }}
 ADR:;;{{ $user->address ?? '' }};;;;

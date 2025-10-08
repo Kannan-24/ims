@@ -15,7 +15,8 @@ use App\Models\ims\Invoice;
 use App\Models\ims\InvoiceItem;
 use App\Models\ims\Stock;
 use Illuminate\Support\Facades\DB;
-use PDF; // Import PDF class from the package
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class QuotationController extends Controller
@@ -342,17 +343,59 @@ class QuotationController extends Controller
         return redirect()->route('quotations.index')->with('success', 'Quotation deleted successfully.');
     }
 
+   
+
     public function generatePDF($id)
     {
         $quotation = Quotation::with(['items', 'customer'])->findOrFail($id);
 
-        $pdf = Pdf::loadView('ims.quotations.pdf', compact('quotation'))->setPaper('a4', 'portrait');
+        // Generate a secure link for downloading or viewing (use public route for QR)
+        $downloadUrl = route('quotation.public.download', ['id' => $quotation->id]);
 
-        // Sanitize filename by replacing invalid characters
-        $sanitizedQuotationNo = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $quotation->quotation_no);
+        // Generate QR code with SVG format for better PDF compatibility (no ImageMagick needed)
+        $qrCodeSvg = QrCode::format('svg')
+            ->size(80)
+            ->errorCorrection('M')
+            ->generate($downloadUrl);
         
+        // Convert SVG to data URL for PDF embedding
+        $qrCode = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
+
+        $pdf = Pdf::loadView('ims.quotations.pdf', compact('quotation', 'qrCode'))
+            ->setPaper('a4', 'portrait');
+
+        $sanitizedQuotationNo = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $quotation->quotation_no);
+
         return $pdf->stream('Quotation_' . $sanitizedQuotationNo . '.pdf');
     }
+
+    /**
+     * Generate PDF for public download (no authentication required)
+     */
+    public function publicDownloadPDF($id)
+    {
+        $quotation = Quotation::with(['items', 'customer'])->findOrFail($id);
+
+        // Generate a secure link for downloading or viewing
+        $downloadUrl = route('quotation.public.download', ['id' => $quotation->id]);
+
+        // Generate QR code with SVG format for better PDF compatibility (no ImageMagick needed)
+        $qrCodeSvg = QrCode::format('svg')
+            ->size(80)
+            ->errorCorrection('M')
+            ->generate($downloadUrl);
+        
+        // Convert SVG to data URL for PDF embedding
+        $qrCode = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
+
+        $pdf = Pdf::loadView('ims.quotations.pdf', compact('quotation', 'qrCode'))
+            ->setPaper('a4', 'portrait');
+
+        $sanitizedQuotationNo = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $quotation->quotation_no);
+
+        return $pdf->download('Quotation_' . $sanitizedQuotationNo . '.pdf');
+    }
+
 
     /**
      * Convert quotation to invoice.

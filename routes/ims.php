@@ -22,6 +22,8 @@ use App\Http\Controllers\ims\ChatController;
 use App\Http\Controllers\ims\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
+// Public Routes (no authentication required)
+Route::get('/public/quotation/{id}/download', [QuotationController::class, 'publicDownloadPDF'])->name('quotation.public.download');
 
 // Authentication Routes
 Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
@@ -75,6 +77,7 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
 
     // Quotation Payment Routes
     Route::get('/quotations/{id}/pdf', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');
+    Route::get('/quotation/{id}/download', [QuotationController::class, 'generatePDF'])->name('quotation.download');
 
     Route::get('/products/{product}/assign-suppliers', [ProductController::class, 'assignSuppliersForm'])->name('products.assignSuppliersForm');
     Route::post('/products/{product}/assign-suppliers', [ProductController::class, 'assignSupplier'])->name('products.assignSupplier');
