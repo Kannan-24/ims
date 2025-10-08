@@ -84,39 +84,49 @@
 
         .customer-details {
             float: left;
-            width: 45%;
-            /* reduced a bit */
+            width: 43%;
+            /* reduced to match quotation-details width */
             border-right: 2px solid #000;
             padding: 10px 15px 10px 10px;
         }
 
         .quotation-details {
             float: left;
-            width: 45%;
-            /* changed from right to left, same row */
+            width: 43%;
+            /* reduced width to accommodate border */
             padding: 10px 10px 10px 15px;
+            border-right: 2px solid #000;
         }
 
         .qr-section {
             float: right;
-            width: 10%;
+            width: 12%;
             text-align: center;
             padding: 10px 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
         }
 
         .qr-code {
             text-align: center;
+            margin: auto;
         }
 
         .qr-code img {
             border: 1px solid #ddd;
             padding: 2px;
+            display: block;
+            margin: 0 auto;
         }
 
         .qr-label {
             font-size: 8px;
             margin-top: 5px;
             color: #666;
+            text-align: center;
         }
 
         .label {
