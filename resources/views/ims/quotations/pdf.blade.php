@@ -76,43 +76,42 @@
 
         .details-section {
             border-bottom: 2px solid #000;
-            padding: ;
-
+            padding: 0;
+            height: 140px;
             font-size: 12px;
             overflow: hidden;
+            display: table;
+            width: 100%;
         }
 
         .customer-details {
-            float: left;
-            width: 43%;
-            /* reduced to match quotation-details width */
+            display: table-cell;
+            width: 50%;
             border-right: 2px solid #000;
             padding: 10px 15px 10px 10px;
+            vertical-align: top;
         }
 
         .quotation-details {
-            float: left;
-            width: 43%;
-            /* reduced width to accommodate border */
+            display: table-cell;
+            width: 33%;
             padding: 10px 10px 10px 15px;
             border-right: 2px solid #000;
+            vertical-align: top;
         }
 
         .qr-section {
-            float: right;
-            width: 12%;
+            display: table-cell;
+            width: 17%;
             text-align: center;
             padding: 10px 5px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
+            vertical-align: middle;
         }
 
         .qr-code {
             text-align: center;
-            margin: auto;
+            margin: 0 auto;
+            padding-top: 15px;
         }
 
         .qr-code img {
@@ -124,7 +123,7 @@
 
         .qr-label {
             font-size: 8px;
-            margin-top: 5px;
+            margin-top: 8px;
             color: #666;
             text-align: center;
         }
@@ -254,7 +253,7 @@
         </div>
 
         <!-- Details Section -->
-        <div class="details-section clearfix">
+        <div class="details-section">
             <div class="customer-details">
                 <div class="detail-line"><span class="label">Customer Details:</span></div>
                 <div class="detail-line"><span class="label">Name :</span> {{ $quotation->customer->company_name }}
