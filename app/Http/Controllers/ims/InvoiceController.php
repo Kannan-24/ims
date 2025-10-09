@@ -452,7 +452,7 @@ class InvoiceController extends Controller
 
         $totalGst = $totalCgst + $totalSgst + $totalIgst;
         $grandTotal = $subTotal + $totalGst;
-        
+
         // Handle courier charges and final total
         $courierCharges = (float)($request->courier_charges ?? 0);
         $finalTotal = $grandTotal + $courierCharges;
