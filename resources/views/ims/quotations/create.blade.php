@@ -59,7 +59,8 @@
 
         <!-- Content -->
         <div class="p-6">
-            <form action="{{ route('quotations.store') }}" method="POST" id="quotationForm" @submit.prevent="submitForm">
+            <form action="{{ route('quotations.store') }}" method="POST" id="quotationForm"
+                @submit.prevent="submitForm">
                 @csrf
 
                 <!-- Tab Navigation -->
@@ -198,41 +199,68 @@
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount Amt</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Taxable Amt</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">CGST</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">SGST</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">IGST</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Product</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Qty</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Unit Price</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Discount Amt</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Taxable Amt</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                CGST</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                SGST</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                IGST</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Total</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         <template x-for="(product, index) in products" :key="index">
                                             <tr>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm font-medium text-gray-900" x-text="product.name"></div>
-                                                    <input type="hidden" :name="`products[${index}][product_id]`" :value="product.id">
-                                                    <input type="hidden" :name="`products[${index}][gst_percentage]`" :value="product.gst_percentage">
+                                                    <div class="text-sm font-medium text-gray-900"
+                                                        x-text="product.name"></div>
+                                                    <input type="hidden" :name="`products[${index}][product_id]`"
+                                                        :value="product.id">
+                                                    <input type="hidden" :name="`products[${index}][gst_percentage]`"
+                                                        :value="product.gst_percentage">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <input type="number" :name="`products[${index}][quantity]`"
-                                                        x-model="product.quantity" @input="calculateProductTotal(index)"
+                                                        x-model="product.quantity"
+                                                        @input="calculateProductTotal(index)"
                                                         class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="1">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <input type="number" :name="`products[${index}][unit_price]`"
-                                                        x-model="product.unit_price" @input="calculateProductTotal(index)"
+                                                        x-model="product.unit_price"
+                                                        @input="calculateProductTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <input type="number" :name="`products[${index}][discount_amount]`"
-                                                        x-model="product.discount_amount" @input="calculateProductTotal(index)"
+                                                    <input type="number"
+                                                        :name="`products[${index}][discount_amount]`"
+                                                        x-model="product.discount_amount"
+                                                        @input="calculateProductTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01" placeholder="₹">
                                                 </td>
@@ -240,32 +268,44 @@
                                                     <div class="text-sm text-gray-900">
                                                         ₹<span x-text="product.taxable_amount || 0"></span>
                                                     </div>
-                                                    <input type="hidden" :name="`products[${index}][taxable_amount]`" :value="product.taxable_amount">
+                                                    <input type="hidden" :name="`products[${index}][taxable_amount]`"
+                                                        :value="product.taxable_amount">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900">
-                                                        <span x-text="product.cgst_rate"></span>% = ₹<span x-text="product.cgst_value"></span>
+                                                        <span x-text="product.cgst_rate"></span>% = ₹<span
+                                                            x-text="product.cgst_value"></span>
                                                     </div>
-                                                    <input type="hidden" :name="`products[${index}][cgst]`" :value="product.cgst_rate">
-                                                    <input type="hidden" :name="`products[${index}][cgst_value]`" :value="product.cgst_value">
+                                                    <input type="hidden" :name="`products[${index}][cgst]`"
+                                                        :value="product.cgst_rate">
+                                                    <input type="hidden" :name="`products[${index}][cgst_value]`"
+                                                        :value="product.cgst_value">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900">
-                                                        <span x-text="product.sgst_rate"></span>% = ₹<span x-text="product.sgst_value"></span>
+                                                        <span x-text="product.sgst_rate"></span>% = ₹<span
+                                                            x-text="product.sgst_value"></span>
                                                     </div>
-                                                    <input type="hidden" :name="`products[${index}][sgst]`" :value="product.sgst_rate">
-                                                    <input type="hidden" :name="`products[${index}][sgst_value]`" :value="product.sgst_value">
+                                                    <input type="hidden" :name="`products[${index}][sgst]`"
+                                                        :value="product.sgst_rate">
+                                                    <input type="hidden" :name="`products[${index}][sgst_value]`"
+                                                        :value="product.sgst_value">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900">
-                                                        <span x-text="product.igst_rate"></span>% = ₹<span x-text="product.igst_value"></span>
+                                                        <span x-text="product.igst_rate"></span>% = ₹<span
+                                                            x-text="product.igst_value"></span>
                                                     </div>
-                                                    <input type="hidden" :name="`products[${index}][igst]`" :value="product.igst_rate">
-                                                    <input type="hidden" :name="`products[${index}][igst_value]`" :value="product.igst_value">
+                                                    <input type="hidden" :name="`products[${index}][igst]`"
+                                                        :value="product.igst_rate">
+                                                    <input type="hidden" :name="`products[${index}][igst_value]`"
+                                                        :value="product.igst_value">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm font-medium text-gray-900">₹<span x-text="product.total"></span></div>
-                                                    <input type="hidden" :name="`products[${index}][total]`" :value="product.total">
+                                                    <div class="text-sm font-medium text-gray-900">₹<span
+                                                            x-text="product.total"></span></div>
+                                                    <input type="hidden" :name="`products[${index}][total]`"
+                                                        :value="product.total">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <button type="button" @click="removeProduct(index)"
@@ -310,39 +350,63 @@
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount Amt</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Taxable Amt</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST Amount</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Service</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Qty</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Unit Price</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Discount Amt</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Taxable Amt</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                GST %</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                GST Amount</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Total</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         <template x-for="(service, index) in services" :key="index">
                                             <tr>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm font-medium text-gray-900" x-text="service.name"></div>
-                                                    <input type="hidden" :name="`services[${index}][service_id]`" :value="service.id">
+                                                    <div class="text-sm font-medium text-gray-900"
+                                                        x-text="service.name"></div>
+                                                    <input type="hidden" :name="`services[${index}][service_id]`"
+                                                        :value="service.id">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <input type="number" :name="`services[${index}][quantity]`"
-                                                        x-model="service.quantity" @input="calculateServiceTotal(index)"
+                                                        x-model="service.quantity"
+                                                        @input="calculateServiceTotal(index)"
                                                         class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="1">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <input type="number" :name="`services[${index}][unit_price]`"
-                                                        x-model="service.unit_price" @input="calculateServiceTotal(index)"
+                                                        x-model="service.unit_price"
+                                                        @input="calculateServiceTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <input type="number" :name="`services[${index}][discount_amount]`"
-                                                        x-model="service.discount_amount" @input="calculateServiceTotal(index)"
+                                                    <input type="number"
+                                                        :name="`services[${index}][discount_amount]`"
+                                                        x-model="service.discount_amount"
+                                                        @input="calculateServiceTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01" placeholder="₹">
                                                 </td>
@@ -350,19 +414,26 @@
                                                     <div class="text-sm text-gray-900">
                                                         ₹<span x-text="service.taxable_amount || 0"></span>
                                                     </div>
-                                                    <input type="hidden" :name="`services[${index}][taxable_amount]`" :value="service.taxable_amount">
+                                                    <input type="hidden" :name="`services[${index}][taxable_amount]`"
+                                                        :value="service.taxable_amount">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm text-gray-900" x-text="service.gst_percentage + '%'"></div>
-                                                    <input type="hidden" :name="`services[${index}][gst_percentage]`" :value="service.gst_percentage">
+                                                    <div class="text-sm text-gray-900"
+                                                        x-text="service.gst_percentage + '%'"></div>
+                                                    <input type="hidden" :name="`services[${index}][gst_percentage]`"
+                                                        :value="service.gst_percentage">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm text-gray-900">₹<span x-text="service.gst_total"></span></div>
-                                                    <input type="hidden" :name="`services[${index}][gst_total]`" :value="service.gst_total">
+                                                    <div class="text-sm text-gray-900">₹<span
+                                                            x-text="service.gst_total"></span></div>
+                                                    <input type="hidden" :name="`services[${index}][gst_total]`"
+                                                        :value="service.gst_total">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm font-medium text-gray-900">₹<span x-text="service.total"></span></div>
-                                                    <input type="hidden" :name="`services[${index}][total]`" :value="service.total">
+                                                    <div class="text-sm font-medium text-gray-900">₹<span
+                                                            x-text="service.total"></span></div>
+                                                    <input type="hidden" :name="`services[${index}][total]`"
+                                                        :value="service.total">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <button type="button" @click="removeService(index)"
@@ -383,7 +454,7 @@
                         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-6">Quotation Summary</h3>
-                            
+
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 <!-- Product Summary -->
                                 <div>
@@ -391,38 +462,53 @@
                                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product Subtotal:</span>
-                                            <span class="font-medium">₹<span x-text="summary.product_subtotal"></span></span>
-                                            <input type="hidden" name="product_subtotal" :value="summary.product_subtotal">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.product_subtotal"></span></span>
+                                            <input type="hidden" name="product_subtotal"
+                                                :value="summary.product_subtotal">
                                         </div>
                                         <div class="flex justify-between" x-show="summary.product_discount > 0">
                                             <span class="text-gray-700">Product Discount:</span>
-                                            <span class="font-medium text-red-600">-₹<span x-text="summary.product_discount"></span></span>
-                                            <input type="hidden" name="product_discount" :value="summary.product_discount">
+                                            <span class="font-medium text-red-600">-₹<span
+                                                    x-text="summary.product_discount"></span></span>
+                                            <input type="hidden" name="product_discount"
+                                                :value="summary.product_discount">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product Taxable Amount:</span>
-                                            <span class="font-medium">₹<span x-text="summary.product_taxable_amount"></span></span>
-                                            <input type="hidden" name="product_taxable_amount" :value="summary.product_taxable_amount">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.product_taxable_amount"></span></span>
+                                            <input type="hidden" name="product_taxable_amount"
+                                                :value="summary.product_taxable_amount">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product CGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.product_total_cgst"></span></span>
-                                            <input type="hidden" name="product_total_cgst" :value="summary.product_total_cgst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.product_total_cgst"></span></span>
+                                            <input type="hidden" name="product_total_cgst"
+                                                :value="summary.product_total_cgst">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product SGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.product_total_sgst"></span></span>
-                                            <input type="hidden" name="product_total_sgst" :value="summary.product_total_sgst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.product_total_sgst"></span></span>
+                                            <input type="hidden" name="product_total_sgst"
+                                                :value="summary.product_total_sgst">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product IGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.product_total_igst"></span></span>
-                                            <input type="hidden" name="product_total_igst" :value="summary.product_total_igst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.product_total_igst"></span></span>
+                                            <input type="hidden" name="product_total_igst"
+                                                :value="summary.product_total_igst">
                                         </div>
-                                        <div class="flex justify-between border-t border-blue-300 pt-3 text-lg font-bold">
+                                        <div
+                                            class="flex justify-between border-t border-blue-300 pt-3 text-lg font-bold">
                                             <span class="text-gray-900">Product Total:</span>
-                                            <span class="text-blue-600">₹<span x-text="summary.product_total"></span></span>
-                                            <input type="hidden" name="product_total" :value="summary.product_total">
+                                            <span class="text-blue-600">₹<span
+                                                    x-text="summary.product_total"></span></span>
+                                            <input type="hidden" name="product_total"
+                                                :value="summary.product_total">
                                         </div>
                                     </div>
                                 </div>
@@ -433,33 +519,46 @@
                                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Service Subtotal:</span>
-                                            <span class="font-medium">₹<span x-text="summary.service_subtotal"></span></span>
-                                            <input type="hidden" name="service_subtotal" :value="summary.service_subtotal">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.service_subtotal"></span></span>
+                                            <input type="hidden" name="service_subtotal"
+                                                :value="summary.service_subtotal">
                                         </div>
                                         <div class="flex justify-between" x-show="summary.service_discount > 0">
                                             <span class="text-gray-700">Service Discount:</span>
-                                            <span class="font-medium text-red-600">-₹<span x-text="summary.service_discount"></span></span>
-                                            <input type="hidden" name="service_discount" :value="summary.service_discount">
+                                            <span class="font-medium text-red-600">-₹<span
+                                                    x-text="summary.service_discount"></span></span>
+                                            <input type="hidden" name="service_discount"
+                                                :value="summary.service_discount">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Service Taxable Amount:</span>
-                                            <span class="font-medium">₹<span x-text="summary.service_taxable_amount"></span></span>
-                                            <input type="hidden" name="service_taxable_amount" :value="summary.service_taxable_amount">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.service_taxable_amount"></span></span>
+                                            <input type="hidden" name="service_taxable_amount"
+                                                :value="summary.service_taxable_amount">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Service CGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.service_total_cgst"></span></span>
-                                            <input type="hidden" name="service_total_cgst" :value="summary.service_total_cgst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.service_total_cgst"></span></span>
+                                            <input type="hidden" name="service_total_cgst"
+                                                :value="summary.service_total_cgst">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Service SGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.service_total_sgst"></span></span>
-                                            <input type="hidden" name="service_total_sgst" :value="summary.service_total_sgst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.service_total_sgst"></span></span>
+                                            <input type="hidden" name="service_total_sgst"
+                                                :value="summary.service_total_sgst">
                                         </div>
-                                        <div class="flex justify-between border-t border-green-300 pt-3 text-lg font-bold">
+                                        <div
+                                            class="flex justify-between border-t border-green-300 pt-3 text-lg font-bold">
                                             <span class="text-gray-900">Service Total:</span>
-                                            <span class="text-green-600">₹<span x-text="summary.service_total"></span></span>
-                                            <input type="hidden" name="service_total" :value="summary.service_total">
+                                            <span class="text-green-600">₹<span
+                                                    x-text="summary.service_total"></span></span>
+                                            <input type="hidden" name="service_total"
+                                                :value="summary.service_total">
                                         </div>
                                     </div>
                                 </div>
@@ -472,17 +571,23 @@
                                     <div class="space-y-4">
                                         <div class="flex justify-between text-lg">
                                             <span class="text-gray-700">Grand Subtotal:</span>
-                                            <span class="font-semibold">₹<span x-text="summary.grand_sub_total"></span></span>
-                                            <input type="hidden" name="grand_sub_total" :value="summary.grand_sub_total">
+                                            <span class="font-semibold">₹<span
+                                                    x-text="summary.grand_sub_total"></span></span>
+                                            <input type="hidden" name="grand_sub_total"
+                                                :value="summary.grand_sub_total">
                                         </div>
                                         <div class="flex justify-between text-lg">
                                             <span class="text-gray-700">Grand GST Total:</span>
-                                            <span class="font-semibold">₹<span x-text="summary.grand_gst_total"></span></span>
-                                            <input type="hidden" name="grand_gst_total" :value="summary.grand_gst_total">
+                                            <span class="font-semibold">₹<span
+                                                    x-text="summary.grand_gst_total"></span></span>
+                                            <input type="hidden" name="grand_gst_total"
+                                                :value="summary.grand_gst_total">
                                         </div>
-                                        <div class="flex justify-between border-t border-yellow-300 pt-4 text-2xl font-bold">
+                                        <div
+                                            class="flex justify-between border-t border-yellow-300 pt-4 text-2xl font-bold">
                                             <span class="text-gray-900">Grand Total:</span>
-                                            <span class="text-yellow-600">₹<span x-text="summary.grand_total"></span></span>
+                                            <span class="text-yellow-600">₹<span
+                                                    x-text="summary.grand_total"></span></span>
                                             <input type="hidden" name="grand_total" :value="summary.grand_total">
                                         </div>
                                     </div>
@@ -570,11 +675,16 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">HSN Code</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product
+                                        Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">HSN
+                                        Code</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -585,9 +695,11 @@
                                         <td class="px-6 py-4 text-sm text-gray-900">
                                             {{ $product->stock->sum('quantity') - $product->stock->sum('sold') }}
                                         </td>
-                                        <td class="px-6 py-4 text-sm text-gray-900">{{ $product->gst_percentage }}%</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900">{{ $product->gst_percentage }}%
+                                        </td>
                                         <td class="px-6 py-4">
-                                            <button type="button" @click="addProduct({{ $product->id }}, '{{ $product->name }}', {{ $product->gst_percentage }}, {{ $product->is_igst }})"
+                                            <button type="button"
+                                                @click="addProduct({{ $product->id }}, '{{ $product->name }}', {{ $product->gst_percentage }}, {{ $product->is_igst }})"
                                                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
                                                 Select
                                             </button>
@@ -626,18 +738,23 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service
+                                        Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($services as $service)
                                     <tr class="service-row">
                                         <td class="px-6 py-4 text-sm text-gray-900">{{ $service->name }}</td>
-                                        <td class="px-6 py-4 text-sm text-gray-900">{{ $service->gst_percentage }}%</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900">{{ $service->gst_percentage }}%
+                                        </td>
                                         <td class="px-6 py-4">
-                                            <button type="button" @click="addService({{ $service->id }}, '{{ $service->name }}', {{ $service->gst_percentage }})"
+                                            <button type="button"
+                                                @click="addService({{ $service->id }}, '{{ $service->name }}', {{ $service->gst_percentage }})"
                                                 class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
                                                 Select
                                             </button>
@@ -673,28 +790,39 @@
                         </h3>
                         <div class="space-y-4">
                             <div class="flex items-start space-x-3">
-                                <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                                <div
+                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                    1</div>
                                 <div>
                                     <h4 class="font-medium text-gray-900">Basic Information</h4>
-                                    <p class="text-sm text-gray-600">Select customer, contact person, and set quotation date.</p>
+                                    <p class="text-sm text-gray-600">Select customer, contact person, and set quotation
+                                        date.</p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
-                                <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                                <div
+                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                    2</div>
                                 <div>
                                     <h4 class="font-medium text-gray-900">Add Products</h4>
-                                    <p class="text-sm text-gray-600">Select products, set quantities and unit prices.</p>
+                                    <p class="text-sm text-gray-600">Select products, set quantities and unit prices.
+                                    </p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
-                                <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                                <div
+                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                    3</div>
                                 <div>
                                     <h4 class="font-medium text-gray-900">Add Services (Optional)</h4>
-                                    <p class="text-sm text-gray-600">Include services if required for your quotation.</p>
+                                    <p class="text-sm text-gray-600">Include services if required for your quotation.
+                                    </p>
                                 </div>
                             </div>
                             <div class="flex items-start space-x-3">
-                                <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
+                                <div
+                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                    4</div>
                                 <div>
                                     <h4 class="font-medium text-gray-900">Review & Submit</h4>
                                     <p class="text-sm text-gray-600">Review totals and create the quotation.</p>
@@ -791,7 +919,7 @@
                             } else if (this.showServiceModal) {
                                 this.showServiceModal = false;
                             } else if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
-                                window.location.href = '{{ route("quotations.index") }}';
+                                window.location.href = '{{ route('quotations.index') }}';
                             }
                         }
                     });
@@ -909,18 +1037,19 @@
                     if (!product) return;
 
                     const subtotal = product.quantity * product.unit_price;
-                    
+
                     // Use direct discount amount
                     const discountAmount = parseFloat(product.discount_amount) || 0;
                     // Ensure discount doesn't exceed subtotal
                     product.discount_amount = Math.min(discountAmount, subtotal);
                     product.taxable_amount = parseFloat((subtotal - product.discount_amount).toFixed(2));
-                    
+
                     // Calculate GST on taxable amount (after discount)
                     product.cgst_value = parseFloat(((product.taxable_amount * product.cgst_rate) / 100).toFixed(2));
                     product.sgst_value = parseFloat(((product.taxable_amount * product.sgst_rate) / 100).toFixed(2));
                     product.igst_value = parseFloat(((product.taxable_amount * product.igst_rate) / 100).toFixed(2));
-                    product.total = parseFloat((product.taxable_amount + product.cgst_value + product.sgst_value + product.igst_value).toFixed(2));
+                    product.total = parseFloat((product.taxable_amount + product.cgst_value + product.sgst_value + product
+                        .igst_value).toFixed(2));
 
                     this.calculateSummary();
                 },
@@ -930,13 +1059,13 @@
                     if (!service) return;
 
                     const subtotal = service.quantity * service.unit_price;
-                    
+
                     // Use direct discount amount
                     const discountAmount = parseFloat(service.discount_amount) || 0;
                     // Ensure discount doesn't exceed subtotal
                     service.discount_amount = Math.min(discountAmount, subtotal);
                     service.taxable_amount = parseFloat((subtotal - service.discount_amount).toFixed(2));
-                    
+
                     // Calculate GST on taxable amount (after discount)
                     service.gst_total = parseFloat(((service.taxable_amount * service.gst_percentage) / 100).toFixed(2));
                     service.total = parseFloat((service.taxable_amount + service.gst_total).toFixed(2));
@@ -993,8 +1122,10 @@
                     // Calculate grand totals
                     this.summary.grand_sub_total = this.summary.product_subtotal + this.summary.service_subtotal;
                     this.summary.grand_discount = this.summary.product_discount + this.summary.service_discount;
-                    this.summary.grand_taxable_amount = this.summary.product_taxable_amount + this.summary.service_taxable_amount;
-                    this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary.product_total_sgst + this.summary.product_total_igst + this.summary.service_total_cgst + this.summary.service_total_sgst;
+                    this.summary.grand_taxable_amount = this.summary.product_taxable_amount + this.summary
+                        .service_taxable_amount;
+                    this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary.product_total_sgst + this
+                        .summary.product_total_igst + this.summary.service_total_cgst + this.summary.service_total_sgst;
                     this.summary.grand_total = this.summary.product_total + this.summary.service_total;
 
                     // Round all values to 2 decimal places

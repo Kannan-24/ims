@@ -192,7 +192,7 @@ class QuotationController extends Controller
                     $taxableAmount = $subtotal - $discountAmount;
 
                     $gstTotal = (float)str_replace(',', '', $service['gst_total'] ?? 0);
-                    
+
                     QuotationItem::create([
                         'quotation_id' => $quotation->id,
                         'product_id' => null,
@@ -356,7 +356,7 @@ class QuotationController extends Controller
                     $taxableAmount = $subtotal - $discountAmount;
 
                     $gstTotal = (float)($service['gst_total'] ?? 0);
-                    
+
                     QuotationItem::create([
                         'quotation_id' => $quotation->id,
                         'product_id' => null,

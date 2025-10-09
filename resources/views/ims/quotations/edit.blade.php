@@ -301,7 +301,8 @@
                                                         min="0" step="0.01">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <input type="number" :name="`products[${index}][discount_amount]`"
+                                                    <input type="number"
+                                                        :name="`products[${index}][discount_amount]`"
                                                         x-model="product.discount_amount"
                                                         @input="calculateProductTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -446,7 +447,8 @@
                                                         min="0" step="0.01">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <input type="number" :name="`services[${index}][discount_amount]`"
+                                                    <input type="number"
+                                                        :name="`services[${index}][discount_amount]`"
                                                         x-model="service.discount_amount"
                                                         @input="calculateServiceTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -1024,7 +1026,7 @@
                                     quantity: {{ $item->quantity }},
                                     unit_price: {{ $item->unit_price }},
                                     discount_amount: {{ $item->discount_amount ?? 0 }},
-                                    taxable_amount: {{ $item->taxable_amount ?? ($item->unit_price * $item->quantity) }},
+                                    taxable_amount: {{ $item->taxable_amount ?? $item->unit_price * $item->quantity }},
                                     gst_percentage: gstPercentage{{ $loop->index }},
                                     is_igst: isIgst{{ $loop->index }},
                                     cgst_rate: isIgst{{ $loop->index }} ? 0 : (gstPercentage{{ $loop->index }} /
@@ -1052,7 +1054,7 @@
                                     quantity: {{ $item->quantity }},
                                     unit_price: {{ $item->unit_price }},
                                     discount_amount: {{ $item->discount_amount ?? 0 }},
-                                    taxable_amount: {{ $item->taxable_amount ?? ($item->unit_price * $item->quantity) }},
+                                    taxable_amount: {{ $item->taxable_amount ?? $item->unit_price * $item->quantity }},
                                     gst_percentage: {{ $item->service->gst_percentage }},
                                     gst_total: parseFloat({{ number_format($item->gst, 2, '.', '') }}),
                                     total: parseFloat({{ number_format($item->total, 2, '.', '') }})
@@ -1259,7 +1261,8 @@
                             product.igst_value = 0;
                         }
 
-                        product.total = parseFloat((taxableAmount + product.cgst_value + product.sgst_value + product.igst_value)
+                        product.total = parseFloat((taxableAmount + product.cgst_value + product.sgst_value + product
+                                .igst_value)
                             .toFixed(2));
 
                         this.calculateSummary();
@@ -1362,7 +1365,8 @@
                         // Calculate grand totals
                         this.summary.grand_sub_total = this.summary.product_subtotal + this.summary.service_subtotal;
                         this.summary.grand_discount = this.summary.product_discount + this.summary.service_discount;
-                        this.summary.grand_taxable_amount = this.summary.product_taxable_amount + this.summary.service_taxable_amount;
+                        this.summary.grand_taxable_amount = this.summary.product_taxable_amount + this.summary
+                            .service_taxable_amount;
                         this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary.product_total_sgst +
                             this.summary.product_total_igst + this.summary.service_total_cgst + this.summary
                             .service_total_sgst;

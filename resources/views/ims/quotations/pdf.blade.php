@@ -356,7 +356,9 @@
                                 <td class="qty-col">{{ number_format($item->quantity, 2) }}</td>
                                 <td class="rate-col">{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
                                 <td class="gst-col">{{ number_format($item->discount_amount ?? 0, 2) }}</td>
-                                <td class="tax-col">{{ number_format($item->taxable_amount ?? ($item->unit_price * $item->quantity), 2) }}</td>
+                                <td class="tax-col">
+                                    {{ number_format($item->taxable_amount ?? $item->unit_price * $item->quantity, 2) }}
+                                </td>
                                 <td class="gst-col">
                                     {{ !$item->product->is_igst ? $item->product->gst_percentage / 2 . '%' : '-' }}
                                 </td>
@@ -385,7 +387,9 @@
                         <tr style="font-weight: bold;">
                             <td colspan="3" class="desc-col">SUB TOTAL</td>
                             <td class="qty-col">{{ number_format($productItems->sum('quantity'), 2) }}</td>
-                            <td class="rate-col">{{ number_format($productItems->sum(fn($item) => $item->unit_price * $item->quantity), 2) }}</td>
+                            <td class="rate-col">
+                                {{ number_format($productItems->sum(fn($item) => $item->unit_price * $item->quantity), 2) }}
+                            </td>
                             <td class="gst-col">{{ number_format($productItems->sum('discount_amount'), 2) }}</td>
                             <td class="tax-col">{{ number_format($productItems->sum('taxable_amount'), 2) }}</td>
                             <td colspan="1"></td>
@@ -431,7 +435,9 @@
                                 <td class="qty-col">{{ number_format($item->quantity, 2) }}</td>
                                 <td class="rate-col">{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
                                 <td class="gst-col">{{ number_format($item->discount_amount ?? 0, 2) }}</td>
-                                <td class="tax-col">{{ number_format($item->taxable_amount ?? ($item->unit_price * $item->quantity), 2) }}</td>
+                                <td class="tax-col">
+                                    {{ number_format($item->taxable_amount ?? $item->unit_price * $item->quantity, 2) }}
+                                </td>
                                 <td class="gst-col">{{ ($item->service->gst_percentage ?? 18) / 2 }}%</td>
                                 <td class="tax-col">
                                     {{ number_format(($item->unit_price * $item->quantity * (($item->service->gst_percentage ?? 18) / 2)) / 100, 2) }}
@@ -447,7 +453,9 @@
                         <tr style="font-weight: bold;">
                             <td colspan="3" class="desc-col">SUB TOTAL</td>
                             <td class="qty-col">{{ number_format($serviceItems->sum('quantity'), 2) }}</td>
-                            <td class="rate-col">{{ number_format($serviceItems->sum(fn($item) => $item->unit_price * $item->quantity), 2) }}</td>
+                            <td class="rate-col">
+                                {{ number_format($serviceItems->sum(fn($item) => $item->unit_price * $item->quantity), 2) }}
+                            </td>
                             <td class="gst-col">{{ number_format($serviceItems->sum('discount_amount'), 2) }}</td>
                             <td class="tax-col">{{ number_format($serviceItems->sum('taxable_amount'), 2) }}</td>
                             <td colspan="1"></td>
