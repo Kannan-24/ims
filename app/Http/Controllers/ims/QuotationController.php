@@ -133,6 +133,12 @@ class QuotationController extends Controller
                     $unitPrice = (float)str_replace(',', '', $product['unit_price']);
                     $subtotal = $quantity * $unitPrice;
 
+                    // Use direct discount amount
+                    $discountAmount = (float)str_replace(',', '', $product['discount_amount'] ?? 0);
+                    // Ensure discount doesn't exceed subtotal
+                    $discountAmount = min($discountAmount, $subtotal);
+                    $taxableAmount = $subtotal - $discountAmount;
+
                     // Get GST percentage from product
                     $gstPercentage = $productModel->gst_percentage;
                     $isIgst = $productModel->is_igst;
@@ -142,10 +148,10 @@ class QuotationController extends Controller
                     $igstAmount = 0;
 
                     if ($isIgst) {
-                        $igstAmount = ($subtotal * $gstPercentage) / 100;
+                        $igstAmount = ($taxableAmount * $gstPercentage) / 100;
                     } else {
-                        $cgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
-                        $sgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                        $cgstAmount = ($taxableAmount * $gstPercentage) / 200; // Half of GST
+                        $sgstAmount = ($taxableAmount * $gstPercentage) / 200; // Half of GST
                     }
 
                     $totalGst = $cgstAmount + $sgstAmount + $igstAmount;
@@ -156,12 +162,15 @@ class QuotationController extends Controller
                         'service_id' => null,
                         'quantity' => $quantity,
                         'unit_price' => $unitPrice,
+                        'discount_percentage' => ($discountAmount > 0 && $subtotal > 0) ? round(($discountAmount / $subtotal) * 100, 2) : 0,
+                        'discount_amount' => $discountAmount,
+                        'taxable_amount' => $taxableAmount,
                         'unit_type' => $productModel->unit_type,
                         'cgst' => $cgstAmount,
                         'sgst' => $sgstAmount,
                         'igst' => $igstAmount,
                         'gst' => $totalGst,
-                        'total' => $subtotal + $totalGst,
+                        'total' => $taxableAmount + $totalGst,
                         'type' => 'product',
                     ]);
                 }
@@ -172,13 +181,27 @@ class QuotationController extends Controller
         if ($request->has('services')) {
             foreach ($request->services as $service) {
                 if (isset($service['service_id'])) {
+                    $quantity = (int)$service['quantity'];
+                    $unitPrice = (float)str_replace(',', '', $service['unit_price']);
+                    $subtotal = $quantity * $unitPrice;
+
+                    // Use direct discount amount
+                    $discountAmount = (float)str_replace(',', '', $service['discount_amount'] ?? 0);
+                    // Ensure discount doesn't exceed subtotal
+                    $discountAmount = min($discountAmount, $subtotal);
+                    $taxableAmount = $subtotal - $discountAmount;
+
                     $gstTotal = (float)str_replace(',', '', $service['gst_total'] ?? 0);
+                    
                     QuotationItem::create([
                         'quotation_id' => $quotation->id,
                         'product_id' => null,
                         'service_id' => $service['service_id'],
-                        'quantity' => (int)$service['quantity'],
-                        'unit_price' => (float)str_replace(',', '', $service['unit_price']),
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
+                        'discount_percentage' => ($discountAmount > 0 && $subtotal > 0) ? round(($discountAmount / $subtotal) * 100, 2) : 0,
+                        'discount_amount' => $discountAmount,
+                        'taxable_amount' => $taxableAmount,
                         'unit_type' => '-',
                         'cgst' => $gstTotal / 2,
                         'sgst' => $gstTotal / 2,
@@ -236,10 +259,12 @@ class QuotationController extends Controller
             'products.*.product_id' => 'nullable|exists:products,id',
             'products.*.quantity' => 'required_with:products.*.product_id|integer|min:1',
             'products.*.unit_price' => 'required_with:products.*.product_id|numeric|min:0',
+            'products.*.discount_amount' => 'nullable|numeric|min:0',
             'services' => 'nullable|array',
             'services.*.service_id' => 'nullable|exists:services,id',
             'services.*.quantity' => 'required_with:services.*.service_id|integer|min:1',
             'services.*.unit_price' => 'required_with:services.*.service_id|numeric|min:0',
+            'services.*.discount_amount' => 'nullable|numeric|min:0',
         ]);
 
         $quotation = Quotation::findOrFail($id);
@@ -272,6 +297,12 @@ class QuotationController extends Controller
                     $unitPrice = (float)$product['unit_price'];
                     $subtotal = $quantity * $unitPrice;
 
+                    // Use direct discount amount
+                    $discountAmount = (float)($product['discount_amount'] ?? 0);
+                    // Ensure discount doesn't exceed subtotal
+                    $discountAmount = min($discountAmount, $subtotal);
+                    $taxableAmount = $subtotal - $discountAmount;
+
                     // Get GST percentage from product
                     $gstPercentage = $productModel->gst_percentage;
                     $isIgst = $productModel->is_igst;
@@ -281,10 +312,10 @@ class QuotationController extends Controller
                     $igstAmount = 0;
 
                     if ($isIgst) {
-                        $igstAmount = ($subtotal * $gstPercentage) / 100;
+                        $igstAmount = ($taxableAmount * $gstPercentage) / 100;
                     } else {
-                        $cgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
-                        $sgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                        $cgstAmount = ($taxableAmount * $gstPercentage) / 200; // Half of GST
+                        $sgstAmount = ($taxableAmount * $gstPercentage) / 200; // Half of GST
                     }
 
                     $totalGst = $cgstAmount + $sgstAmount + $igstAmount;
@@ -295,12 +326,15 @@ class QuotationController extends Controller
                         'service_id' => null,
                         'quantity' => $quantity,
                         'unit_price' => $unitPrice,
+                        'discount_percentage' => ($discountAmount > 0 && $subtotal > 0) ? round(($discountAmount / $subtotal) * 100, 2) : 0,
+                        'discount_amount' => $discountAmount,
+                        'taxable_amount' => $taxableAmount,
                         'unit_type' => $productModel->unit_type,
                         'cgst' => $cgstAmount,
                         'sgst' => $sgstAmount,
                         'igst' => $igstAmount,
                         'gst' => $totalGst,
-                        'total' => $subtotal + $totalGst,
+                        'total' => $taxableAmount + $totalGst,
                         'type' => 'product',
                     ]);
                 }
@@ -311,17 +345,32 @@ class QuotationController extends Controller
         if ($request->has('services') && is_array($request->services)) {
             foreach ($request->services as $service) {
                 if (isset($service['service_id']) && !empty($service['service_id'])) {
+                    $quantity = (int)$service['quantity'];
+                    $unitPrice = (float)$service['unit_price'];
+                    $subtotal = $quantity * $unitPrice;
+
+                    // Use direct discount amount
+                    $discountAmount = (float)($service['discount_amount'] ?? 0);
+                    // Ensure discount doesn't exceed subtotal
+                    $discountAmount = min($discountAmount, $subtotal);
+                    $taxableAmount = $subtotal - $discountAmount;
+
+                    $gstTotal = (float)($service['gst_total'] ?? 0);
+                    
                     QuotationItem::create([
                         'quotation_id' => $quotation->id,
                         'product_id' => null,
                         'service_id' => $service['service_id'],
-                        'quantity' => $service['quantity'],
-                        'unit_price' => $service['unit_price'],
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
+                        'discount_percentage' => ($discountAmount > 0 && $subtotal > 0) ? round(($discountAmount / $subtotal) * 100, 2) : 0,
+                        'discount_amount' => $discountAmount,
+                        'taxable_amount' => $taxableAmount,
                         'unit_type' => '-',
-                        'cgst' => ($service['gst_total'] ?? 0) / 2,
-                        'sgst' => ($service['gst_total'] ?? 0) / 2,
+                        'cgst' => $gstTotal / 2,
+                        'sgst' => $gstTotal / 2,
                         'igst' => 0,
-                        'gst' => $service['gst_total'] ?? 0,
+                        'gst' => $gstTotal,
                         'total' => (float)str_replace(',', '', $service['total']),
                         'type' => 'service',
                     ]);

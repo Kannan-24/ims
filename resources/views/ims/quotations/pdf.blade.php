@@ -7,7 +7,7 @@
     <style>
         @page {
             size: A4;
-            margin: 10mm;
+            margin: 5mm;
         }
 
         body {
@@ -15,45 +15,44 @@
             margin: 0;
             padding: 0;
             font-size: 12px;
+            height: 100%;
             line-height: 1.3;
         }
 
         .container {
             border: 2px solid #000;
             width: 100%;
-            min-height: 270mm;
+            min-height: 285.5mm;
         }
 
         .header {
             border-bottom: 2px solid #000;
             text-align: center;
-            padding: 10px 0;
+            padding: 8px 0;
             position: relative;
         }
 
         .logo {
             position: absolute;
-            left: 20px;
+            left: 225px;
             top: 10px;
             width: 50px;
             height: 50px;
         }
 
         .company {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 5px;
         }
 
         .address {
             font-size: 11px;
-            margin-bottom: 5px;
         }
 
         .info-row {
             border-bottom: 2px solid #000;
             font-size: 11px;
-            padding: 8px 10px;
+            padding: 2px 9px;
             overflow: hidden;
         }
 
@@ -137,49 +136,77 @@
         }
 
         .main-content {
-            padding: 15px 10px;
+            padding: 10px 10px;
         }
 
         .section-title {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
-            margin: 15px 0 10px 0;
-            text-align: center;
+            margin: 0px 0 2px 0;
         }
 
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .items-table th,
         .items-table td {
             border: 1px solid #000;
-            padding: 5px 3px;
-            font-size: 10px;
+            padding: 4px 2px;
+            font-size: 9px;
             text-align: center;
+            vertical-align: middle;
         }
 
         .items-table th {
             background-color: #f0f0f0;
             font-weight: bold;
+            font-size: 8px;
         }
 
         .desc-col {
             text-align: left !important;
-            width: 25%;
+            width: 22%;
+            padding-left: 5px !important;
         }
 
         .amount-col {
             text-align: right !important;
-            width: 10%;
+            width: 8%;
+            padding-right: 5px !important;
+        }
+
+        .sno-col {
+            width: 4%;
+        }
+
+        .hsn-col {
+            width: 8%;
+        }
+
+        .qty-col {
+            width: 5%;
+        }
+
+        .rate-col {
+            width: 8%;
+            padding-right: 5px !important;
+        }
+
+        .gst-col {
+            width: 6%;
+        }
+
+        .tax-col {
+            width: 7%;
         }
 
         .summary-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 0px 0;
         }
 
         .summary-table td {
@@ -195,11 +222,7 @@
         }
 
         .amount-words {
-            border: 2px solid #000;
-            padding: 10px;
-            background-color: #f9f9f9;
             font-size: 12px;
-            font-weight: bold;
             margin: 15px 0;
         }
 
@@ -242,7 +265,7 @@
                 <img src="{{ public_path('assets/logo.png') }}" alt="Company Logo" class="logo">
             @endif
             <div class="company">SKM AND COMPANY</div>
-            <div class="address">3/90, VOC Nagar Colony, Salem, Tamil Nadu - 636 014, India.</div>
+            <div class="address">3/90, VOC Nagar Colony,<br> Salem, Tamil Nadu - 636 014, India.</div>
         </div>
 
         <!-- Info Row -->
@@ -297,7 +320,7 @@
         <div class="main-content">
             @php
                 $productItems = $quotation->items->filter(fn($item) => $item->service_id === null);
-                $serviceItems = $quotation->items->filter(fn($item) => $item->service_id === 1);
+                $serviceItems = $quotation->items->filter(fn($item) => $item->service_id !== null);
             @endphp
 
             {{-- PRODUCT TABLE --}}
@@ -306,36 +329,73 @@
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th style="width: 5%;">S.No</th>
-                            <th class="desc-col">Description of Goods</th>
-                            <th style="width: 8%;">HSN Code</th>
-                            <th style="width: 6%;">QTY</th>
-                            <th style="width: 6%;">Units</th>
-                            <th class="amount-col">Rate</th>
-                            <th style="width: 6%;">GST %</th>
-                            <th style="width: 8%;">CGST</th>
-                            <th style="width: 8%;">SGST</th>
-                            <th style="width: 8%;">IGST</th>
-                            <th class="amount-col">Amount</th>
+                            <th class="sno-col">S.NO</th>
+                            <th class="desc-col">DESCRIPTION</th>
+                            <th class="hsn-col">HSN/SAC</th>
+                            <th class="qty-col">QTY</th>
+                            <th class="rate-col">Taxable Value</th>
+                            <th class="gst-col">DISC</th>
+                            <th class="tax-col">Tax Val after DISC</th>
+                            <th class="gst-col">CGST%</th>
+                            <th class="tax-col">CGST</th>
+                            <th class="gst-col">SGST%</th>
+                            <th class="tax-col">SGST</th>
+                            <th class="gst-col">IGST%</th>
+                            <th class="tax-col">IGST</th>
+                            <th class="amount-col">AMOUNT</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($productItems as $index => $item)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td class="desc-col">{{ $item->product->name }} - {{ $item->product->description }}
+                                <td class="sno-col">{{ $loop->iteration }}</td>
+                                <td class="desc-col">
+                                    {{ $item->product->name }}<br><small>{{ $item->product->description }}</small>
                                 </td>
-                                <td>{{ $item->product->hsn_code }}</td>
-                                <td>{{ $item->quantity }}</td>
-                                <td>{{ $item->unit_type }}</td>
-                                <td class="amount-col">{{ number_format($item->unit_price, 2) }}</td>
-                                <td>{{ $item->product->gst_percentage }}%</td>
-                                <td>{{ number_format($item->cgst, 2) }}</td>
-                                <td>{{ number_format($item->sgst, 2) }}</td>
-                                <td>{{ number_format($item->igst, 2) }}</td>
+                                <td class="hsn-col">{{ $item->product->hsn_code }}</td>
+                                <td class="qty-col">{{ number_format($item->quantity, 2) }}</td>
+                                <td class="rate-col">{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+                                <td class="gst-col">{{ number_format($item->discount_amount ?? 0, 2) }}</td>
+                                <td class="tax-col">{{ number_format($item->taxable_amount ?? ($item->unit_price * $item->quantity), 2) }}</td>
+                                <td class="gst-col">
+                                    {{ !$item->product->is_igst ? $item->product->gst_percentage / 2 . '%' : '-' }}
+                                </td>
+                                <td class="tax-col">
+                                    {{ !$item->product->is_igst ? number_format($item->cgst, 2) : '0.00' }}
+                                </td>
+
+                                <td class="gst-col">
+                                    {{ !$item->product->is_igst ? $item->product->gst_percentage / 2 . '%' : '-' }}
+                                </td>
+                                <td class="tax-col">
+                                    {{ !$item->product->is_igst ? number_format($item->sgst, 2) : '0.00' }}
+                                </td>
+
+                                <td class="gst-col">
+                                    {{ $item->product->is_igst ? $item->product->gst_percentage . '%' : '-' }}
+                                </td>
+                                <td class="tax-col">
+                                    {{ $item->product->is_igst ? number_format($item->igst, 2) : '0.00' }}
+                                </td>
+
                                 <td class="amount-col">{{ number_format($item->total, 2) }}</td>
                             </tr>
                         @endforeach
+                        <!-- Subtotal Row -->
+                        <tr style="font-weight: bold;">
+                            <td colspan="3" class="desc-col">SUB TOTAL</td>
+                            <td class="qty-col">{{ number_format($productItems->sum('quantity'), 2) }}</td>
+                            <td class="rate-col">{{ number_format($productItems->sum(fn($item) => $item->unit_price * $item->quantity), 2) }}</td>
+                            <td class="gst-col">{{ number_format($productItems->sum('discount_amount'), 2) }}</td>
+                            <td class="tax-col">{{ number_format($productItems->sum('taxable_amount'), 2) }}</td>
+                            <td colspan="1"></td>
+                            <td class="tax-col">{{ number_format($productItems->sum('cgst'), 2) }}</td>
+                            <td></td>
+                            <td class="tax-col">{{ number_format($productItems->sum('sgst'), 2) }}</td>
+                            <td></td>
+                            <td class="tax-col">{{ number_format($productItems->sum('igst'), 2) }}</td>
+                            <td class="amount-col">{{ number_format($productItems->sum('total'), 2) }}</td>
+                        </tr>
                     </tbody>
                 </table>
             @endif
@@ -346,63 +406,88 @@
                 <table class="items-table">
                     <thead>
                         <tr>
-                            <th style="width: 5%;">S.No</th>
-                            <th class="desc-col">Description of Services</th>
-                            <th style="width: 10%;">HSN Code</th>
-                            <th style="width: 8%;">QTY</th>
-                            <th style="width: 8%;">Units</th>
-                            <th class="amount-col">Rate</th>
-                            <th class="amount-col">Amount</th>
+                            <th class="sno-col">S.NO</th>
+                            <th class="desc-col">PART NAME</th>
+                            <th class="hsn-col">HSN CODE</th>
+                            <th class="qty-col">QTY</th>
+                            <th class="rate-col">Taxable Value</th>
+                            <th class="gst-col">DISC</th>
+                            <th class="tax-col">Tax Val after DISC</th>
+                            <th class="gst-col">CGST %</th>
+                            <th class="tax-col">CGST</th>
+                            <th class="gst-col">SGST %</th>
+                            <th class="tax-col">SGST</th>
+                            <th class="amount-col">AMOUNT</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($serviceItems as $index => $item)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td class="desc-col">{{ $item->service->name }} - {{ $item->service->description }}
+                                <td class="sno-col">{{ $loop->iteration }}</td>
+                                <td class="desc-col">
+                                    {{ $item->service->name }}<br><small>{{ $item->service->description }}</small>
                                 </td>
-                                <td>{{ $item->service->hsn_code }}</td>
-                                <td>{{ $item->quantity }}</td>
-                                <td>nos</td>
-                                <td class="amount-col">{{ number_format($item->unit_price, 2) }}</td>
+                                <td class="hsn-col">{{ $item->service->hsn_code }}</td>
+                                <td class="qty-col">{{ number_format($item->quantity, 2) }}</td>
+                                <td class="rate-col">{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+                                <td class="gst-col">{{ number_format($item->discount_amount ?? 0, 2) }}</td>
+                                <td class="tax-col">{{ number_format($item->taxable_amount ?? ($item->unit_price * $item->quantity), 2) }}</td>
+                                <td class="gst-col">{{ ($item->service->gst_percentage ?? 18) / 2 }}%</td>
+                                <td class="tax-col">
+                                    {{ number_format(($item->unit_price * $item->quantity * (($item->service->gst_percentage ?? 18) / 2)) / 100, 2) }}
+                                </td>
+                                <td class="gst-col">{{ ($item->service->gst_percentage ?? 18) / 2 }}%</td>
+                                <td class="tax-col">
+                                    {{ number_format(($item->unit_price * $item->quantity * (($item->service->gst_percentage ?? 18) / 2)) / 100, 2) }}
+                                </td>
                                 <td class="amount-col">{{ number_format($item->total, 2) }}</td>
                             </tr>
                         @endforeach
+                        <!-- Subtotal Row -->
+                        <tr style="font-weight: bold;">
+                            <td colspan="3" class="desc-col">SUB TOTAL</td>
+                            <td class="qty-col">{{ number_format($serviceItems->sum('quantity'), 2) }}</td>
+                            <td class="rate-col">{{ number_format($serviceItems->sum(fn($item) => $item->unit_price * $item->quantity), 2) }}</td>
+                            <td class="gst-col">{{ number_format($serviceItems->sum('discount_amount'), 2) }}</td>
+                            <td class="tax-col">{{ number_format($serviceItems->sum('taxable_amount'), 2) }}</td>
+                            <td colspan="1"></td>
+                            <td class="tax-col">
+                                {{ number_format($serviceItems->sum(function ($item) {return ($item->unit_price * $item->quantity * (($item->service->gst_percentage ?? 18) / 2)) / 100;}),2) }}
+                            </td>
+                            <td></td>
+                            <td class="tax-col">
+                                {{ number_format($serviceItems->sum(function ($item) {return ($item->unit_price * $item->quantity * (($item->service->gst_percentage ?? 18) / 2)) / 100;}),2) }}
+                            </td>
+                            <td class="amount-col">{{ number_format($serviceItems->sum('total'), 2) }}</td>
+                        </tr>
                     </tbody>
                 </table>
             @endif
 
-            {{-- SUMMARY TABLE --}}
-            <div class="section-title">Quotation Summary</div>
-            <table class="summary-table">
-                <thead>
-                    <tr>
-                        <td class="summary-header">Total</td>
-                        <td class="summary-header">Less Discount</td>
-                        <td class="summary-header">Taxable Value</td>
-                        <td class="summary-header">ADD CGST</td>
-                        <td class="summary-header">ADD SGST</td>
-                        <td class="summary-header">ADD IGST</td>
-                        <td class="summary-header">Grand Total</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ number_format($quotation->sub_total, 2) }}</td>
-                        <td>-</td>
-                        <td>{{ number_format($quotation->sub_total, 2) }}</td>
-                        <td>{{ number_format($quotation->cgst ?? 0, 2) }}</td>
-                        <td>{{ number_format($quotation->sgst ?? 0, 2) }}</td>
-                        <td>{{ number_format($quotation->igst ?? 0, 2) }}</td>
-                        <td style="font-weight: bold;">{{ number_format($quotation->total, 2) }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            {{-- TOTAL SUMMARY ROWS --}}
+            @if ($productItems->count() || $serviceItems->count())
+                <table class="items-table" style="margin-top: 0; border-top: none;">
+                    <tbody>
+                        <tr style="font-weight: bold; background-color: #f8f8f8;">
+                            <td colspan="13" style="text-align: right; padding-right: 10px;">Product Total</td>
+                            <td class="amount-col">{{ number_format($productItems->sum('total'), 2) }}</td>
+                        </tr>
+                        <tr style="font-weight: bold; background-color: #f8f8f8;">
+                            <td colspan="13" style="text-align: right; padding-right: 10px;">Service Total</td>
+                            <td class="amount-col">{{ number_format($serviceItems->sum('total'), 2) }}</td>
+                        </tr>
+                        <tr style="font-weight: bold; background-color: #e8e8e8; font-size: 11px;">
+                            <td colspan="13" style="text-align: right; padding-right: 10px;">Grand Total</td>
+                            <td class="amount-col">{{ number_format($quotation->total, 2) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endif
 
             {{-- AMOUNT IN WORDS --}}
             <div class="amount-words">
                 <strong>Amount Chargeable (in words):</strong>
-                {{ ucwords(\App\Helpers\NumberToWords::convert($quotation->total)) }} Rupees Only
+                {{ ucwords(\App\Helpers\NumberToWords::convert($quotation->total)) }}.
             </div>
 
             {{-- TERMS --}}

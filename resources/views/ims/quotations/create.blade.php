@@ -201,6 +201,8 @@
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount Amt</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Taxable Amt</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">CGST</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">SGST</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">IGST</th>
@@ -227,6 +229,18 @@
                                                         x-model="product.unit_price" @input="calculateProductTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01">
+                                                </td>
+                                                <td class="px-4 py-4">
+                                                    <input type="number" :name="`products[${index}][discount_amount]`"
+                                                        x-model="product.discount_amount" @input="calculateProductTotal(index)"
+                                                        class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                        min="0" step="0.01" placeholder="₹">
+                                                </td>
+                                                <td class="px-4 py-4">
+                                                    <div class="text-sm text-gray-900">
+                                                        ₹<span x-text="product.taxable_amount || 0"></span>
+                                                    </div>
+                                                    <input type="hidden" :name="`products[${index}][taxable_amount]`" :value="product.taxable_amount">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900">
@@ -299,6 +313,8 @@
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount Amt</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Taxable Amt</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST Amount</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
@@ -323,6 +339,18 @@
                                                         x-model="service.unit_price" @input="calculateServiceTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01">
+                                                </td>
+                                                <td class="px-4 py-4">
+                                                    <input type="number" :name="`services[${index}][discount_amount]`"
+                                                        x-model="service.discount_amount" @input="calculateServiceTotal(index)"
+                                                        class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                        min="0" step="0.01" placeholder="₹">
+                                                </td>
+                                                <td class="px-4 py-4">
+                                                    <div class="text-sm text-gray-900">
+                                                        ₹<span x-text="service.taxable_amount || 0"></span>
+                                                    </div>
+                                                    <input type="hidden" :name="`services[${index}][taxable_amount]`" :value="service.taxable_amount">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900" x-text="service.gst_percentage + '%'"></div>
@@ -366,6 +394,16 @@
                                             <span class="font-medium">₹<span x-text="summary.product_subtotal"></span></span>
                                             <input type="hidden" name="product_subtotal" :value="summary.product_subtotal">
                                         </div>
+                                        <div class="flex justify-between" x-show="summary.product_discount > 0">
+                                            <span class="text-gray-700">Product Discount:</span>
+                                            <span class="font-medium text-red-600">-₹<span x-text="summary.product_discount"></span></span>
+                                            <input type="hidden" name="product_discount" :value="summary.product_discount">
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-700">Product Taxable Amount:</span>
+                                            <span class="font-medium">₹<span x-text="summary.product_taxable_amount"></span></span>
+                                            <input type="hidden" name="product_taxable_amount" :value="summary.product_taxable_amount">
+                                        </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product CGST:</span>
                                             <span class="font-medium">₹<span x-text="summary.product_total_cgst"></span></span>
@@ -397,6 +435,16 @@
                                             <span class="text-gray-700">Service Subtotal:</span>
                                             <span class="font-medium">₹<span x-text="summary.service_subtotal"></span></span>
                                             <input type="hidden" name="service_subtotal" :value="summary.service_subtotal">
+                                        </div>
+                                        <div class="flex justify-between" x-show="summary.service_discount > 0">
+                                            <span class="text-gray-700">Service Discount:</span>
+                                            <span class="font-medium text-red-600">-₹<span x-text="summary.service_discount"></span></span>
+                                            <input type="hidden" name="service_discount" :value="summary.service_discount">
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-700">Service Taxable Amount:</span>
+                                            <span class="font-medium">₹<span x-text="summary.service_taxable_amount"></span></span>
+                                            <input type="hidden" name="service_taxable_amount" :value="summary.service_taxable_amount">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Service CGST:</span>
@@ -798,6 +846,8 @@
                         name: name,
                         quantity: 1,
                         unit_price: 0,
+                        discount_amount: 0,
+                        taxable_amount: 0,
                         gst_percentage: gstPercentage,
                         is_igst: isIgst,
                         cgst_rate: isIgst ? 0 : (gstPercentage / 2),
@@ -828,6 +878,8 @@
                         name: name,
                         quantity: 1,
                         unit_price: 0,
+                        discount_amount: 0,
+                        taxable_amount: 0,
                         gst_percentage: gstPercentage,
                         gst_total: 0,
                         total: 0
@@ -857,10 +909,18 @@
                     if (!product) return;
 
                     const subtotal = product.quantity * product.unit_price;
-                    product.cgst_value = parseFloat(((subtotal * product.cgst_rate) / 100).toFixed(2));
-                    product.sgst_value = parseFloat(((subtotal * product.sgst_rate) / 100).toFixed(2));
-                    product.igst_value = parseFloat(((subtotal * product.igst_rate) / 100).toFixed(2));
-                    product.total = parseFloat((subtotal + product.cgst_value + product.sgst_value + product.igst_value).toFixed(2));
+                    
+                    // Use direct discount amount
+                    const discountAmount = parseFloat(product.discount_amount) || 0;
+                    // Ensure discount doesn't exceed subtotal
+                    product.discount_amount = Math.min(discountAmount, subtotal);
+                    product.taxable_amount = parseFloat((subtotal - product.discount_amount).toFixed(2));
+                    
+                    // Calculate GST on taxable amount (after discount)
+                    product.cgst_value = parseFloat(((product.taxable_amount * product.cgst_rate) / 100).toFixed(2));
+                    product.sgst_value = parseFloat(((product.taxable_amount * product.sgst_rate) / 100).toFixed(2));
+                    product.igst_value = parseFloat(((product.taxable_amount * product.igst_rate) / 100).toFixed(2));
+                    product.total = parseFloat((product.taxable_amount + product.cgst_value + product.sgst_value + product.igst_value).toFixed(2));
 
                     this.calculateSummary();
                 },
@@ -870,8 +930,16 @@
                     if (!service) return;
 
                     const subtotal = service.quantity * service.unit_price;
-                    service.gst_total = parseFloat(((subtotal * service.gst_percentage) / 100).toFixed(2));
-                    service.total = parseFloat((subtotal + service.gst_total).toFixed(2));
+                    
+                    // Use direct discount amount
+                    const discountAmount = parseFloat(service.discount_amount) || 0;
+                    // Ensure discount doesn't exceed subtotal
+                    service.discount_amount = Math.min(discountAmount, subtotal);
+                    service.taxable_amount = parseFloat((subtotal - service.discount_amount).toFixed(2));
+                    
+                    // Calculate GST on taxable amount (after discount)
+                    service.gst_total = parseFloat(((service.taxable_amount * service.gst_percentage) / 100).toFixed(2));
+                    service.total = parseFloat((service.taxable_amount + service.gst_total).toFixed(2));
 
                     this.calculateSummary();
                 },
@@ -880,15 +948,21 @@
                     // Reset summary
                     this.summary = {
                         product_subtotal: 0,
+                        product_discount: 0,
+                        product_taxable_amount: 0,
                         product_total_cgst: 0,
                         product_total_sgst: 0,
                         product_total_igst: 0,
                         product_total: 0,
                         service_subtotal: 0,
+                        service_discount: 0,
+                        service_taxable_amount: 0,
                         service_total_cgst: 0,
                         service_total_sgst: 0,
                         service_total: 0,
                         grand_sub_total: 0,
+                        grand_discount: 0,
+                        grand_taxable_amount: 0,
                         grand_gst_total: 0,
                         grand_total: 0
                     };
@@ -897,6 +971,8 @@
                     this.products.forEach(product => {
                         const subtotal = product.quantity * product.unit_price;
                         this.summary.product_subtotal += subtotal;
+                        this.summary.product_discount += (product.discount_amount || 0);
+                        this.summary.product_taxable_amount += (product.taxable_amount || 0);
                         this.summary.product_total_cgst += product.cgst_value;
                         this.summary.product_total_sgst += product.sgst_value;
                         this.summary.product_total_igst += product.igst_value;
@@ -907,6 +983,8 @@
                     this.services.forEach(service => {
                         const subtotal = service.quantity * service.unit_price;
                         this.summary.service_subtotal += subtotal;
+                        this.summary.service_discount += (service.discount_amount || 0);
+                        this.summary.service_taxable_amount += (service.taxable_amount || 0);
                         this.summary.service_total_cgst += service.gst_total / 2;
                         this.summary.service_total_sgst += service.gst_total / 2;
                         this.summary.service_total += service.total;
@@ -914,6 +992,8 @@
 
                     // Calculate grand totals
                     this.summary.grand_sub_total = this.summary.product_subtotal + this.summary.service_subtotal;
+                    this.summary.grand_discount = this.summary.product_discount + this.summary.service_discount;
+                    this.summary.grand_taxable_amount = this.summary.product_taxable_amount + this.summary.service_taxable_amount;
                     this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary.product_total_sgst + this.summary.product_total_igst + this.summary.service_total_cgst + this.summary.service_total_sgst;
                     this.summary.grand_total = this.summary.product_total + this.summary.service_total;
 

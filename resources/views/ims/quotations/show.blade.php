@@ -236,6 +236,8 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HSN</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taxable Amt</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CGST</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SGST</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IGST</th>
@@ -254,6 +256,14 @@
                                                 <td class="px-6 py-4 text-sm text-gray-900">{{ $item->product->hsn_code ?? 'N/A' }}</td>
                                                 <td class="px-6 py-4 text-sm text-gray-900">{{ number_format($item->quantity) }}</td>
                                                 <td class="px-6 py-4 text-sm text-gray-900">₹{{ number_format($item->unit_price, 2) }}</td>
+                                                <td class="px-6 py-4 text-sm text-gray-900">
+                                                    @if($item->discount_amount > 0)
+                                                        <span class="text-red-600">-₹{{ number_format($item->discount_amount, 2) }}</span>
+                                                    @else
+                                                        ₹0.00
+                                                    @endif
+                                                </td>
+                                                <td class="px-6 py-4 text-sm text-gray-900">₹{{ number_format($item->taxable_amount ?? ($item->unit_price * $item->quantity), 2) }}</td>
                                                 <td class="px-6 py-4 text-sm text-gray-900">
                                                     @if($item->product && !$item->product->is_igst)
                                                         {{ $item->product->gst_percentage / 2 }}% = ₹{{ number_format($item->cgst, 2) }}
@@ -298,6 +308,8 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taxable Amt</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GST</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GST Amount</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
@@ -314,6 +326,14 @@
                                                 </td>
                                                 <td class="px-6 py-4 text-sm text-gray-900">{{ number_format($item->quantity) }}</td>
                                                 <td class="px-6 py-4 text-sm text-gray-900">₹{{ number_format($item->unit_price, 2) }}</td>
+                                                <td class="px-6 py-4 text-sm text-gray-900">
+                                                    @if($item->discount_amount > 0)
+                                                        <span class="text-red-600">-₹{{ number_format($item->discount_amount, 2) }}</span>
+                                                    @else
+                                                        ₹0.00
+                                                    @endif
+                                                </td>
+                                                <td class="px-6 py-4 text-sm text-gray-900">₹{{ number_format($item->taxable_amount ?? ($item->unit_price * $item->quantity), 2) }}</td>
                                                 <td class="px-6 py-4 text-sm text-gray-900">{{ $item->service->gst_percentage ?? 0 }}%</td>
                                                 <td class="px-6 py-4 text-sm text-gray-900">₹{{ number_format($item->gst, 2) }}</td>
                                                 <td class="px-6 py-4 text-sm font-medium text-gray-900">₹{{ number_format($item->total, 2) }}</td>
