@@ -145,8 +145,7 @@
                                             <div class="text-sm text-gray-900">{{ $quotation->customer->company_name }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-700">Sub Total: ₹{{ number_format($quotation->sub_total, 2) }}</div>
-                                            <div class="text-sm font-semibold text-gray-900">Final: ₹{{ number_format($quotation->total, 2) }}</div>
+                                            <div class="text-sm font-semibold text-gray-900"> ₹{{ number_format($quotation->total, 2) }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-3">

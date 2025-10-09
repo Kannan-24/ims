@@ -478,6 +478,8 @@ class QuotationController extends Controller
             'igst' => $quotation->igst,
             'gst' => $quotation->gst,
             'total' => $quotation->total,
+            'courier_charges' => 0,
+            'grand_total' => $quotation->total,
         ]);
 
         // Copy quotation items to invoice items
@@ -488,6 +490,9 @@ class QuotationController extends Controller
                 'service_id' => $item->service_id,
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
+                'discount_percentage' => $item->discount_percentage ?? 0,
+                'discount_amount' => $item->discount_amount ?? 0,
+                'taxable_amount' => $item->taxable_amount ?? ($item->unit_price * $item->quantity),
                 'unit_type' => $item->unit_type,
                 'cgst' => $item->cgst,
                 'sgst' => $item->sgst,

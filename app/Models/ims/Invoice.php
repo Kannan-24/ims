@@ -21,7 +21,9 @@ class Invoice extends Model
         'sgst',
         'igst',
         'gst',
-        'total'
+        'total',
+        'courier_charges',
+        'grand_total'
     ];
 
     /**

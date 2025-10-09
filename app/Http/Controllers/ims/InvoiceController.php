@@ -75,10 +75,12 @@ class InvoiceController extends Controller
             'order_no' => 'required|string',
             'order_no_text' => 'nullable|string',
             'terms_condition' => 'nullable|string',
+            'courier_charges' => 'nullable|numeric|min:0',
             'products' => 'nullable|array',
             'products.*.product_id' => 'nullable|exists:products,id',
             'products.*.quantity' => 'required_with:products.*.product_id|integer|min:1',
             'products.*.unit_price' => 'required_with:products.*.product_id|numeric|min:0',
+            'products.*.discount_amount' => 'nullable|numeric|min:0',
             'products.*.cgst' => 'nullable|numeric|min:0',
             'products.*.sgst' => 'nullable|numeric|min:0',
             'products.*.igst' => 'nullable|numeric|min:0',
@@ -87,6 +89,7 @@ class InvoiceController extends Controller
             'services.*.service_id' => 'nullable|exists:services,id',
             'services.*.quantity' => 'required_with:services.*.service_id|integer|min:1',
             'services.*.unit_price' => 'required_with:services.*.service_id|numeric|min:0',
+            'services.*.discount_amount' => 'nullable|numeric|min:0',
             'services.*.gst_total' => 'nullable|numeric|min:0',
             'services.*.total' => 'nullable|numeric|min:0',
         ]);
@@ -130,7 +133,7 @@ class InvoiceController extends Controller
         $totalCgst = 0;
         $totalSgst = 0;
         $totalIgst = 0;
-        
+
         // Calculate product totals
         if ($request->has('products')) {
             foreach ($request->products as $product) {
@@ -139,21 +142,28 @@ class InvoiceController extends Controller
                     $quantity = (int)$product['quantity'];
                     $unitPrice = (float)str_replace(',', '', $product['unit_price']);
                     $subtotal = $quantity * $unitPrice;
+
+                    // Use direct discount amount
+                    $discountAmount = (float)str_replace(',', '', $product['discount_amount'] ?? 0);
+                    // Ensure discount doesn't exceed subtotal
+                    $discountAmount = min($discountAmount, $subtotal);
+                    $taxableAmount = $subtotal - $discountAmount;
+
                     $totalSubtotal += $subtotal;
-                    
+
                     $gstPercentage = $productModel->gst_percentage;
                     $isIgst = $productModel->is_igst;
-                    
+
                     if ($isIgst) {
-                        $totalIgst += ($subtotal * $gstPercentage) / 100;
+                        $totalIgst += ($taxableAmount * $gstPercentage) / 100;
                     } else {
-                        $totalCgst += ($subtotal * $gstPercentage) / 200;
-                        $totalSgst += ($subtotal * $gstPercentage) / 200;
+                        $totalCgst += ($taxableAmount * $gstPercentage) / 200;
+                        $totalSgst += ($taxableAmount * $gstPercentage) / 200;
                     }
                 }
             }
         }
-        
+
         // Calculate service totals
         if ($request->has('services')) {
             foreach ($request->services as $service) {
@@ -161,16 +171,25 @@ class InvoiceController extends Controller
                     $quantity = (int)$service['quantity'];
                     $unitPrice = (float)str_replace(',', '', $service['unit_price']);
                     $subtotal = $quantity * $unitPrice;
+
+                    // Use direct discount amount
+                    $discountAmount = (float)str_replace(',', '', $service['discount_amount'] ?? 0);
+                    // Ensure discount doesn't exceed subtotal
+                    $discountAmount = min($discountAmount, $subtotal);
+                    $taxableAmount = $subtotal - $discountAmount;
+
                     $totalSubtotal += $subtotal;
-                    
+
                     $gstTotal = (float)str_replace(',', '', $service['gst_total'] ?? 0);
                     $totalCgst += $gstTotal / 2;
                     $totalSgst += $gstTotal / 2;
                 }
             }
         }
-        
+
         $grandTotal = $totalSubtotal + $totalCgst + $totalSgst + $totalIgst;
+        $courierCharges = (float)str_replace(',', '', $request->courier_charges ?? 0);
+        $finalTotal = $grandTotal + $courierCharges;
 
         $invoice = Invoice::create([
             'customer_id' => $request->customer,
@@ -187,6 +206,8 @@ class InvoiceController extends Controller
             'igst' => $totalIgst,
             'gst' => $totalCgst + $totalSgst + $totalIgst,
             'total' => $grandTotal,
+            'courier_charges' => $courierCharges,
+            'grand_total' => $finalTotal,
         ]);
 
         // Store products
@@ -194,41 +215,50 @@ class InvoiceController extends Controller
             foreach ($request->products as $product) {
                 if (isset($product['product_id'])) {
                     $productModel = Product::findOrFail($product['product_id']);
-                    
+
                     // Calculate individual GST values for this product
                     $quantity = (int)$product['quantity'];
                     $unitPrice = (float)str_replace(',', '', $product['unit_price']);
                     $subtotal = $quantity * $unitPrice;
-                    
+
+                    // Use direct discount amount
+                    $discountAmount = (float)str_replace(',', '', $product['discount_amount'] ?? 0);
+                    // Ensure discount doesn't exceed subtotal
+                    $discountAmount = min($discountAmount, $subtotal);
+                    $taxableAmount = $subtotal - $discountAmount;
+
                     // Get GST percentage from product
                     $gstPercentage = $productModel->gst_percentage;
                     $isIgst = $productModel->is_igst;
-                    
+
                     $cgstAmount = 0;
                     $sgstAmount = 0;
                     $igstAmount = 0;
-                    
+
                     if ($isIgst) {
-                        $igstAmount = ($subtotal * $gstPercentage) / 100;
+                        $igstAmount = ($taxableAmount * $gstPercentage) / 100;
                     } else {
-                        $cgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
-                        $sgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                        $cgstAmount = ($taxableAmount * $gstPercentage) / 200; // Half of GST
+                        $sgstAmount = ($taxableAmount * $gstPercentage) / 200; // Half of GST
                     }
-                    
+
                     $totalGst = $cgstAmount + $sgstAmount + $igstAmount;
-                    
+
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
                         'product_id' => $product['product_id'],
                         'service_id' => null,
                         'quantity' => $quantity,
                         'unit_price' => $unitPrice,
+                        'discount_percentage' => ($discountAmount > 0 && $subtotal > 0) ? round(($discountAmount / $subtotal) * 100, 2) : 0,
+                        'discount_amount' => $discountAmount,
+                        'taxable_amount' => $taxableAmount,
                         'unit_type' => $productModel->unit_type,
                         'cgst' => $cgstAmount,
                         'sgst' => $sgstAmount,
                         'igst' => $igstAmount,
                         'gst' => $totalGst,
-                        'total' => $subtotal + $totalGst,
+                        'total' => $taxableAmount + $totalGst,
                         'type' => 'product',
                     ]);
 
@@ -245,13 +275,27 @@ class InvoiceController extends Controller
         if ($request->has('services')) {
             foreach ($request->services as $service) {
                 if (isset($service['service_id'])) {
+                    $quantity = (int)$service['quantity'];
+                    $unitPrice = (float)str_replace(',', '', $service['unit_price']);
+                    $subtotal = $quantity * $unitPrice;
+
+                    // Use direct discount amount
+                    $discountAmount = (float)str_replace(',', '', $service['discount_amount'] ?? 0);
+                    // Ensure discount doesn't exceed subtotal
+                    $discountAmount = min($discountAmount, $subtotal);
+                    $taxableAmount = $subtotal - $discountAmount;
+
                     $gstTotal = (float)str_replace(',', '', $service['gst_total'] ?? 0);
+
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
                         'product_id' => null,
                         'service_id' => $service['service_id'],
-                        'quantity' => (int)$service['quantity'],
-                        'unit_price' => (float)str_replace(',', '', $service['unit_price']),
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
+                        'discount_percentage' => ($discountAmount > 0 && $subtotal > 0) ? round(($discountAmount / $subtotal) * 100, 2) : 0,
+                        'discount_amount' => $discountAmount,
+                        'taxable_amount' => $taxableAmount,
                         'unit_type' => '-',
                         'cgst' => $gstTotal / 2,
                         'sgst' => $gstTotal / 2,
@@ -310,6 +354,8 @@ class InvoiceController extends Controller
             'order_no' => 'required|string',
             'grand_sub_total' => 'required|numeric|min:0',
             'grand_total' => 'required|numeric|min:0',
+            'courier_charges' => 'nullable|numeric|min:0',
+            'final_total' => 'nullable|numeric|min:0',
             'product_total_cgst' => 'nullable|numeric|min:0',
             'product_total_sgst' => 'nullable|numeric|min:0',
             'product_total_igst' => 'nullable|numeric|min:0',
@@ -320,10 +366,12 @@ class InvoiceController extends Controller
             'products.*.product_id' => 'nullable|exists:products,id',
             'products.*.quantity' => 'required_with:products.*.product_id|integer|min:1',
             'products.*.unit_price' => 'required_with:products.*.product_id|numeric|min:0',
+            'products.*.discount_amount' => 'nullable|numeric|min:0',
             'services' => 'nullable|array',
             'services.*.service_id' => 'nullable|exists:services,id',
             'services.*.quantity' => 'required_with:services.*.service_id|integer|min:1',
             'services.*.unit_price' => 'required_with:services.*.service_id|numeric|min:0',
+            'services.*.discount_amount' => 'nullable|numeric|min:0',
         ]);
 
         $invoice = Invoice::findOrFail($id);
@@ -359,22 +407,22 @@ class InvoiceController extends Controller
         $totalCgst = 0;
         $totalSgst = 0;
         $totalIgst = 0;
-        
+
         // Calculate product totals
         if ($request->has('products') && is_array($request->products)) {
             foreach ($request->products as $product) {
                 if (isset($product['product_id']) && !empty($product['product_id'])) {
                     $productModel = Product::findOrFail($product['product_id']);
-                    
+
                     $quantity = (int)$product['quantity'];
                     $unitPrice = (float)$product['unit_price'];
                     $itemSubtotal = $quantity * $unitPrice;
                     $subTotal += $itemSubtotal;
-                    
+
                     // Calculate GST
                     $gstPercentage = $productModel->gst_percentage;
                     $isIgst = $productModel->is_igst;
-                    
+
                     if ($isIgst) {
                         $totalIgst += ($itemSubtotal * $gstPercentage) / 100;
                     } else {
@@ -384,7 +432,7 @@ class InvoiceController extends Controller
                 }
             }
         }
-        
+
         // Calculate service totals
         if ($request->has('services') && is_array($request->services)) {
             foreach ($request->services as $service) {
@@ -393,7 +441,7 @@ class InvoiceController extends Controller
                     $unitPrice = (float)$service['unit_price'];
                     $itemSubtotal = $quantity * $unitPrice;
                     $subTotal += $itemSubtotal;
-                    
+
                     // For services, use the provided GST values (they are calculated correctly)
                     $totalCgst += (float)($service['cgst'] ?? 0);
                     $totalSgst += (float)($service['sgst'] ?? 0);
@@ -401,9 +449,13 @@ class InvoiceController extends Controller
                 }
             }
         }
-        
+
         $totalGst = $totalCgst + $totalSgst + $totalIgst;
         $grandTotal = $subTotal + $totalGst;
+        
+        // Handle courier charges and final total
+        $courierCharges = (float)($request->courier_charges ?? 0);
+        $finalTotal = $grandTotal + $courierCharges;
 
         $invoice->update([
             'customer_id' => $request->customer,
@@ -418,6 +470,8 @@ class InvoiceController extends Controller
             'igst' => $totalIgst,
             'gst' => $totalGst,
             'total' => $grandTotal,
+            'courier_charges' => $courierCharges,
+            'grand_total' => $finalTotal,
         ]);
 
         // Delete old items and add new ones
@@ -428,27 +482,32 @@ class InvoiceController extends Controller
             foreach ($request->products as $product) {
                 if (isset($product['product_id']) && !empty($product['product_id'])) {
                     $productModel = Product::findOrFail($product['product_id']);
-                    
+
                     // Calculate individual GST values for this product
                     $quantity = (int)$product['quantity'];
                     $unitPrice = (float)$product['unit_price'];
                     $subtotal = $quantity * $unitPrice;
-                    
+
+                    // Handle discount amount
+                    $discountAmount = (float)($product['discount_amount'] ?? 0);
+                    $discountAmount = min($discountAmount, $subtotal); // Ensure discount doesn't exceed subtotal
+                    $taxableAmount = $subtotal - $discountAmount;
+
                     // Get GST percentage from product
                     $gstPercentage = $productModel->gst_percentage;
                     $isIgst = $productModel->is_igst;
-                    
+
                     $cgstAmount = 0;
                     $sgstAmount = 0;
                     $igstAmount = 0;
-                    
+
                     if ($isIgst) {
-                        $igstAmount = ($subtotal * $gstPercentage) / 100;
+                        $igstAmount = ($taxableAmount * $gstPercentage) / 100;
                     } else {
-                        $cgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
-                        $sgstAmount = ($subtotal * $gstPercentage) / 200; // Half of GST
+                        $cgstAmount = ($taxableAmount * $gstPercentage) / 200; // Half of GST
+                        $sgstAmount = ($taxableAmount * $gstPercentage) / 200; // Half of GST
                     }
-                    
+
                     $totalGst = $cgstAmount + $sgstAmount + $igstAmount;
 
                     InvoiceItem::create([
@@ -457,12 +516,15 @@ class InvoiceController extends Controller
                         'service_id' => null,
                         'quantity' => $quantity,
                         'unit_price' => $unitPrice,
+                        'discount_percentage' => ($discountAmount > 0 && $subtotal > 0) ? round(($discountAmount / $subtotal) * 100, 2) : 0,
+                        'discount_amount' => $discountAmount,
+                        'taxable_amount' => $taxableAmount,
                         'unit_type' => $productModel->unit_type,
                         'cgst' => $cgstAmount,
                         'sgst' => $sgstAmount,
                         'igst' => $igstAmount,
                         'gst' => $totalGst,
-                        'total' => $subtotal + $totalGst,
+                        'total' => $taxableAmount + $totalGst,
                         'type' => 'product',
                     ]);
 
@@ -479,12 +541,24 @@ class InvoiceController extends Controller
         if ($request->has('services') && is_array($request->services)) {
             foreach ($request->services as $service) {
                 if (isset($service['service_id']) && !empty($service['service_id'])) {
+                    $quantity = (int)$service['quantity'];
+                    $unitPrice = (float)$service['unit_price'];
+                    $subtotal = $quantity * $unitPrice;
+
+                    // Handle discount amount
+                    $discountAmount = (float)($service['discount_amount'] ?? 0);
+                    $discountAmount = min($discountAmount, $subtotal); // Ensure discount doesn't exceed subtotal
+                    $taxableAmount = $subtotal - $discountAmount;
+
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
                         'product_id' => null,
                         'service_id' => $service['service_id'],
-                        'quantity' => $service['quantity'],
-                        'unit_price' => $service['unit_price'],
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
+                        'discount_percentage' => ($discountAmount > 0 && $subtotal > 0) ? round(($discountAmount / $subtotal) * 100, 2) : 0,
+                        'discount_amount' => $discountAmount,
+                        'taxable_amount' => $taxableAmount,
                         'unit_type' => '-',
                         'cgst' => $service['cgst'] ?? 0,
                         'sgst' => $service['sgst'] ?? 0,
@@ -529,13 +603,13 @@ class InvoiceController extends Controller
 
             // Generate QR code for invoice verification - use absolute URL
             $qrUrl = url('/ims/invoices/' . $id . '/qr-view');
-            
+
             // Generate QR code with SVG format for better PDF compatibility
             $qrCodeSvg = QrCode::format('svg')
                 ->size(80)
                 ->errorCorrection('M')
                 ->generate($qrUrl);
-            
+
             // Convert SVG to data URL for PDF embedding
             $qrCode = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
 
@@ -548,7 +622,7 @@ class InvoiceController extends Controller
 
             // Sanitize filename by replacing invalid characters
             $sanitizedInvoiceNo = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $invoice->invoice_no);
-            
+
             return $pdf->stream('Invoice_' . $sanitizedInvoiceNo . '.pdf');
         } catch (\Exception $e) {
             Log::error('PDF Generation Error: ' . $e->getMessage());
@@ -560,16 +634,16 @@ class InvoiceController extends Controller
     {
         try {
             $invoice = Invoice::with(['items.product', 'items.service', 'customer'])->findOrFail($id);
-            
+
             // Generate QR code URL for the invoice - use absolute URL
             $qrUrl = url('/ims/invoices/' . $id . '/qr-view');
-            
+
             // Generate QR code with proper format for web display
             $qrCode = QrCode::format('svg')
                 ->size(200)
                 ->errorCorrection('M')
                 ->generate($qrUrl);
-            
+
             return view('ims.invoices.qr-view', compact('invoice', 'qrCode'));
         } catch (\Exception $e) {
             Log::error('QR View Error: ' . $e->getMessage());

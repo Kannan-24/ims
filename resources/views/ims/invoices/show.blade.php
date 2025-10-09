@@ -69,40 +69,40 @@
 
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex items-center space-x-3 justify-end flex-wrap">
-            <!-- Print Button -->
-            <button @click="printInvoice()"
-                class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                <i class="fas fa-print w-4 h-4 mr-2"></i>
-                Print
-            </button>
+                <!-- Print Button -->
+                <button @click="printInvoice()"
+                    class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-print w-4 h-4 mr-2"></i>
+                    Print
+                </button>
 
-            <!-- PDF Button -->
-            <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
-                class="inline-flex items-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-sm font-medium rounded-lg transition-colors">
-                <i class="fas fa-file-pdf w-4 h-4 mr-2"></i>
-                PDF
-            </a>
+                <!-- PDF Button -->
+                <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
+                    class="inline-flex items-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-file-pdf w-4 h-4 mr-2"></i>
+                    PDF
+                </a>
 
-            <!-- QR View Button -->
-            <a href="{{ route('invoices.qr-view', $invoice->id) }}" target="_blank"
-                class="inline-flex items-center px-3 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-sm font-medium rounded-lg transition-colors">
-                <i class="fas fa-qrcode w-4 h-4 mr-2"></i>
-                QR View
-            </a>
+                <!-- QR View Button -->
+                <a href="{{ route('invoices.qr-view', $invoice->id) }}" target="_blank"
+                    class="inline-flex items-center px-3 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-qrcode w-4 h-4 mr-2"></i>
+                    QR View
+                </a>
 
-            <!-- Delivery Challan Button -->
-            <button @click="generateDeliveryChallan()"
-                class="inline-flex items-center px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 text-sm font-medium rounded-lg transition-colors">
-                <i class="fas fa-truck w-4 h-4 mr-2"></i>
-                Delivery Challan
-            </button>
+                <!-- Delivery Challan Button -->
+                <button @click="generateDeliveryChallan()"
+                    class="inline-flex items-center px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-truck w-4 h-4 mr-2"></i>
+                    Delivery Challan
+                </button>
 
-            <!-- Email Button -->
-            <a href="{{ route('emails.create') }}?invoice_id={{ $invoice->id }}"
-                class="inline-flex items-center px-3 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 text-sm font-medium rounded-lg transition-colors">
-                <i class="fas fa-envelope w-4 h-4 mr-2"></i>
-                Email
-            </a>
+                <!-- Email Button -->
+                <a href="{{ route('emails.create') }}?invoice_id={{ $invoice->id }}"
+                    class="inline-flex items-center px-3 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 text-sm font-medium rounded-lg transition-colors">
+                    <i class="fas fa-envelope w-4 h-4 mr-2"></i>
+                    Email
+                </a>
             </div>
         </div>
 
@@ -362,6 +362,12 @@
                                             Unit Price</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Discount</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Taxable Amt</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             CGST</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -386,6 +392,22 @@
                                                 {{ number_format($item->quantity) }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-900">
                                                 ₹{{ number_format($item->unit_price, 2) }}</td>
+                                            <td class="px-6 py-4 text-sm text-gray-900">
+                                                @if ($item->discount_amount > 0)
+                                                    <span
+                                                        class="text-red-600">₹{{ number_format($item->discount_amount, 2) }}</span>
+                                                @else
+                                                    ₹0.00
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900">
+                                                @php
+                                                    $calculatedTaxableAmount =
+                                                        $item->taxable_amount ??
+                                                        $item->quantity * $item->unit_price -
+                                                            ($item->discount_amount ?? 0);
+                                                @endphp
+                                                ₹{{ number_format($calculatedTaxableAmount, 2) }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-900">
                                                 ₹{{ number_format($item->cgst, 2) }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-900">
@@ -427,6 +449,12 @@
                                             Unit Price</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Discount</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Taxable Amt</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             CGST</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -448,6 +476,22 @@
                                                 {{ number_format($item->quantity) }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-900">
                                                 ₹{{ number_format($item->unit_price, 2) }}</td>
+                                            <td class="px-6 py-4 text-sm text-gray-900">
+                                                @if ($item->discount_amount > 0)
+                                                    <span
+                                                        class="text-red-600">₹{{ number_format($item->discount_amount, 2) }}</span>
+                                                @else
+                                                    ₹0.00
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900">
+                                                @php
+                                                    $calculatedTaxableAmount =
+                                                        $item->taxable_amount ??
+                                                        $item->quantity * $item->unit_price -
+                                                            ($item->discount_amount ?? 0);
+                                                @endphp
+                                                ₹{{ number_format($calculatedTaxableAmount, 2) }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-900">
                                                 ₹{{ number_format($item->cgst, 2) }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-900">
@@ -487,6 +531,11 @@
                                 $productSubtotal = $productItems->sum(function ($item) {
                                     return $item->quantity * $item->unit_price;
                                 });
+                                $productDiscount = $productItems->sum('discount_amount');
+                                $productTaxableAmount = $productItems->sum(function ($item) {
+                                    return $item->taxable_amount ??
+                                        $item->quantity * $item->unit_price - ($item->discount_amount ?? 0);
+                                });
                                 $productCgst = $productItems->sum('cgst');
                                 $productSgst = $productItems->sum('sgst');
                                 $productIgst = $productItems->sum('igst');
@@ -496,6 +545,17 @@
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Product Subtotal:</span>
                                     <span class="font-medium">₹{{ number_format($productSubtotal, 2) }}</span>
+                                </div>
+                                @if ($productDiscount > 0)
+                                    <div class="flex justify-between">
+                                        <span class="text-red-600">Product Discount:</span>
+                                        <span
+                                            class="font-medium text-red-600">-₹{{ number_format($productDiscount, 2) }}</span>
+                                    </div>
+                                @endif
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Product Taxable Amount:</span>
+                                    <span class="font-medium">₹{{ number_format($productTaxableAmount, 2) }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">CGST:</span>
@@ -529,6 +589,11 @@
                                 $serviceSubtotal = $serviceItems->sum(function ($item) {
                                     return $item->quantity * $item->unit_price;
                                 });
+                                $serviceDiscount = $serviceItems->sum('discount_amount');
+                                $serviceTaxableAmount = $serviceItems->sum(function ($item) {
+                                    return $item->taxable_amount ??
+                                        $item->quantity * $item->unit_price - ($item->discount_amount ?? 0);
+                                });
                                 $serviceCgst = $serviceItems->sum('cgst');
                                 $serviceSgst = $serviceItems->sum('sgst');
                                 $serviceIgst = $serviceItems->sum('igst');
@@ -538,6 +603,17 @@
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Service Subtotal:</span>
                                     <span class="font-medium">₹{{ number_format($serviceSubtotal, 2) }}</span>
+                                </div>
+                                @if ($serviceDiscount > 0)
+                                    <div class="flex justify-between">
+                                        <span class="text-red-600">Service Discount:</span>
+                                        <span
+                                            class="font-medium text-red-600">-₹{{ number_format($serviceDiscount, 2) }}</span>
+                                    </div>
+                                @endif
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Service Taxable Amount:</span>
+                                    <span class="font-medium">₹{{ number_format($serviceTaxableAmount, 2) }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">CGST:</span>
@@ -566,18 +642,52 @@
                             Grand Total
                         </h3>
                         <div class="space-y-4">
+                            @php
+                                $allItems = $invoice->items;
+                                $grandSubtotal = $allItems->sum(function ($item) {
+                                    return $item->quantity * $item->unit_price;
+                                });
+                                $totalDiscount = $allItems->sum('discount_amount');
+                                $grandTaxableAmount = $allItems->sum(function ($item) {
+                                    return $item->taxable_amount ??
+                                        $item->quantity * $item->unit_price - ($item->discount_amount ?? 0);
+                                });
+                                $totalGst = $invoice->cgst + $invoice->sgst + $invoice->igst;
+                                $courierCharges = $invoice->courier_charges ?? 0;
+                                $finalTotal = $invoice->grand_total ?? $invoice->total;
+                            @endphp
                             <div class="flex justify-between text-lg">
                                 <span class="text-gray-700">Grand Subtotal:</span>
-                                <span class="font-semibold">₹{{ number_format($invoice->sub_total, 2) }}</span>
+                                <span class="font-semibold">₹{{ number_format($grandSubtotal, 2) }}</span>
+                            </div>
+                            @if ($totalDiscount > 0)
+                                <div class="flex justify-between text-lg">
+                                    <span class="text-red-600">Total Discount:</span>
+                                    <span
+                                        class="font-semibold text-red-600">-₹{{ number_format($totalDiscount, 2) }}</span>
+                                </div>
+                            @endif
+                            <div class="flex justify-between text-lg">
+                                <span class="text-gray-700">Taxable Amount:</span>
+                                <span class="font-semibold">₹{{ number_format($grandTaxableAmount, 2) }}</span>
                             </div>
                             <div class="flex justify-between text-lg">
                                 <span class="text-gray-700">Total GST:</span>
-                                <span
-                                    class="font-semibold">₹{{ number_format($invoice->cgst + $invoice->sgst + $invoice->igst, 2) }}</span>
+                                <span class="font-semibold">₹{{ number_format($totalGst, 2) }}</span>
                             </div>
+                            <div class="flex justify-between text-lg">
+                                <span class="text-gray-700">Subtotal + GST:</span>
+                                <span class="font-semibold">₹{{ number_format($invoice->total, 2) }}</span>
+                            </div>
+                            @if ($courierCharges > 0)
+                                <div class="flex justify-between text-lg">
+                                    <span class="text-gray-700">Courier Charges:</span>
+                                    <span class="font-semibold">₹{{ number_format($courierCharges, 2) }}</span>
+                                </div>
+                            @endif
                             <div class="border-t border-gray-300 pt-4 flex justify-between text-2xl font-bold">
-                                <span class="text-gray-900">Grand Total:</span>
-                                <span class="text-yellow-600">₹{{ number_format($invoice->total, 2) }}</span>
+                                <span class="text-gray-900">Final Total:</span>
+                                <span class="text-yellow-600">₹{{ number_format($finalTotal, 2) }}</span>
                             </div>
                         </div>
                     </div>

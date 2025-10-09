@@ -453,6 +453,18 @@
                                         <span
                                             class="font-medium">₹{{ number_format($quotation->items->where('type', 'product')->sum(function ($item) {return $item->quantity * $item->unit_price;}),2) }}</span>
                                     </div>
+                                    @if ($quotation->items->where('type', 'product')->sum('discount_amount') > 0)
+                                        <div class="flex justify-between">
+                                            <span class="text-red-600">Discount:</span>
+                                            <span
+                                                class="font-medium text-red-600">-₹{{ number_format($quotation->items->where('type', 'product')->sum('discount_amount'), 2) }}</span>
+                                        </div>
+                                    @endif
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Taxable Amount:</span>
+                                        <span
+                                            class="font-medium">₹{{ number_format($quotation->items->where('type', 'product')->sum('taxable_amount'), 2) }}</span>
+                                    </div>
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">CGST:</span>
                                         <span
@@ -490,6 +502,18 @@
                                         <span
                                             class="font-medium">₹{{ number_format($quotation->items->where('type', 'service')->sum(function ($item) {return $item->quantity * $item->unit_price;}),2) }}</span>
                                     </div>
+                                    @if ($quotation->items->where('type', 'service')->sum('discount_amount') > 0)
+                                        <div class="flex justify-between">
+                                            <span class="text-red-600">Discount:</span>
+                                            <span
+                                                class="font-medium text-red-600">-₹{{ number_format($quotation->items->where('type', 'service')->sum('discount_amount'), 2) }}</span>
+                                        </div>
+                                    @endif
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Taxable Amount:</span>
+                                        <span
+                                            class="font-medium">₹{{ number_format($quotation->items->where('type', 'service')->sum('taxable_amount'), 2) }}</span>
+                                    </div>
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">GST Total:</span>
                                         <span
@@ -516,6 +540,18 @@
                                     <span class="text-gray-700">Grand Subtotal:</span>
                                     <span
                                         class="font-semibold">₹{{ number_format($quotation->sub_total ??$quotation->items->sum(function ($item) {return $item->quantity * $item->unit_price;}),2) }}</span>
+                                </div>
+                                @if ($quotation->items->sum('discount_amount') > 0)
+                                    <div class="flex justify-between text-lg">
+                                        <span class="text-red-600">Total Discount:</span>
+                                        <span
+                                            class="font-semibold text-red-600">-₹{{ number_format($quotation->items->sum('discount_amount'), 2) }}</span>
+                                    </div>
+                                @endif
+                                <div class="flex justify-between text-lg">
+                                    <span class="text-gray-700">Taxable Amount:</span>
+                                    <span
+                                        class="font-semibold">₹{{ number_format($quotation->items->sum('taxable_amount'), 2) }}</span>
                                 </div>
                                 <div class="flex justify-between text-lg">
                                     <span class="text-gray-700">Total GST:</span>
