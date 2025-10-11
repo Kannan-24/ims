@@ -556,8 +556,8 @@
                             @php
                                 $prodTotal = $productItems->sum('total');
                                 $servTotal = $serviceItems->sum('total');
-                                $courier = $invoice->courier_charge ?? 0;
-                                $grand = $invoice->total ?? $prodTotal + $servTotal + $courier;
+                                $courierCharges = $invoice->courier_charges ?? 0;
+                                $grand = $prodTotal + $servTotal + $courierCharges;
                             @endphp
 
                             {{-- TOTALS SUMMARY --}}
@@ -576,7 +576,7 @@
                                     </tr>
                                 @endif
 
-                                @if ($courierCharges > 0)
+                                @if (isset($invoice->courier_charges) && $invoice->courier_charges > 0)
                                     <tr>
                                         <td class="total-label">Courier Charges</td>
                                         <td class="total-amount">₹ {{ number_format($courierCharges, 2) }}</td>
