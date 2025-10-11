@@ -601,6 +601,9 @@ class InvoiceController extends Controller
         try {
             $invoice = Invoice::with(['items.product', 'items.service', 'customer'])->findOrFail($id);
 
+            // Provide courier charges expected by the view
+            $courierCharges = (float)($invoice->courier_charges ?? 0);
+
             // Generate QR code for invoice verification - use absolute URL
             $qrUrl = url('/ims/invoices/' . $id . '/qr-view');
 
@@ -613,7 +616,7 @@ class InvoiceController extends Controller
             // Convert SVG to data URL for PDF embedding
             $qrCode = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
 
-            $pdf = Pdf::loadView('ims.invoices.pdf', compact('invoice', 'qrCode'))
+            $pdf = Pdf::loadView('ims.invoices.pdf', compact('invoice', 'qrCode', 'courierCharges'))
                 ->setPaper('a4', 'portrait')
                 ->setOptions([
                     'isHtml5ParserEnabled' => true,

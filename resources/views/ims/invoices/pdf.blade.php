@@ -1,350 +1,613 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice PDF</title>
+    <title>Invoice</title>
     <style>
+        @page {
+            size: A4;
+            margin: 5mm;
+        }
+
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            font-size: 12px;
+            font-family: Arial, Helvetica, sans-serif;
             margin: 0;
             padding: 0;
-            color: #333;
+            font-size: 12px;
+            height: 100%;
+            line-height: 1.3;
         }
 
         .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 30px;
+            border: 2px solid #000;
+            width: 100%;
+            min-height: 285.5mm;
         }
 
         .header {
-            border-bottom: 3px solid #2c3e50;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
+            border-bottom: 2px solid #000;
+            text-align: center;
+            padding: 8px 0;
+            position: relative;
         }
 
-        .company-details {
-            max-width: 60%;
+        .logo {
+            position: absolute;
+            left: 220px;
+            top: 10px;
+            width: 60px;
+            height: 60px;
         }
 
-        .company-name {
-            font-size: 24px;
+        .company {
+            font-size: 18px;
             font-weight: bold;
-            color: #2c3e50;
         }
 
-        .company-tagline {
+        .address {
             font-size: 11px;
-            color: #888;
-            margin-bottom: 8px;
         }
 
-        .company-address {
+        .info-row {
+            border-bottom: 2px solid #000;
             font-size: 11px;
-            color: #555;
-            line-height: 1.5;
+            padding: 2px 9px;
+            overflow: hidden;
         }
 
-        .invoice-title {
+        .info-left {
+            float: left;
+            width: 33.33%;
+        }
+
+        .info-middle {
+            float: left;
+            width: 33.33%;
+            text-align: center;
+        }
+
+        .info-right {
+            float: right;
+            width: 33.33%;
             text-align: right;
         }
 
-        .invoice-title h1 {
-            margin: 0;
-            font-size: 28px;
-            color: #2c3e50;
+        .details-section {
+            border-bottom: 2px solid #000;
+            padding: 0;
+            height: 140px;
+            font-size: 12px;
+            overflow: hidden;
+            display: table;
+            width: 100%;
         }
 
-        .invoice-number {
-            font-weight: bold;
-            color: #e74c3c;
-            margin: 5px 0;
+        .customer-details {
+            display: table-cell;
+            width: 50%;
+            border-right: 2px solid #000;
+            padding: 10px 15px 10px 10px;
+            vertical-align: top;
         }
 
-        .qr-code {
+        .invoice-details {
+            display: table-cell;
+            width: 33%;
+            padding: 10px 10px 10px 15px;
+            border-right: 2px solid #000;
+            vertical-align: top;
+        }
+
+        .qr-section {
+            display: table-cell;
+            width: 17%;
+            text-align: center;
+            padding: 10px 5px;
+            vertical-align: middle;
+        }
+
+        .qr-code img {
             border: 1px solid #ddd;
-            padding: 4px;
-            background: #fff;
-            display: inline-block;
+            padding: 2px;
+            display: block;
+            margin: 0 auto;
         }
 
-        .invoice-meta {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0;
+        .qr-label {
+            font-size: 8px;
+            margin-top: 8px;
+            color: #666;
+            text-align: center;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .detail-line {
+            margin-bottom: 3px;
+        }
+
+        .main-content {
+            padding: 10px 10px;
         }
 
         .section-title {
+            font-size: 12px;
             font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            font-size: 13px;
+            margin: 0px 0 2px 0;
         }
 
-        .table-container {
-            margin-bottom: 20px;
-        }
-
-        table {
+        .items-table {
             width: 100%;
             border-collapse: collapse;
-            background: #fff;
+            margin-bottom: 10px;
         }
 
-        th {
-            background: #34495e;
-            color: #fff;
-            padding: 10px;
-            font-size: 11px;
-            text-align: left;
+        .items-table th,
+        .items-table td {
+            border: 1px solid #000;
+            padding: 4px 2px;
+            font-size: 9px;
+            text-align: center;
+            vertical-align: middle;
         }
 
-        td {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-            font-size: 12px;
+        .items-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            font-size: 8px;
         }
 
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+        .desc-col {
+            text-align: left !important;
+            width: 30%;
+            padding-left: 5px !important;
         }
 
-        .text-right {
-            text-align: right;
+        .amount-col {
+            text-align: right !important;
+            width: 12%;
+            padding-right: 5px !important;
+        }
+
+        .sno-col {
+            width: 4%;
+        }
+
+        .hsn-col {
+            width: 8%;
+        }
+
+        .qty-col {
+            width: 6%;
+        }
+
+        .rate-col {
+            width: 10%;
+            padding-right: 5px !important;
+        }
+
+        .gst-col {
+            width: 6%;
+        }
+
+        .tax-col {
+            width: 8%;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0px 0;
         }
 
         .amount-words {
-            background: #e8f6ff;
-            padding: 10px;
-            border-left: 4px solid #3498db;
-            margin: 20px 0;
             font-size: 12px;
+            margin: 15px 0;
         }
 
-        .totals {
-            width: 300px;
-            margin-left: auto;
+        .footer-section {
+            margin-top: 15px;
+            border: 1px solid #000;
         }
 
-        .totals td {
-            padding: 8px;
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .totals .label {
-            font-weight: bold;
-            background: #f8f9fa;
-        }
-
-        .totals .total-row {
-            background: #27ae60;
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .terms {
-            margin-top: 30px;
+        .left-content {
+            width: 60%;
+            padding: 10px 15px;
+            vertical-align: top;
+            border-right: 1px solid #000;
             font-size: 11px;
-            color: #555;
+            line-height: 1.4;
         }
 
-        .signature-section {
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
+        .right-content {
+            width: 40%;
+            padding: 15px;
+            vertical-align: top;
+            font-size: 11px;
         }
 
-        .signature-line {
-            border-bottom: 2px solid #333;
-            width: 150px;
-            margin: auto;
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+            margin-bottom: 10px;
+        }
+
+        .totals-table th,
+        .totals-table td {
+            border: 1px solid #000 !important;
+            padding: 8px 12px;
+        }
+
+        .totals-table tr:last-child td {
+            border-bottom: 1px solid #000 !important;
+        }
+
+        .totals-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .total-label {
+            text-align: left;
+            width: 60%;
+        }
+
+        .total-amount {
+            text-align: right;
+            width: 40%;
+            font-weight: bold;
+        }
+
+        .total-final {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .total-words-box {
+            border: 1px solid #000;
+            padding: 10px;
+            background-color: #f8f8f8;
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .signature-area {
+            text-align: right;
+            margin: 30px 15px 15px 0;
+            font-size: 11px;
+        }
+
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-
         <!-- Header -->
         <div class="header">
-            <div class="company-details">
-                <div class="company-name">{{ config('company.name') }}</div>
-                <div class="company-tagline">{{ config('company.tagline') }}</div>
-                <div class="company-address">
-                    {{ config('company.address') }}<br>
-                    Phone: {{ config('company.phone') }} | Email: {{ config('company.email') }}<br>
-                    @if (config('company.website'))
-                        Website: {{ config('company.website') }}<br>
-                    @endif
-                    @if (config('company.gst_number'))
-                        GST: {{ config('company.gst_number') }}
-                    @endif
-                </div>
-            </div>
-            <div class="invoice-title">
-                <h1>INVOICE</h1>
-                <div class="invoice-number">#{{ $invoice->invoice_no }}</div>
-                <div class="qr-code">
-                    <img src="{{ $qrCode }}" style="width:80px; height:80px;">
-                </div>
-                <div style="font-size:8px; color:#666;">Scan to verify</div>
-            </div>
-        </div>
-
-        <!-- Bill To -->
-        <div class="invoice-meta">
-            <div>
-                <div class="section-title">Bill To</div>
-                <strong>{{ $invoice->customer->company_name }}</strong><br>
-                {{ $invoice->customer->address }}<br>
-                {{ $invoice->customer->city }}, {{ $invoice->customer->state }} -
-                {{ $invoice->customer->zip_code }}<br>
-                {{ $invoice->customer->country }}<br>
-                @if ($invoice->customer->gst_number)
-                    GST: {{ $invoice->customer->gst_number }}
-                @endif
-            </div>
-            <div>
-                <div class="section-title">Invoice Details</div>
-                Date: {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d M, Y') }}<br>
-                Due:
-                {{ $invoice->due_date ? \Carbon\Carbon::parse($invoice->due_date)->format('d M, Y') : 'On Receipt' }}<br>
-                Payment Terms: {{ config('company.invoice.payment_terms') }}
-            </div>
-        </div>
-
-        <!-- Product Table -->
-        @php $products = $invoice->items->whereNotNull('product_id'); @endphp
-        @if ($products->count() > 0)
-            <div class="table-container">
-                <div class="section-title">Products</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Description</th>
-                            <th class="text-right">Qty</th>
-                            <th class="text-right">Unit Price</th>
-                            <th class="text-right">Tax</th>
-                            <th class="text-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($products as $item)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->product->name }}<br>
-                                    @if ($item->description)
-                                        <small>{{ $item->description }}</small>
-                                    @endif
-                                </td>
-                                <td class="text-right">{{ $item->quantity }}</td>
-                                <td class="text-right">₹{{ number_format($item->unit_price, 2) }}</td>
-                                <td class="text-right">₹{{ number_format($item->tax_amount, 2) }}</td>
-                                <td class="text-right">₹{{ number_format($item->total, 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
-
-        <!-- Service Table -->
-        @php $services = $invoice->items->whereNotNull('service_id'); @endphp
-        @if ($services->count() > 0)
-            <div class="table-container">
-                <div class="section-title">Services</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Description</th>
-                            <th class="text-right">Qty</th>
-                            <th class="text-right">Unit Price</th>
-                            <th class="text-right">Tax</th>
-                            <th class="text-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($services as $item)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->service->name }}<br>
-                                    @if ($item->description)
-                                        <small>{{ $item->description }}</small>
-                                    @endif
-                                </td>
-                                <td class="text-right">{{ $item->quantity }}</td>
-                                <td class="text-right">₹{{ number_format($item->unit_price, 2) }}</td>
-                                <td class="text-right">₹{{ number_format($item->tax_amount, 2) }}</td>
-                                <td class="text-right">₹{{ number_format($item->total, 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
-
-        <!-- Amount in Words -->
-        @php $amountInWords = \App\Helpers\NumberToWords::convert($invoice->total); @endphp
-        <div class="amount-words"><strong>Amount in Words:</strong> {{ $amountInWords }} Rupees Only</div>
-
-        <!-- Totals -->
-        <table class="totals">
-            <tr>
-                <td class="label">Subtotal</td>
-                <td class="text-right">₹{{ number_format($invoice->sub_total, 2) }}</td>
-            </tr>
-            <tr>
-                <td class="label">Tax</td>
-                <td class="text-right">₹{{ number_format($invoice->tax_amount, 2) }}</td>
-            </tr>
-            @if ($invoice->discount > 0)
-                <tr>
-                    <td class="label">Discount</td>
-                    <td class="text-right">-₹{{ number_format($invoice->discount, 2) }}</td>
-                </tr>
+            @if (file_exists(public_path('assets/logo.png')))
+                <img src="{{ public_path('assets/logo.png') }}" alt="Logo" class="logo">
             @endif
-            <tr class="total-row">
-                <td>Total</td>
-                <td class="text-right">₹{{ number_format($invoice->total, 2) }}</td>
-            </tr>
-        </table>
-
-        <!-- Terms -->
-        <div class="terms">
-            <strong>Terms & Conditions:</strong>
-            <ol>
-                <li>Payment is due within
-                    {{ $invoice->due_date ? \Carbon\Carbon::parse($invoice->due_date)->diffInDays($invoice->invoice_date) : 30 }}
-                    days.</li>
-                <li>Interest @ {{ config('company.invoice.late_fee_rate') }} will be charged on overdue amounts.</li>
-                <li>All disputes are subject to {{ explode(',', config('company.address'))[0] ?? 'Local' }}
-                    jurisdiction only.</li>
-            </ol>
-        </div>
-
-        <!-- Signature -->
-        <div class="signature-section">
-            <div>
-                <strong>Payment Info:</strong><br>
-                Account: {{ config('company.bank.account_name') }}<br>
-                Bank: {{ config('company.bank.name') }}<br>
-                A/C No: {{ config('company.bank.account_number') }}<br>
-                IFSC: {{ config('company.bank.ifsc_code') }}
-            </div>
-            <div style="text-align:center;">
-                <div class="signature-line"></div>
-                <div>Authorized Signatory</div>
-                <div style="font-size:11px; color:#666;">{{ config('company.name') }}</div>
+            <div class="company">{{ config('company.name') }}</div>
+            <div class="address">
+                {!! nl2br(e(config('company.address'))) !!}<br>
+                Phone: {{ config('company.phone') }} | Email: {{ config('company.email') }}
             </div>
         </div>
 
+        <!-- Info Row -->
+        <div class="info-row clearfix">
+            <div class="info-left">GSTIN : {{ config('company.gst_number') ?? 'N/A' }}</div>
+            <div class="info-middle">Website : {{ config('company.website') ?? 'N/A' }}</div>
+            <div class="info-right">Ph : {{ config('company.phone') }}</div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="details-section">
+            <div class="customer-details">
+                <div class="detail-line"><span class="label">Bill To:</span></div>
+                <div class="detail-line"><span class="label">Name :</span> {{ $invoice->customer->company_name }}</div>
+                <div class="detail-line"><span class="label">Address :</span>
+                    {{ $invoice->customer->address }}, {{ $invoice->customer->city }}, {{ $invoice->customer->state }}
+                    -
+                    {{ $invoice->customer->zip_code }}, {{ $invoice->customer->country }}
+                </div>
+                <div class="detail-line"><span class="label">GSTIN :</span>
+                    {{ $invoice->customer->gst_number ?? 'N/A' }}</div>
+                <div class="detail-line"><span class="label">Contact Person :</span>
+                    {{ $invoice->customer->contactPersons->first()->name ?? 'N/A' }}</div>
+                <div class="detail-line"><span class="label">Place of Supply :</span>
+                    {{ $invoice->customer->city ?? 'N/A' }}</div>
+            </div>
+
+            <div class="invoice-details">
+                <div class="detail-line"><span class="label">Invoice No :</span> {{ $invoice->invoice_no }}</div>
+                <div class="detail-line"><span class="label">Invoice Date :</span>
+                    {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d-m-Y') }}</div>
+                <div class="detail-line"><span class="label">Customer ID :</span>
+                    {{ $invoice->customer->cid ?? 'N/A' }}</div>
+                <div class="detail-line"><span class="label">Due Date :</span>
+                    {{ $invoice->due_date ? \Carbon\Carbon::parse($invoice->due_date)->format('d-m-Y') : 'On Receipt' }}
+                </div>
+                <div class="detail-line"><span class="label">Payment Terms :</span>
+                    {{ config('company.invoice.payment_terms') ?? 'N/A' }}</div>
+            </div>
+
+            <div class="qr-section">
+                <div class="qr-code">
+                    <img src="{{ $qrCode }}" alt="QR Code" width="90" height="90">
+                    <div class="qr-label">Scan to Verify</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            @php
+                $productItems = $invoice->items->filter(fn($i) => $i->product_id !== null);
+                $serviceItems = $invoice->items->filter(fn($i) => $i->service_id !== null);
+                $prodHasDiscount = $productItems->contains(fn($it) => ($it->discount_amount ?? 0) > 0);
+                $servHasDiscount = $serviceItems->contains(fn($it) => ($it->discount_amount ?? 0) > 0);
+            @endphp
+
+            {{-- PRODUCT TABLE --}}
+            @if ($productItems->count())
+                <div class="section-title">Product Items</div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th class="sno-col">S.NO</th>
+                            <th class="desc-col">DESCRIPTION</th>
+                            <th class="hsn-col">HSN/SAC</th>
+                            <th class="qty-col">QTY</th>
+                            <th class="rate-col">Taxable Value</th>
+                            @if ($prodHasDiscount)
+                                <th class="gst-col">DISC</th>
+                                <th class="tax-col">Tax Val after DISC</th>
+                            @endif
+                            <th class="gst-col">CGST%</th>
+                            <th class="tax-col">CGST</th>
+                            <th class="gst-col">SGST%</th>
+                            <th class="tax-col">SGST</th>
+                            <th class="gst-col">IGST%</th>
+                            <th class="tax-col">IGST</th>
+                            <th class="amount-col">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($productItems as $item)
+                            <tr>
+                                <td class="sno-col">{{ $loop->iteration }}</td>
+                                <td class="desc-col" style="font-size:10px;">
+                                    {{ $item->product->name }}@if ($item->description)
+                                        - {{ $item->description }}
+                                    @endif
+                                </td>
+                                <td class="hsn-col">{{ $item->product->hsn_code }}</td>
+                                <td class="qty-col">{{ number_format($item->quantity) }}</td>
+                                <td class="rate-col">{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+
+                                @if ($prodHasDiscount)
+                                    <td class="gst-col">
+                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->discount_amount, 2) : '' }}
+                                    </td>
+                                    <td class="tax-col">
+                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->taxable_amount ?? $item->unit_price * $item->quantity, 2) : '-' }}
+                                    </td>
+                                @endif
+
+                                <td class="gst-col">
+                                    {{ !$item->product->is_igst ? $item->product->gst_percentage / 2 . '%' : '-' }}
+                                </td>
+                                <td class="tax-col">
+                                    {{ !$item->product->is_igst ? number_format($item->cgst, 2) : '0.00' }}</td>
+                                <td class="gst-col">
+                                    {{ !$item->product->is_igst ? $item->product->gst_percentage / 2 . '%' : '-' }}
+                                </td>
+                                <td class="tax-col">
+                                    {{ !$item->product->is_igst ? number_format($item->sgst, 2) : '0.00' }}</td>
+                                <td class="gst-col">
+                                    {{ $item->product->is_igst ? $item->product->gst_percentage . '%' : '-' }}</td>
+                                <td class="tax-col">
+                                    {{ $item->product->is_igst ? number_format($item->igst, 2) : '0.00' }}</td>
+                                <td class="amount-col">{{ number_format($item->total, 2) }}</td>
+                            </tr>
+                        @endforeach
+
+                        {{-- subtotal --}}
+                        <tr style="font-weight:bold;">
+                            <td colspan="{{ $prodHasDiscount ? 3 : 5 }}" class="desc-col">SUB TOTAL</td>
+                            <td class="qty-col">{{ number_format($productItems->sum('quantity')) }}</td>
+                            <td class="rate-col">
+                                {{ number_format($productItems->sum(fn($i) => $i->unit_price * $i->quantity), 2) }}
+                            </td>
+                            @if ($prodHasDiscount)
+                                <td class="gst-col">{{ number_format($productItems->sum('discount_amount'), 2) }}</td>
+                                <td class="tax-col">
+                                    {{ number_format($productItems->sum(function ($it) {return ($it->discount_amount ?? 0) > 0 ? $it->taxable_amount ?? $it->unit_price * $it->quantity : 0;}),2) }}
+                                </td>
+                            @endif
+                            <td class="gst-col"></td>
+                            <td class="tax-col">{{ number_format($productItems->sum('cgst'), 2) }}</td>
+                            <td class="gst-col"></td>
+                            <td class="tax-col">{{ number_format($productItems->sum('sgst'), 2) }}</td>
+                            <td class="gst-col"></td>
+                            <td class="tax-col">{{ number_format($productItems->sum('igst'), 2) }}</td>
+                            <td class="amount-col">{{ number_format($productItems->sum('total'), 2) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endif
+
+            {{-- SERVICE TABLE --}}
+            @if ($serviceItems->count())
+                <div class="section-title">Service Items</div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th class="sno-col">S.NO</th>
+                            <th class="desc-col">DESCRIPTION</th>
+                            <th class="hsn-col">HSN/SAC</th>
+                            <th class="qty-col">QTY</th>
+                            <th class="rate-col">Taxable Value</th>
+                            @if ($servHasDiscount)
+                                <th class="gst-col">DISC</th>
+                                <th class="tax-col">Tax Val after DISC</th>
+                            @endif
+                            <th class="gst-col">CGST%</th>
+                            <th class="tax-col">CGST</th>
+                            <th class="gst-col">SGST%</th>
+                            <th class="tax-col">SGST</th>
+                            <th class="amount-col">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($serviceItems as $item)
+                            <tr>
+                                <td class="sno-col">{{ $loop->iteration }}</td>
+                                <td class="desc-col" style="font-size:10px;">
+                                    {{ $item->service->name }}@if ($item->description)
+                                        - {{ $item->description }}
+                                    @endif
+                                </td>
+                                <td class="hsn-col">{{ $item->service->hsn_code }}</td>
+                                <td class="qty-col">{{ number_format($item->quantity) }}</td>
+                                <td class="rate-col">{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+
+                                @if ($servHasDiscount)
+                                    <td class="gst-col">
+                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->discount_amount, 2) : '' }}
+                                    </td>
+                                    <td class="tax-col">
+                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->taxable_amount ?? $item->unit_price * $item->quantity, 2) : '-' }}
+                                    </td>
+                                @endif
+
+                                @php
+                                    $gstPerc = $item->service->gst_percentage ?? 18;
+                                    $half = $gstPerc / 2;
+                                @endphp
+                                <td class="gst-col">{{ $half }}%</td>
+                                <td class="tax-col">
+                                    {{ number_format(($item->unit_price * $item->quantity * $half) / 100, 2) }}</td>
+                                <td class="gst-col">{{ $half }}%</td>
+                                <td class="tax-col">
+                                    {{ number_format(($item->unit_price * $item->quantity * $half) / 100, 2) }}</td>
+                                <td class="amount-col">{{ number_format($item->total, 2) }}</td>
+                            </tr>
+                        @endforeach
+
+                        {{-- subtotal --}}
+                        <tr style="font-weight:bold;">
+                            <td colspan="{{ $servHasDiscount ? 3 : 5 }}" class="desc-col">SUB TOTAL</td>
+                            <td class="qty-col">{{ number_format($serviceItems->sum('quantity')) }}</td>
+                            <td class="rate-col">
+                                {{ number_format($serviceItems->sum(fn($i) => $i->unit_price * $i->quantity), 2) }}
+                            </td>
+                            @if ($servHasDiscount)
+                                <td class="gst-col">{{ number_format($serviceItems->sum('discount_amount'), 2) }}</td>
+                                <td class="tax-col">
+                                    {{ number_format($serviceItems->sum(function ($it) {return ($it->discount_amount ?? 0) > 0 ? $it->taxable_amount ?? $it->unit_price * $it->quantity : 0;}),2) }}
+                                </td>
+                            @endif
+                            <td class="gst-col"></td>
+                            <td class="tax-col">
+                                {{ number_format($serviceItems->sum(function ($it) {$perc = $it->service->gst_percentage ?? 18;$half = $perc / 2;return ($it->unit_price * $it->quantity * $half) / 100;}),2) }}
+                            </td>
+                            <td class="gst-col"></td>
+                            <td class="tax-col">
+                                {{ number_format($serviceItems->sum(function ($it) {$perc = $it->service->gst_percentage ?? 18;$half = $perc / 2;return ($it->unit_price * $it->quantity * $half) / 100;}),2) }}
+                            </td>
+                            <td class="amount-col">{{ number_format($serviceItems->sum('total'), 2) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endif
+
+            {{-- BOTTOM SECTION --}}
+            <div class="footer-section">
+                <table class="footer-table">
+                    <tr>
+                        <td class="left-content">
+                            {{-- ACCOUNT DETAILS --}}
+                            <div class="account-box">
+                                <strong style="font-size:14px;"><u>Account Details</u></strong><br>
+                                <strong>Account Name:</strong> SKM AND COMPANY<br>
+                                <strong>Account Number:</strong> 31167308287<br>
+                                <strong>IFSC Code:</strong> SBIN0012772<br>
+                                <strong>Bank Name:</strong> State Bank of India<br>
+                                <strong>Branch:</strong> Ammapettai
+                            </div>
+                        </td>
+                        <td class="right-content">
+                            @php
+                                $prodTotal = $productItems->sum('total');
+                                $servTotal = $serviceItems->sum('total');
+                                $courier = $invoice->courier_charge ?? 0;
+                                $grand = $invoice->total ?? $prodTotal + $servTotal + $courier;
+                            @endphp
+
+                            {{-- TOTALS SUMMARY --}}
+                            <table class="totals-table">
+                                @if ($productItems->count())
+                                    <tr>
+                                        <td class="total-label">Product Total</td>
+                                        <td class="total-amount">{{ number_format($prodTotal, 2) }}</td>
+                                    </tr>
+                                @endif
+
+                                @if ($serviceItems->count())
+                                    <tr>
+                                        <td class="total-label">Service Total</td>
+                                        <td class="total-amount">{{ number_format($servTotal, 2) }}</td>
+                                    </tr>
+                                @endif
+
+                                @if ($courierCharges > 0)
+                                    <tr>
+                                        <td class="total-label">Courier Charges</td>
+                                        <td class="total-amount">₹ {{ number_format($courierCharges, 2) }}</td>
+                                    </tr>
+                                @endif
+
+                                <tr class="total-final">
+                                    <td class="total-label"><strong>Grand Total</strong></td>
+                                    <td class="total-amount">
+                                        <strong>{{ number_format($grand, 2) }}</strong>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div class="total-words-box">
+                                <strong>Amount Chargeable (in words):</strong><br>
+                                {{ ucwords(\App\Helpers\NumberToWords::convert($grand)) }} Only
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            {{-- SIGNATURE --}}
+            <div class="signature-area">
+                <div class="signature-right">
+                    <strong>For {{ config('company.name') }}</strong><br><br><br>
+                    Authorised Signature
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
