@@ -9,7 +9,7 @@ class CreateSuppliersTable extends Migration
     public function up()
     {
         Schema::create('suppliers', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('supplier_id', 50)->unique();
             $table->string('name', 100);
             $table->string('contact_person', 100);

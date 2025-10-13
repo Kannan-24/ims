@@ -8,17 +8,18 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('invoice_items', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
             // Foreign key to product
-            $table->unsignedBigInteger('product_id')->nullable();
+            $table->uuid('product_id')->nullable();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
 
             // Foreign key to invoice
-            $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
+            $table->uuid('invoice_id');
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
 
             // Foreign key to service (optional)
-            $table->unsignedBigInteger('service_id')->nullable();
+            $table->uuid('service_id')->nullable();
             $table->foreign('service_id')->references('id')->on('services')->onDelete('set null');
 
             // Type: 'product' or 'service'

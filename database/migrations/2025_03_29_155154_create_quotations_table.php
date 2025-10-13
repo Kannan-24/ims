@@ -8,11 +8,12 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('quotations', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('quotation_code')->unique();
             $table->date('quotation_date');
-            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
-            $table->unsignedBigInteger('contactperson_id');
+            $table->uuid('customer_id');
+            $table->uuid('contactperson_id');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('contactperson_id')->references('id')->on('contact_persons')->onDelete('cascade');
             $table->string('terms_condition')->nullable();
             $table->decimal('sub_total', 10, 2);

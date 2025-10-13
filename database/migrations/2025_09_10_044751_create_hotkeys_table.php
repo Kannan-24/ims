@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('hotkeys', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->uuid('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('action_name'); // e.g., 'Dashboard', 'Create Invoice', 'Search'
             $table->string('hotkey_combination'); // e.g., 'Ctrl+Shift+D'
             $table->string('description')->nullable();

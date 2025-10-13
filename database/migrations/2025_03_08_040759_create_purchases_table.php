@@ -8,10 +8,10 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('purchases', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('invoice_no')->unique();
             $table->date('invoice_date');
-            $table->unsignedBigInteger('supplier_id');
+            $table->uuid('supplier_id');
             $table->decimal('sub_total', 10, 2);
             $table->decimal('cgst', 10, 2)->nullable();
             $table->decimal('sgst', 10, 2)->nullable();

@@ -8,17 +8,18 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('quotation_items', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
             // Foreign key to product
-            $table->unsignedBigInteger('product_id')->nullable();
+            $table->uuid('product_id')->nullable();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
 
             // Foreign key to quotation
-            $table->foreignId('quotation_id')->constrained('quotations')->onDelete('cascade');
+            $table->uuid('quotation_id');
+            $table->foreign('quotation_id')->references('id')->on('quotations')->onDelete('cascade');
 
             // Foreign key to service (optional)
-            $table->unsignedBigInteger('service_id')->nullable();
+            $table->uuid('service_id')->nullable();
             $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
 
             // Type: 'product' or 'service'

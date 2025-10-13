@@ -8,9 +8,9 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('purchase_items', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('purchase_id');
-            $table->unsignedBigInteger('product_id');
+            $table->uuid('id')->primary();
+            $table->uuid('purchase_id');
+            $table->uuid('product_id');
             $table->string('unit_type'); // kg, litre, etc.
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);

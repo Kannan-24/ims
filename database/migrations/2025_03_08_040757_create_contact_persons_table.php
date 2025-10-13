@@ -8,8 +8,9 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('contact_persons', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade'); // Foreign key
+            $table->uuid('id')->primary();
+            $table->uuid('customer_id');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->string('name');
             $table->string('phone_no');
             $table->string('email')->unique();

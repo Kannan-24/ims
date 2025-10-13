@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('email_logs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('mailable')->nullable();
             $table->string('subject')->nullable();
             $table->string('to')->nullable();

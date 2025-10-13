@@ -9,8 +9,9 @@ class CreatePaymentItemsTable extends Migration
     public function up()
     {
         Schema::create('payment_items', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('payment_id')->constrained()->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->uuid('payment_id');
+            $table->foreign('payment_id')->references('id')->on('payments')->onDelete('cascade');
             $table->decimal('amount', 10, 2);
             $table->date('payment_date');
             $table->string('reference_number')->nullable();

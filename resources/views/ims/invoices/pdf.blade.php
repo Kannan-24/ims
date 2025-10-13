@@ -339,9 +339,9 @@
                     {{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d-m-Y') }}</div>
                 <div class="detail-line"><span class="label">Customer ID :</span>
                     {{ $invoice->customer->cid ?? 'N/A' }}</div>
-                <div class="detail-line"><span class="label">Due Date :</span>
-                    {{ $invoice->due_date ? \Carbon\Carbon::parse($invoice->due_date)->format('d-m-Y') : 'On Receipt' }}
-                </div>
+                <div class="detail-line"><span class="label">Order Number :</span>
+                    {{ $invoice->order_number ?? 'N/A' }}</div>
+
                 <div class="detail-line"><span class="label">Payment Terms :</span>
                     {{ config('company.invoice.payment_terms') ?? 'N/A' }}</div>
             </div>
@@ -398,14 +398,14 @@
                                 </td>
                                 <td class="hsn-col">{{ $item->product->hsn_code }}</td>
                                 <td class="qty-col">{{ number_format($item->quantity) }}</td>
-                                <td class="rate-col">{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+                                <td class="rate-col">{{ number_format($item->unit_price * $item->quantity) }}</td>
 
                                 @if ($prodHasDiscount)
                                     <td class="gst-col">
-                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->discount_amount, 2) : '' }}
+                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->discount_amount) : '' }}
                                     </td>
                                     <td class="tax-col">
-                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->taxable_amount ?? $item->unit_price * $item->quantity, 2) : '-' }}
+                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->taxable_amount ?? $item->unit_price * $item->quantity) : '-' }}
                                     </td>
                                 @endif
 
@@ -413,17 +413,17 @@
                                     {{ !$item->product->is_igst ? $item->product->gst_percentage / 2 . '%' : '-' }}
                                 </td>
                                 <td class="tax-col">
-                                    {{ !$item->product->is_igst ? number_format($item->cgst, 2) : '0.00' }}</td>
+                                    {{ !$item->product->is_igst ? number_format($item->cgst) : '0.00' }}</td>
                                 <td class="gst-col">
                                     {{ !$item->product->is_igst ? $item->product->gst_percentage / 2 . '%' : '-' }}
                                 </td>
                                 <td class="tax-col">
-                                    {{ !$item->product->is_igst ? number_format($item->sgst, 2) : '0.00' }}</td>
+                                    {{ !$item->product->is_igst ? number_format($item->sgst) : '0.00' }}</td>
                                 <td class="gst-col">
                                     {{ $item->product->is_igst ? $item->product->gst_percentage . '%' : '-' }}</td>
                                 <td class="tax-col">
-                                    {{ $item->product->is_igst ? number_format($item->igst, 2) : '0.00' }}</td>
-                                <td class="amount-col">{{ number_format($item->total, 2) }}</td>
+                                    {{ $item->product->is_igst ? number_format($item->igst) : '0.00' }}</td>
+                                <td class="amount-col">{{ number_format($item->total) }}</td>
                             </tr>
                         @endforeach
 
@@ -432,21 +432,21 @@
                             <td colspan="{{ $prodHasDiscount ? 3 : 5 }}" class="desc-col">SUB TOTAL</td>
                             <td class="qty-col">{{ number_format($productItems->sum('quantity')) }}</td>
                             <td class="rate-col">
-                                {{ number_format($productItems->sum(fn($i) => $i->unit_price * $i->quantity), 2) }}
+                                {{ number_format($productItems->sum(fn($i) => $i->unit_price * $i->quantity)) }}
                             </td>
                             @if ($prodHasDiscount)
-                                <td class="gst-col">{{ number_format($productItems->sum('discount_amount'), 2) }}</td>
+                                <td class="gst-col">{{ number_format($productItems->sum('discount_amount')) }}</td>
                                 <td class="tax-col">
                                     {{ number_format($productItems->sum(function ($it) {return ($it->discount_amount ?? 0) > 0 ? $it->taxable_amount ?? $it->unit_price * $it->quantity : 0;}),2) }}
                                 </td>
                             @endif
                             <td class="gst-col"></td>
-                            <td class="tax-col">{{ number_format($productItems->sum('cgst'), 2) }}</td>
+                            <td class="tax-col">{{ number_format($productItems->sum('cgst')) }}</td>
                             <td class="gst-col"></td>
-                            <td class="tax-col">{{ number_format($productItems->sum('sgst'), 2) }}</td>
+                            <td class="tax-col">{{ number_format($productItems->sum('sgst')) }}</td>
                             <td class="gst-col"></td>
-                            <td class="tax-col">{{ number_format($productItems->sum('igst'), 2) }}</td>
-                            <td class="amount-col">{{ number_format($productItems->sum('total'), 2) }}</td>
+                            <td class="tax-col">{{ number_format($productItems->sum('igst')) }}</td>
+                            <td class="amount-col">{{ number_format($productItems->sum('total')) }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -485,14 +485,14 @@
                                 </td>
                                 <td class="hsn-col">{{ $item->service->hsn_code }}</td>
                                 <td class="qty-col">{{ number_format($item->quantity) }}</td>
-                                <td class="rate-col">{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+                                <td class="rate-col">{{ number_format($item->unit_price * $item->quantity) }}</td>
 
                                 @if ($servHasDiscount)
                                     <td class="gst-col">
-                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->discount_amount, 2) : '' }}
+                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->discount_amount) : '' }}
                                     </td>
                                     <td class="tax-col">
-                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->taxable_amount ?? $item->unit_price * $item->quantity, 2) : '-' }}
+                                        {{ ($item->discount_amount ?? 0) > 0 ? number_format($item->taxable_amount ?? $item->unit_price * $item->quantity) : '-' }}
                                     </td>
                                 @endif
 
@@ -502,11 +502,11 @@
                                 @endphp
                                 <td class="gst-col">{{ $half }}%</td>
                                 <td class="tax-col">
-                                    {{ number_format(($item->unit_price * $item->quantity * $half) / 100, 2) }}</td>
+                                    {{ number_format(($item->unit_price * $item->quantity * $half) / 100) }}</td>
                                 <td class="gst-col">{{ $half }}%</td>
                                 <td class="tax-col">
-                                    {{ number_format(($item->unit_price * $item->quantity * $half) / 100, 2) }}</td>
-                                <td class="amount-col">{{ number_format($item->total, 2) }}</td>
+                                    {{ number_format(($item->unit_price * $item->quantity * $half) / 100) }}</td>
+                                <td class="amount-col">{{ number_format($item->total) }}</td>
                             </tr>
                         @endforeach
 
@@ -515,10 +515,10 @@
                             <td colspan="{{ $servHasDiscount ? 3 : 5 }}" class="desc-col">SUB TOTAL</td>
                             <td class="qty-col">{{ number_format($serviceItems->sum('quantity')) }}</td>
                             <td class="rate-col">
-                                {{ number_format($serviceItems->sum(fn($i) => $i->unit_price * $i->quantity), 2) }}
+                                {{ number_format($serviceItems->sum(fn($i) => $i->unit_price * $i->quantity)) }}
                             </td>
                             @if ($servHasDiscount)
-                                <td class="gst-col">{{ number_format($serviceItems->sum('discount_amount'), 2) }}</td>
+                                <td class="gst-col">{{ number_format($serviceItems->sum('discount_amount')) }}</td>
                                 <td class="tax-col">
                                     {{ number_format($serviceItems->sum(function ($it) {return ($it->discount_amount ?? 0) > 0 ? $it->taxable_amount ?? $it->unit_price * $it->quantity : 0;}),2) }}
                                 </td>
@@ -531,7 +531,7 @@
                             <td class="tax-col">
                                 {{ number_format($serviceItems->sum(function ($it) {$perc = $it->service->gst_percentage ?? 18;$half = $perc / 2;return ($it->unit_price * $it->quantity * $half) / 100;}),2) }}
                             </td>
-                            <td class="amount-col">{{ number_format($serviceItems->sum('total'), 2) }}</td>
+                            <td class="amount-col">{{ number_format($serviceItems->sum('total')) }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -565,28 +565,28 @@
                                 @if ($productItems->count())
                                     <tr>
                                         <td class="total-label">Product Total</td>
-                                        <td class="total-amount">{{ number_format($prodTotal, 2) }}</td>
+                                        <td class="total-amount">{{ number_format($prodTotal) }}</td>
                                     </tr>
                                 @endif
 
                                 @if ($serviceItems->count())
                                     <tr>
                                         <td class="total-label">Service Total</td>
-                                        <td class="total-amount">{{ number_format($servTotal, 2) }}</td>
+                                        <td class="total-amount">{{ number_format($servTotal) }}</td>
                                     </tr>
                                 @endif
 
                                 @if (isset($invoice->courier_charges) && $invoice->courier_charges > 0)
                                     <tr>
                                         <td class="total-label">Courier Charges</td>
-                                        <td class="total-amount">₹ {{ number_format($courierCharges, 2) }}</td>
+                                        <td class="total-amount">₹ {{ number_format($courierCharges) }}</td>
                                     </tr>
                                 @endif
 
                                 <tr class="total-final">
                                     <td class="total-label"><strong>Grand Total</strong></td>
                                     <td class="total-amount">
-                                        <strong>{{ number_format($grand, 2) }}</strong>
+                                        <strong>{{ number_format($grand) }}</strong>
                                     </td>
                                 </tr>
                             </table>
