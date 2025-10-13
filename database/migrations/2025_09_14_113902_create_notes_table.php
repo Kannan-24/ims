@@ -19,7 +19,7 @@ return new class extends Migration
             $table->uuid('created_by');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
-            
+
             // Add indexes for better performance
             $table->index(['created_by', 'is_pinned']);
             $table->index('created_at');

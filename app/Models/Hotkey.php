@@ -61,22 +61,22 @@ class Hotkey extends Model
     {
         $validKeys = ['ctrl', 'shift', 'alt', 'meta', 'cmd'];
         $parts = explode('+', strtolower($combination));
-        
+
         if (count($parts) < 2) {
             return false;
         }
-        
+
         $lastKey = array_pop($parts);
         if (strlen($lastKey) !== 1 && !in_array($lastKey, ['enter', 'space', 'tab', 'escape'])) {
             return false;
         }
-        
+
         foreach ($parts as $part) {
             if (!in_array(trim($part), $validKeys)) {
                 return false;
             }
         }
-        
+
         return true;
     }
 

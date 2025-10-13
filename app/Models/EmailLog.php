@@ -24,6 +24,6 @@ class EmailLog extends Model
      * @var string
      */
     protected $keyType = 'string';
-    protected $fillable = [ 'mailable','subject','to','success','error','meta' ];
-    protected $casts = [ 'success'=>'boolean','meta'=>'array' ];
+    protected $fillable = ['mailable', 'subject', 'to', 'success', 'error', 'meta'];
+    protected $casts = ['success' => 'boolean', 'meta' => 'array'];
 }

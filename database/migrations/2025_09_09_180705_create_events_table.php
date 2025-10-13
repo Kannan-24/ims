@@ -24,10 +24,10 @@ return new class extends Migration
             $table->uuid('created_by');
             $table->uuid('updated_by')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
-            
+
             $table->index(['start', 'end']);
             $table->index('type');
             $table->index('status');

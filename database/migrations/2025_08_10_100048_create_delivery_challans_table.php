@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->enum('status', ['pending', 'delivered', 'returned'])->default('pending');
             $table->timestamps();
-            
+
             $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->index(['dc_no', 'invoice_id']);
         });

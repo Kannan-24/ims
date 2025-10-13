@@ -49,9 +49,9 @@ class Note extends Model
 
     public function scopeSearch($query, $term)
     {
-        return $query->where(function($q) use ($term) {
+        return $query->where(function ($q) use ($term) {
             $q->where('title', 'LIKE', "%{$term}%")
-              ->orWhere('content', 'LIKE', "%{$term}%");
+                ->orWhere('content', 'LIKE', "%{$term}%");
         });
     }
 

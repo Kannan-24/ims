@@ -25,7 +25,7 @@ class SupplierContactPerson extends Model
      */
     protected $keyType = 'string';
     protected $table = 'supplier_contact_persons';
-    
+
     protected $fillable = [
         'supplier_id',
         'name',

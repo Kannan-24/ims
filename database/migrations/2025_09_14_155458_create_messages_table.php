@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('attachment')->nullable();
             $table->boolean('is_read')->default(false);
             $table->timestamps();
-            
+
             // Add indexes for performance
             $table->index(['sender_id', 'receiver_id']);
             $table->index(['receiver_id', 'is_read']);

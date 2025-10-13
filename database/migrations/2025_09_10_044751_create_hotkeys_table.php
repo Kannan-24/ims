@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('action_type')->default('navigate'); // 'navigate', 'modal', 'function'
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             // Ensure unique hotkey combinations per user
             $table->unique(['user_id', 'hotkey_combination']);
         });
