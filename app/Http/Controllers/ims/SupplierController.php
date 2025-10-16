@@ -44,7 +44,7 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         // Validate the incoming request.
-                $request->validate([
+        $request->validate([
             'company_name' => 'required|max:255',
             'contact_person' => 'required|max:100',
             'email' => 'required|email|unique:suppliers|max:100',
@@ -65,7 +65,7 @@ class SupplierController extends Controller
             $maxSupplierNumber = Supplier::whereRaw("supplier_id REGEXP '^SKMS[0-9]+$'")
                 ->selectRaw('MAX(CAST(SUBSTRING(supplier_id, 5) AS UNSIGNED)) as max_number')
                 ->value('max_number') ?? 0;
-            
+
             $newSupplierId = 'SKMS' . str_pad($maxSupplierNumber + 1, 2, '0', STR_PAD_LEFT);
         } else {
             $newSupplierId = $request->supplier_id;
@@ -117,10 +117,10 @@ class SupplierController extends Controller
     public function show(Supplier $supplier)
     {
         // Load assigned products with their stocks from purchases
-        $supplier->load(['products.stocks' => function($query) use ($supplier) {
+        $supplier->load(['products.stocks' => function ($query) use ($supplier) {
             $query->where('supplier_id', $supplier->id);
         }]);
-        
+
         // Get purchase transactions for this supplier
         $transactions = \App\Models\ims\Purchase::where('supplier_id', $supplier->id)
             ->with(['purchaseItems.product'])
@@ -269,7 +269,7 @@ class SupplierController extends Controller
         $maxSupplierNumber = Supplier::whereRaw("supplier_id REGEXP '^SKMS[0-9]+$'")
             ->selectRaw('MAX(CAST(SUBSTRING(supplier_id, 5) AS UNSIGNED)) as max_number')
             ->value('max_number') ?? 0;
-        
+
         $nextId = 'SKMS' . str_pad($maxSupplierNumber + 1, 2, '0', STR_PAD_LEFT);
 
         return response()->json(['nextId' => $nextId]);

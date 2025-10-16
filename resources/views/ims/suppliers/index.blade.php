@@ -249,12 +249,14 @@
                     bindKeyboardEvents() {
                         document.addEventListener('keydown', (e) => {
                             // Don't trigger shortcuts when typing in inputs
-                            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName ===
+                                'SELECT') {
                                 return;
                             }
 
                             // Create new supplier - N key or Ctrl+N
-                            if ((e.key.toLowerCase() === 'n' && !e.ctrlKey && !e.altKey) || (e.ctrlKey && e.key === 'n')) {
+                            if ((e.key.toLowerCase() === 'n' && !e.ctrlKey && !e.altKey) || (e.ctrlKey && e.key ===
+                                'n')) {
                                 e.preventDefault();
                                 window.location.href = '{{ route('suppliers.create') }}';
                             }
@@ -266,7 +268,8 @@
                             }
 
                             // Focus search - S key or Ctrl+F
-                            if ((e.key.toLowerCase() === 's' && !e.ctrlKey && !e.altKey) || (e.ctrlKey && e.key === 'f')) {
+                            if ((e.key.toLowerCase() === 's' && !e.ctrlKey && !e.altKey) || (e.ctrlKey && e.key ===
+                                'f')) {
                                 e.preventDefault();
                                 const searchInput = document.querySelector('input[name="search"]');
                                 if (searchInput) {

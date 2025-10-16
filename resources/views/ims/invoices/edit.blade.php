@@ -1056,7 +1056,7 @@
                                         {{ number_format($item->discount_amount ?? 0, 2, '.', '') }}),
                                     taxable_amount: parseFloat(
                                         {{ number_format($item->taxable_amount ?? $item->quantity * $item->unit_price, 2, '.', '') }}
-                                        ),
+                                    ),
                                     total: parseFloat({{ number_format($item->total, 2, '.', '') }})
                                 });
                             @endif
@@ -1075,7 +1075,7 @@
                                         {{ number_format($item->discount_amount ?? 0, 2, '.', '') }}),
                                     taxable_amount: parseFloat(
                                         {{ number_format($item->taxable_amount ?? $item->quantity * $item->unit_price, 2, '.', '') }}
-                                        ),
+                                    ),
                                     gst_total: parseFloat({{ number_format($item->gst, 2, '.', '') }}),
                                     total: parseFloat({{ number_format($item->total, 2, '.', '') }})
                                 });

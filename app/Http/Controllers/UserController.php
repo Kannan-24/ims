@@ -44,16 +44,16 @@ class UserController extends Controller
     public function getNextEmployeeId()
     {
         $lastUser = User::latest('created_at')->first();
-        
+
         if (!$lastUser || !$lastUser->employee_id) {
             return 'SKME001';
         }
-        
+
         // Extract number from employee_id (format: SKME001, SKME002, etc.)
         $lastEmployeeId = $lastUser->employee_id;
         $lastNumber = intval(substr($lastEmployeeId, 4));
         $nextNumber = $lastNumber + 1;
-        
+
         return 'SKME' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
@@ -114,7 +114,7 @@ class UserController extends Controller
         // Get navigation data
         $previousUser = User::where('id', '<', $user->id)->orderBy('id', 'desc')->first();
         $nextUser = User::where('id', '>', $user->id)->orderBy('id', 'asc')->first();
-        
+
         return view('ims.users.show', compact('user', 'previousUser', 'nextUser'));
     }
 
@@ -186,14 +186,16 @@ class UserController extends Controller
             'symbols' => '!@#$%^&*()-_=+[]{}',
         ];
         $password = '';
-        if (($config['require_uppercase'] ?? true)) $password .= $sets['upper'][random_int(0, strlen($sets['upper'])-1)];
-        if (($config['require_lowercase'] ?? true)) $password .= $sets['lower'][random_int(0, strlen($sets['lower'])-1)];
-        if (($config['require_number'] ?? true)) $password .= $sets['digits'][random_int(0, strlen($sets['digits'])-1)];
-        if (($config['require_symbol'] ?? true)) $password .= $sets['symbols'][random_int(0, strlen($sets['symbols'])-1)];
+        if (($config['require_uppercase'] ?? true)) $password .= $sets['upper'][random_int(0, strlen($sets['upper']) - 1)];
+        if (($config['require_lowercase'] ?? true)) $password .= $sets['lower'][random_int(0, strlen($sets['lower']) - 1)];
+        if (($config['require_number'] ?? true)) $password .= $sets['digits'][random_int(0, strlen($sets['digits']) - 1)];
+        if (($config['require_symbol'] ?? true)) $password .= $sets['symbols'][random_int(0, strlen($sets['symbols']) - 1)];
         $all = '';
-        foreach ($sets as $set) { $all .= $set; }
+        foreach ($sets as $set) {
+            $all .= $set;
+        }
         while (strlen($password) < $length) {
-            $password .= $all[random_int(0, strlen($all)-1)];
+            $password .= $all[random_int(0, strlen($all) - 1)];
         }
         return str_shuffle($password);
     }

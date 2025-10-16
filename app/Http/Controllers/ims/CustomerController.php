@@ -68,7 +68,7 @@ class CustomerController extends Controller
             $maxCustomerNumber = Customer::whereRaw("cid REGEXP '^SKMC[0-9]+$'")
                 ->selectRaw('MAX(CAST(SUBSTRING(cid, 5) AS UNSIGNED)) as max_number')
                 ->value('max_number') ?? 0;
-            
+
             $newCid = 'SKMC' . str_pad($maxCustomerNumber + 1, 2, '0', STR_PAD_LEFT);
 
             // Create new customer

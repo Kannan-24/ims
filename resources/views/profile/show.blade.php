@@ -182,12 +182,6 @@
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">Account Status</h3>
                             <div class="space-y-3">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm font-medium text-gray-500">Status</span>
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        Active
-                                    </span>
-                                </div>
                                 <div class="flex justify-between">
                                     <span class="text-sm font-medium text-gray-500">Role</span>
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
