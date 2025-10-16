@@ -139,7 +139,7 @@
                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                         <i class="fas fa-edit mr-2"></i>Edit
                                                     </a>
-                                                    <button @click="togglePin({{ $note->id }}, {{ $note->is_pinned ? 'false' : 'true' }})" 
+                                                    <button @click="togglePin('{{ $note->id }}', {{ $note->is_pinned ? 'false' : 'true' }})" 
                                                             class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                             :disabled="isLoading">
                                                         <i class="fas fa-thumbtack mr-2"></i>{{ $note->is_pinned ? 'Unpin' : 'Pin' }}
@@ -271,7 +271,7 @@
                                                class="text-green-600 hover:text-green-900" title="Edit Note">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <button @click="togglePin({{ $note->id }}, {{ $note->is_pinned ? 'false' : 'true' }})" 
+                                            <button @click="togglePin('{{ $note->id }}', {{ $note->is_pinned ? 'false' : 'true' }})" 
                                                     class="text-orange-600 hover:text-orange-900" 
                                                     title="{{ $note->is_pinned ? 'Unpin' : 'Pin' }} Note"
                                                     :disabled="isLoading">

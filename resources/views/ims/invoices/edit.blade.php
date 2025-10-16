@@ -802,7 +802,7 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <button type="button"
-                                                @click="selectProduct({{ $product->id }}, '{{ $product->name }}', {{ $product->gst_percentage }}, {{ $product->is_igst }})"
+                                                @click="selectProduct('{{ $product->id }}', '{{ $product->name }}', {{ $product->gst_percentage }}, {{ $product->is_igst }})"
                                                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
                                                 Select
                                             </button>
@@ -857,7 +857,7 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <button type="button"
-                                                @click="selectService({{ $service->id }}, '{{ $service->name }}', {{ $service->gst_percentage }})"
+                                                @click="selectService('{{ $service->id }}', '{{ $service->name }}', {{ $service->gst_percentage }})"
                                                 class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
                                                 Select
                                             </button>

@@ -162,7 +162,7 @@
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <button
-                                                    @click="deleteService({{ $service->id }}, '{{ addslashes($service->name) }}')"
+                                                    @click="deleteService('{{ $service->id }}', '{{ addslashes($service->name) }}')"
                                                     class="text-red-600 hover:text-red-900 transition-colors"
                                                     title="Delete Service">
                                                     <i class="fas fa-trash"></i>

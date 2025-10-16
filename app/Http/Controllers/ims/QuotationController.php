@@ -14,6 +14,7 @@ use App\Models\ims\Service;
 use App\Models\ims\Invoice;
 use App\Models\ims\InvoiceItem;
 use App\Models\ims\Stock;
+use App\Models\ims\Payment;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -93,7 +94,7 @@ class QuotationController extends Controller
         $previousYear = date('y', strtotime('-1 year'));
         $financialYear = (date('m') >= 4) ? $currentYear . '-' . $nextYear : $previousYear . '-' . date('y');
 
-        $lastQuotation = Quotation::where('quotation_code', 'like', 'QUO/' . $financialYear . '/%')->latest('id')->first();
+        $lastQuotation = Quotation::where('quotation_code', 'like', 'QUO/' . $financialYear . '/%')->latest('created_at')->first();
         $lastQuotationNumber = $lastQuotation ? (int)explode('/', $lastQuotation->quotation_code)[2] : 0;
         $quotationCode = 'QUO/' . $financialYear . '/' . ($lastQuotationNumber + 1);
 
@@ -459,7 +460,7 @@ class QuotationController extends Controller
         $previousYear = date('y', strtotime('-1 year'));
         $financialYear = (date('m') >= 4) ? $currentYear . '-' . $nextYear : $previousYear . '-' . date('y');
 
-        $lastInvoice = Invoice::where('invoice_no', 'like', 'INV/' . $financialYear . '/%')->latest('id')->first();
+        $lastInvoice = Invoice::where('invoice_no', 'like', 'INV/' . $financialYear . '/%')->latest('created_at')->first();
         $lastInvoiceNumber = $lastInvoice ? (int)explode('/', $lastInvoice->invoice_no)[2] : 0;
         $newInvoiceNo = 'INV/' . $financialYear . '/' . ($lastInvoiceNumber + 1);
 
@@ -512,12 +513,10 @@ class QuotationController extends Controller
         }
 
         // Store payment record
-        DB::table('payments')->insert([
+        Payment::create([
             'invoice_id' => $invoice->id,
             'total_amount' => $invoice->total,
             'pending_amount' => $invoice->total,
-            'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
         return redirect()->route('invoices.show', $invoice->id)->with('success', 'Quotation converted to invoice successfully! Invoice Number: ' . $newInvoiceNo);

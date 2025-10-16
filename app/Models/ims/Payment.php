@@ -23,7 +23,7 @@ class Payment extends Model
      * @var string
      */
     protected $keyType = 'string';
-    protected $fillable = ['invoice_id', 'total_amount', 'status'];
+    protected $fillable = ['invoice_id', 'total_amount', 'paid_amount', 'pending_amount', 'status'];
 
     public function invoice()
     {

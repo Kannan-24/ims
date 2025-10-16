@@ -259,7 +259,7 @@
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                 @endif
-                                                <button @click="deleteEmail({{ $email->id }})" 
+                                                <button @click="deleteEmail('{{ $email->id }}')" 
                                                         class="text-red-600 hover:text-red-900" title="Delete">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -280,15 +280,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             @foreach ($emails as $email)
                                 <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer grid-card"
-                                     :class="selectedEmails.includes({{ $email->id }}) ? 'ring-2 ring-blue-500 bg-blue-50' : ''"
-                                     @click="toggleEmailSelection({{ $email->id }})">
+                                     :class="selectedEmails.includes('{{ $email->id }}') ? 'ring-2 ring-blue-500 bg-blue-50' : ''"
+                                     @click="toggleEmailSelection('{{ $email->id }}')">
                                     <!-- Header -->
                                     <div class="flex items-center justify-between mb-3">
                                         <div class="flex items-center">
                                             <input type="checkbox" 
-                                                   :checked="selectedEmails.includes({{ $email->id }})"
+                                                   :checked="selectedEmails.includes('{{ $email->id }}')"
                                                    @click.stop
-                                                   @change="toggleEmailSelection({{ $email->id }})"
+                                                   @change="toggleEmailSelection('{{ $email->id }}')"
                                                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                             <div class="ml-2 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                                 <i class="fas fa-envelope text-blue-600 text-sm"></i>
@@ -338,7 +338,7 @@
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             @endif
-                                            <button @click.stop="deleteEmail({{ $email->id }})" 
+                                            <button @click.stop="deleteEmail('{{ $email->id }}')" 
                                                     class="text-red-600 hover:text-red-900 text-sm" title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>

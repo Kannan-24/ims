@@ -161,7 +161,7 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button
-                                                @click="confirmDelete({{ $supplier->id }}, '{{ $supplier->company_name }}')"
+                                                @click="confirmDelete('{{ $supplier->id }}', '{{ $supplier->company_name }}')"
                                                 class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
                                                 title="Delete">
                                                 <i class="fas fa-trash"></i>

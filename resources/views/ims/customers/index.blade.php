@@ -148,7 +148,7 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button
-                                                @click="deleteCustomer({{ $customer->id }}, '{{ $customer->cid }}', '{{ addslashes($customer->company_name) }}')"
+                                                @click="deleteCustomer('{{ $customer->id }}', '{{ $customer->cid }}', '{{ addslashes($customer->company_name) }}')"
                                                 class="text-red-600 hover:text-red-900 transition-colors"
                                                 title="Delete Customer">
                                                 <i class="fas fa-trash"></i>

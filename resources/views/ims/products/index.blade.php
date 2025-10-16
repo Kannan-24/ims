@@ -168,7 +168,7 @@
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <button
-                                                    @click="deleteProduct({{ $product->id }}, '{{ addslashes($product->name) }}')"
+                                                    @click="deleteProduct('{{ $product->id }}', '{{ addslashes($product->name) }}')"
                                                     class="text-red-600 hover:text-red-900 transition-colors"
                                                     title="Delete Product">
                                                     <i class="fas fa-trash"></i>

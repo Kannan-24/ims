@@ -61,4 +61,12 @@ class Quotation extends Model
     {
         return $this->hasMany(QuotationItem::class);
     }
+
+    /**
+     * Get the quotation number (alias for quotation_code).
+     */
+    public function getQuotationNoAttribute()
+    {
+        return $this->quotation_code;
+    }
 }

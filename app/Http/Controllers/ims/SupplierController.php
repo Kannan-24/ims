@@ -60,56 +60,43 @@ class SupplierController extends Controller
         ]);
 
         // Generate supplier ID
-        $lastSupplier = Supplier::latest('id')->first();
-        $lastSupplierId = $lastSupplier ? $lastSupplier->supplier_id : 'SKMS00';
+        if (empty($request->supplier_id)) {
+            // Find the highest existing supplier number to avoid duplicates
+            $maxSupplierNumber = Supplier::whereRaw("supplier_id REGEXP '^SKMS[0-9]+$'")
+                ->selectRaw('MAX(CAST(SUBSTRING(supplier_id, 5) AS UNSIGNED)) as max_number')
+                ->value('max_number') ?? 0;
+            
+            $newSupplierId = 'SKMS' . str_pad($maxSupplierNumber + 1, 2, '0', STR_PAD_LEFT);
+        } else {
+            $newSupplierId = $request->supplier_id;
+        }
 
-        preg_match('/\d+/', $lastSupplierId, $matches);
-        $lastNumber = $matches ? (int) $matches[0] : 0;
-
-        $newSupplierId = $request->supplier_id ?: ('SKMS' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT));
-
-        $supplier = Supplier::create([
-            'supplier_id' => $newSupplierId,
-            'name' => $request->company_name, // Use company_name for name field
-            'company_name' => $request->company_name,
-            'contact_person' => $request->contact_person,
-            'email' => $request->email,
-            'phone_number' => $request->phone, // Map phone to phone_number
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'city' => $request->city,
-            'state' => $request->state,
-            'postal_code' => $request->postal_code,
-            'country' => $request->country,
-            'website' => $request->website,
-            'gst' => $request->gst, // Add GST field
-        ]);
-
-        // Generate supplier ID
-        $lastSupplier = Supplier::latest('id')->first();
-        $lastSupplierId = $lastSupplier ? $lastSupplier->supplier_id : 'SKMS00';
-
-        preg_match('/\d+/', $lastSupplierId, $matches);
-        $lastNumber = $matches ? (int) $matches[0] : 0;
-
-        $newSupplierId = $request->supplier_id ?: ('SKMS' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT));
-
-        $supplier = Supplier::create([
-            'supplier_id' => $newSupplierId,
-            'name' => $request->company_name, // Use company_name for name field
-            'company_name' => $request->company_name,
-            'contact_person' => $request->contact_person,
-            'email' => $request->email,
-            'phone_number' => $request->phone, // Map phone to phone_number
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'city' => $request->city,
-            'state' => $request->state,
-            'postal_code' => $request->postal_code,
-            'country' => $request->country,
-            'website' => $request->website,
-            'gst' => $request->gst, // Add GST field
-        ]);
+        try {
+            $supplier = Supplier::create([
+                'supplier_id' => $newSupplierId,
+                'name' => $request->company_name, // Use company_name for name field
+                'company_name' => $request->company_name,
+                'contact_person' => $request->contact_person,
+                'email' => $request->email,
+                'phone_number' => $request->phone, // Map phone to phone_number
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'postal_code' => $request->postal_code,
+                'country' => $request->country,
+                'website' => $request->website,
+                'gst' => $request->gst, // Add GST field
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle duplicate key error gracefully
+            if ($e->getCode() == 23000) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['supplier_id' => 'Supplier ID already exists. Please try again.']);
+            }
+            throw $e;
+        }
 
         // Handle new contact persons
         if ($request->has('new_contacts')) {
@@ -278,13 +265,12 @@ class SupplierController extends Controller
      */
     public function getNextId()
     {
-        $lastSupplier = Supplier::latest('id')->first();
-        $lastSupplierId = $lastSupplier ? $lastSupplier->supplier_id : 'SKMS00';
-
-        preg_match('/\d+/', $lastSupplierId, $matches);
-        $lastNumber = $matches ? (int) $matches[0] : 0;
-
-        $nextId = 'SKMS' . str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT);
+        // Find the highest existing supplier number to avoid duplicates
+        $maxSupplierNumber = Supplier::whereRaw("supplier_id REGEXP '^SKMS[0-9]+$'")
+            ->selectRaw('MAX(CAST(SUBSTRING(supplier_id, 5) AS UNSIGNED)) as max_number')
+            ->value('max_number') ?? 0;
+        
+        $nextId = 'SKMS' . str_pad($maxSupplierNumber + 1, 2, '0', STR_PAD_LEFT);
 
         return response()->json(['nextId' => $nextId]);
     }

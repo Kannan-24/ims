@@ -157,7 +157,7 @@
                                                 <option value="delivered" {{ $challan->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
                                                 <option value="cancelled" {{ $challan->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                                             </select>
-                                            <button @click="deleteChallan({{ $challan->id }})"
+                                            <button @click="deleteChallan('{{ $challan->id }}')"
                                                     class="text-red-600 hover:text-red-900 transition-colors" title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>

@@ -43,7 +43,7 @@ class UserController extends Controller
      */
     public function getNextEmployeeId()
     {
-        $lastUser = User::latest('id')->first();
+        $lastUser = User::latest('created_at')->first();
         
         if (!$lastUser || !$lastUser->employee_id) {
             return 'SKME001';
