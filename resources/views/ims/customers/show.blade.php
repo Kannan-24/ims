@@ -85,26 +85,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Quick Actions -->
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <div class="flex items-center space-x-4">
-                        <span class="text-sm font-medium text-gray-700">Quick Actions:</span>
-                        <a href="{{ route('customers.edit', $customer) }}"
-                            class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                            <i class="fas fa-edit mr-1"></i>Edit
-                        </a>
-                        <button @click="deleteCustomer()" class="text-red-600 hover:text-red-800 text-sm font-medium">
-                            <i class="fas fa-trash mr-1"></i>Delete
-                        </button>
-                        <div class="text-gray-300">|</div>
-                        <span class="text-xs text-gray-500">
-                            <kbd class="px-1 py-0.5 bg-gray-200 rounded text-xs">E</kbd> to edit •
-                            <kbd class="px-1 py-0.5 bg-gray-200 rounded text-xs">D</kbd> to delete •
-                            <kbd class="px-1 py-0.5 bg-gray-200 rounded text-xs">Esc</kbd> to go back
-                        </span>
-                    </div>
-                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -367,35 +347,7 @@
                 showDeleteModal: false,
 
                 init() {
-                    this.bindKeyboardEvents();
-                },
-
-                bindKeyboardEvents() {
-                    document.addEventListener('keydown', (e) => {
-                        // Ignore keyboard shortcuts when typing in input fields
-                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                            return;
-                        }
-
-                        switch (e.key.toLowerCase()) {
-                            case 'e':
-                                e.preventDefault();
-                                window.location.href = '{{ route('customers.edit', $customer) }}';
-                                break;
-                            case 'd':
-                                e.preventDefault();
-                                this.deleteCustomer();
-                                break;
-                            case 'escape':
-                                e.preventDefault();
-                                if (this.showDeleteModal) {
-                                    this.closeDeleteModal();
-                                } else {
-                                    window.location.href = '{{ route('customers.index') }}';
-                                }
-                                break;
-                        }
-                    });
+                    // keyboard shortcuts removed
                 },
 
                 deleteCustomer() {

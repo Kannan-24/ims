@@ -341,201 +341,52 @@
                 </div>
 
                 <!-- Form Actions -->
-                <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-                    <div class="text-sm text-gray-500">
-                        <kbd class="px-2 py-1 bg-gray-100 rounded text-xs">Ctrl+S</kbd> to save •
-                        <kbd class="px-2 py-1 bg-gray-100 rounded text-xs">Esc</kbd> to cancel
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <!-- Previous Button -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                    <!-- Left side - Previous button -->
+                    <div>
                         <button type="button" @click="previousStep()" x-show="activeTab !== 'info'"
-                            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors inline-flex items-center">
-                            <i class="fas fa-arrow-left mr-2"></i>
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-chevron-left mr-2"></i>
                             Previous
                         </button>
+                    </div>
 
-                        <!-- Cancel Button -->
+                    <!-- Right side - Next/Submit buttons -->
+                    <div class="flex items-center space-x-3">
                         <a href="{{ route('customers.show', $customer) }}"
-                            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                             Cancel
                         </a>
 
-                        <!-- Next Button -->
+                        <!-- Next Button (shown when not on last tab) -->
                         <button type="button" @click="nextStep()" x-show="activeTab !== 'contacts'"
-                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors inline-flex items-center">
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             Next
-                            <i class="fas fa-arrow-right ml-2"></i>
+                            <i class="fas fa-chevron-right ml-2"></i>
                         </button>
 
-                        <!-- Update Button -->
-                        <div x-show="activeTab === 'contacts'">
-                            <button type="submit" :disabled="isSubmitting"
-                                class="px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-lg font-medium transition-colors inline-flex items-center">
-                                <span x-show="!isSubmitting">
-                                    <i class="fas fa-save mr-2"></i>
-                                    Update Customer
-                                </span>
-                                <span x-show="isSubmitting" class="inline-flex items-center">
-                                    <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10"
-                                            stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    Updating...
-                                </span>
-                            </button>
-                        </div>
+                        <!-- Submit Button (shown only on last tab) -->
+                        <button type="submit" x-show="activeTab === 'contacts'" :disabled="isSubmitting"
+                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors">
+                            <span x-show="!isSubmitting">
+                                <i class="fas fa-save mr-2"></i>
+                                Update Customer
+                            </span>
+                            <span x-show="isSubmitting" class="inline-flex items-center">
+                                <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                Updating...
+                            </span>
+                        </button>
                     </div>
                 </div>
             </form>
-        </div>
-
-        <!-- Help Modal -->
-        <div x-show="showHelpModal" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-gray-900">Edit Customer Help</h2>
-                    <button @click="closeHelpModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-
-                <div class="p-6 space-y-6">
-                    <!-- Step Guide -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-list-ol text-blue-600 mr-2"></i>Step-by-Step Guide
-                        </h3>
-                        <div class="space-y-4">
-                            <div class="flex items-start space-x-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                    1</div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Company Information</h4>
-                                    <p class="text-sm text-gray-600">Update the customer's company name and GST number.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                    2</div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Address Details</h4>
-                                    <p class="text-sm text-gray-600">Modify address, city, state, ZIP code, and country
-                                        information.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                    3</div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Contact Persons</h4>
-                                    <p class="text-sm text-gray-600">Edit existing contacts or add new ones. You can
-                                        remove contacts if needed.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Navigation Help -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-keyboard text-green-600 mr-2"></i>Navigation & Shortcuts
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Previous Step</span>
-                                    <button
-                                        class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Previous</button>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Next Step</span>
-                                    <button
-                                        class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Next</button>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Update Customer</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Ctrl +
-                                        S</kbd>
-                                </div>
-                            </div>
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Cancel & Exit</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Esc</kbd>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Show Help</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">H</kbd>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Add Contact</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">+
-                                        Button</kbd>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Contact Management -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-users text-purple-600 mr-2"></i>Contact Management
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <div><strong>Existing Contacts:</strong> Edit existing contact information</div>
-                                <div><strong>New Contacts:</strong> Add additional contact persons</div>
-                                <div><strong>Remove Contacts:</strong> Click X to remove unwanted contacts</div>
-                            </div>
-                            <div class="space-y-2">
-                                <div><strong>Required Fields:</strong> Name, Phone, and Email are mandatory</div>
-                                <div><strong>Designation:</strong> Job title or role (optional)</div>
-                                <div><strong>Email Validation:</strong> Must be valid and unique</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tips & Best Practices -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-lightbulb text-yellow-600 mr-2"></i>Tips & Best Practices
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2 text-sm text-gray-700">
-                                <div>• <strong>Review Changes:</strong> Check all tabs before saving</div>
-                                <div>• <strong>Contact Updates:</strong> Existing contacts are highlighted</div>
-                                <div>• <strong>Email Uniqueness:</strong> Each email must be unique</div>
-                                <div>• <strong>Required Fields:</strong> Complete all mandatory fields</div>
-                            </div>
-                            <div class="space-y-2 text-sm text-gray-700">
-                                <div>• <strong>Address Changes:</strong> Verify address details carefully</div>
-                                <div>• <strong>Navigation:</strong> Use tabs or step buttons to move</div>
-                                <div>• <strong>Auto-Save:</strong> Use Ctrl+S to save changes</div>
-                                <div>• <strong>Contact Removal:</strong> Confirm before removing contacts</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-end px-6 py-4 bg-gray-50 border-t border-gray-200">
-                    <button @click="closeHelpModal()"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        Got it!
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -623,8 +474,11 @@
                     this.isSubmitting = true;
                     this.errors = {};
 
+                    // Combine all contact persons for validation
+                    const allContacts = [...this.existingContacts, ...this.newContactPersons];
+
                     // Basic validation
-                    if (this.existingContacts.length === 0 && this.newContactPersons.length === 0) {
+                    if (allContacts.length === 0) {
                         this.errors.contacts = 'At least one contact person is required';
                         this.activeTab = 'contacts';
                         this.isSubmitting = false;
@@ -632,8 +486,32 @@
                         return;
                     }
 
+                    // Create hidden inputs for all contact persons
+                    this.createContactInputs();
+
                     // Submit the form
                     document.getElementById('customerForm').submit();
+                },
+
+                createContactInputs() {
+                    // Remove any existing hidden contact inputs
+                    const existingInputs = document.querySelectorAll('input[name^="contact_persons["]');
+                    existingInputs.forEach(input => input.remove());
+
+                    const form = document.getElementById('customerForm');
+                    const allContacts = [...this.existingContacts, ...this.newContactPersons];
+
+                    allContacts.forEach((contact, index) => {
+                        // Create hidden inputs for each contact person
+                        const fields = ['name', 'designation', 'phone_no', 'email'];
+                        fields.forEach(field => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = `contact_persons[${index}][${field}]`;
+                            input.value = contact[field] || '';
+                            form.appendChild(input);
+                        });
+                    });
                 }
             }
         }
