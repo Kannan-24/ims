@@ -87,17 +87,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-info-circle text-yellow-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm text-yellow-600 font-medium">Status</p>
-                            <p class="text-lg font-bold text-yellow-900">{{ ucfirst($deliveryChallan->status) }}</p>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
                     <div class="flex items-center">
                         <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
@@ -128,16 +118,7 @@
                                 <span class="text-sm font-medium text-gray-500">Delivery Date:</span>
                                 <span class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->delivery_date)->format('d M Y') }}</span>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-gray-500">Status:</span>
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    @if($deliveryChallan->status == 'delivered') bg-green-100 text-green-800
-                                    @elseif($deliveryChallan->status == 'generated') bg-blue-100 text-blue-800
-                                    @elseif($deliveryChallan->status == 'cancelled') bg-red-100 text-red-800
-                                    @else bg-yellow-100 text-yellow-800 @endif">
-                                    {{ ucfirst($deliveryChallan->status) }}
-                                </span>
-                            </div>
+
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray-500">Generated At:</span>
                                 <span class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->generated_at)->format('d M Y H:i A') }}</span>
@@ -292,29 +273,7 @@
                 </div>
             </div>
 
-            <!-- Status Update Section -->
-            <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900">🔄 Update Status</h3>
-                </div>
-                <div class="p-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
-                        <label for="status-select" class="text-sm font-medium text-gray-700">Current Status:</label>
-                        <select id="status-select" 
-                                class="flex-1 sm:flex-none bg-white border border-gray-300 text-gray-900 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                                data-challan-id="{{ $deliveryChallan->id }}">
-                            <option value="pending" {{ $deliveryChallan->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="generated" {{ $deliveryChallan->status == 'generated' ? 'selected' : '' }}>Generated</option>
-                            <option value="delivered" {{ $deliveryChallan->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
-                            <option value="cancelled" {{ $deliveryChallan->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                        </select>
-                        <button @click="updateStatus()" 
-                                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                            <i class="fas fa-save mr-2"></i>Update Status
-                        </button>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 
@@ -325,37 +284,7 @@
                 // Initialize component
             },
 
-            updateStatus() {
-                const select = document.getElementById('status-select');
-                const challanId = select.dataset.challanId;
-                const newStatus = select.value;
-                
-                fetch(`/ims/delivery-challans/${challanId}/status`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        status: newStatus
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        this.showAlert('success', data.message);
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1500);
-                    } else {
-                        this.showAlert('error', 'Failed to update status');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    this.showAlert('error', 'An error occurred while updating status');
-                });
-            },
+
 
             showAlert(type, message) {
                 const alertDiv = document.createElement('div');

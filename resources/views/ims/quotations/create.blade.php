@@ -115,7 +115,8 @@
                                         x-model="selectedCustomer" @change="updateContactPersons()">
                                         <option value="">Select Customer</option>
                                         @foreach ($customers as $customer)
-                                            <option value="{{ $customer->id }}">{{ $customer->company_name }}</option>
+                                            <option value="{{ $customer->id }}">{{ $customer->company_name }} -
+                                                {{ $customer->city }}</option>
                                         @endforeach
                                     </select>
                                     <div class="mt-1 text-sm text-red-600" x-show="errors.customer"
@@ -168,11 +169,10 @@
                     <div x-show="activeTab === 'products'" x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            
+
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-lg font-semibold text-gray-900">Product Items</h3>
-                                <button type="button" @click="showProductModal = true"
-                                    x-show="products.length > 0"
+                                <button type="button" @click="showProductModal = true" x-show="products.length > 0"
                                     class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
                                     <i class="fas fa-plus w-4 h-4 mr-2"></i>
                                     Add Product
@@ -473,7 +473,7 @@
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product Taxable Amount:</span>
                                             <span class="font-medium">₹<span
-                                                    x-text="summary.product_taxable_amount"></span></span>
+                                                    x-text="summary.product_taxable_amount || 0"></span></span>
                                             <input type="hidden" name="product_taxable_amount"
                                                 :value="summary.product_taxable_amount">
                                         </div>
@@ -572,6 +572,20 @@
                                             <input type="hidden" name="grand_sub_total"
                                                 :value="summary.grand_sub_total">
                                         </div>
+                                        <div class="flex justify-between" x-show="summary.grand_discount > 0">
+                                            <span class="text-gray-700">Grand Discount:</span>
+                                            <span class="font-semibold text-red-600">-₹<span
+                                                    x-text="summary.grand_discount"></span></span>
+                                            <input type="hidden" name="grand_discount"
+                                                :value="summary.grand_discount">
+                                        </div>
+                                        <div class="flex justify-between text-lg">
+                                            <span class="text-gray-700">Taxable Amount:</span>
+                                            <span class="font-semibold">₹<span
+                                                    x-text="summary.grand_taxable_amount || 0"></span></span>
+                                            <input type="hidden" name="grand_taxable_amount"
+                                                :value="summary.grand_taxable_amount">
+                                        </div>
                                         <div class="flex justify-between text-lg">
                                             <span class="text-gray-700">Grand GST Total:</span>
                                             <span class="font-semibold">₹<span
@@ -610,14 +624,14 @@
                             class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                             Cancel
                         </a>
-                        
+
                         <!-- Next Button (shown when not on last tab) -->
                         <button type="button" @click="nextStep()" x-show="activeTab !== 'summary'"
                             class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             Next
                             <i class="fas fa-chevron-right ml-2"></i>
                         </button>
-                        
+
                         <!-- Submit Button (shown only on last tab) -->
                         <button type="submit" x-show="activeTab === 'summary'" :disabled="isSubmitting"
                             class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors inline-flex items-center">

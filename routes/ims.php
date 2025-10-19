@@ -158,7 +158,7 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
     Route::post('/delivery-challans/generate', [DeliveryChallanController::class, 'generate'])->name('delivery-challans.generate');
     Route::get('/delivery-challans/{id}/pdf', [DeliveryChallanController::class, 'pdf'])->name('delivery-challans.pdf');
     Route::get('/delivery-challans/{id}/download', [DeliveryChallanController::class, 'download'])->name('delivery-challans.download');
-    Route::put('/delivery-challans/{id}/status', [DeliveryChallanController::class, 'updateStatus'])->name('delivery-challans.update-status');
+    // Status update route removed as requested
     Route::delete('/delivery-challans/{id}', [DeliveryChallanController::class, 'destroy'])->name('delivery-challans.destroy');
 
     // Email Routes - Specific routes MUST come before resource routes

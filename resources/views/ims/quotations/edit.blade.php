@@ -3,7 +3,7 @@
         {{ __('Edit Quotation') }} - {{ config('app.name', 'SKM') }}
     </x-slot>
 
-    <div class="bg-white min-h-screen" x-data="quotationEditManager" x-init="init()">
+    <div class="bg-white min-h-screen" x-data="quotationEditManager()" x-init="init()">
         <!-- Breadcrumbs -->
         <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
             <nav class="flex" aria-label="Breadcrumb">
@@ -28,7 +28,7 @@
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
                             <span class="text-sm font-medium text-gray-500">Edit Quotation
-                                #{{ $quotation->quotation_no ?? $quotation->id }}</span>
+                                #{{ $quotation->quotation_no }}</span>
                         </div>
                     </li>
                 </ol>
@@ -39,23 +39,21 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Edit Quotation
-                        #{{ $quotation->quotation_no ?? $quotation->id }}</h1>
-                    <p class="text-sm text-gray-600 mt-1">Modify quotation details and items</p>
+                    <h1 class="text-2xl font-bold text-gray-900">Edit Quotation #{{ $quotation->quotation_no }}</h1>
+                    <p class="text-sm text-gray-600 mt-1">Update quotation details, products and services</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <!-- Help Button -->
-                    <button @click="showHelpModal = true"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                        Help
-                    </button>
                     <!-- Convert to Invoice Button -->
-                    <button @click="showConvertModal = true"
-                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-file-invoice w-4 h-4 mr-2"></i>
-                        Convert to Invoice
-                    </button>
+                    <form action="{{ route('quotations.convert-to-invoice', $quotation->id) }}" method="POST"
+                        class="inline">
+                        @csrf
+                        <button type="submit"
+                            onclick="return confirm('Are you sure you want to convert this quotation to an invoice? This action cannot be undone.')"
+                            class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors">
+                            <i class="fas fa-file-invoice mr-2"></i>
+                            Convert to Invoice
+                        </button>
+                    </form>
                     <a href="{{ route('quotations.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
                         <i class="fas fa-arrow-left w-4 h-4 mr-2"></i>
@@ -67,22 +65,16 @@
 
         <!-- Error Messages -->
         @if ($errors->any())
-            <div class="mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div class="mx-6 mt-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
                 <div class="flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-exclamation-circle text-red-400"></i>
-                    </div>
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-red-800">
-                            There were {{ $errors->count() }} error(s) with your submission:
-                        </h3>
-                        <div class="mt-2 text-sm text-red-700">
-                            <ul class="list-disc pl-5 space-y-1">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
+                    <i class="fas fa-exclamation-circle text-red-400 mr-3 mt-0.5"></i>
+                    <div>
+                        <h3 class="font-semibold mb-2">Please fix the following errors:</h3>
+                        <ul class="list-disc list-inside space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -103,7 +95,7 @@
                                 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                             class="py-2 px-1 border-b-2 font-medium text-sm">
                             <i class="fas fa-file-alt mr-2"></i>
-                            Basic Information
+                            Quotation Information
                         </button>
                         <button type="button" @click="activeTab = 'products'"
                             :class="activeTab === 'products' ? 'border-blue-500 text-blue-600' :
@@ -141,7 +133,7 @@
                     <div x-show="activeTab === 'basic'" x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Customer & Quotation Details</h3>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quotation & Customer Details</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Customer Selection -->
                                 <div>
@@ -159,8 +151,6 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <div class="mt-1 text-sm text-red-600" x-show="errors.customer"
-                                        x-text="errors.customer"></div>
                                 </div>
 
                                 <!-- Contact Person -->
@@ -172,20 +162,12 @@
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         x-model="selectedContactPerson" :disabled="!selectedCustomer">
                                         <option value="">Select Contact Person</option>
-                                        @if ($quotation->customer)
-                                            @foreach ($quotation->customer->contactPersons as $contactPerson)
-                                                <option value="{{ $contactPerson->id }}"
-                                                    {{ old('contact_person', $quotation->contactperson_id) == $contactPerson->id ? 'selected' : '' }}>
-                                                    {{ $contactPerson->name }}
-                                                </option>
-                                            @endforeach
-                                        @endif
                                         <template x-for="contact in contactPersons" :key="contact.id">
-                                            <option :value="contact.id" x-text="contact.name"></option>
+                                            <option :value="contact.id" 
+                                                    :selected="contact.id == selectedContactPerson"
+                                                    x-text="contact.name"></option>
                                         </template>
                                     </select>
-                                    <div class="mt-1 text-sm text-red-600" x-show="errors.contact_person"
-                                        x-text="errors.contact_person"></div>
                                 </div>
 
                                 <!-- Quotation Date -->
@@ -197,8 +179,6 @@
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                         value="{{ old('quotation_date', $quotation->quotation_date) }}"
                                         x-model="quotationDate">
-                                    <div class="mt-1 text-sm text-red-600" x-show="errors.quotation_date"
-                                        x-text="errors.quotation_date"></div>
                                 </div>
 
                                 <!-- Terms and Conditions -->
@@ -208,7 +188,7 @@
                                     </label>
                                     <textarea name="terms_condition" rows="4"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        placeholder="Enter terms and conditions" x-model="termsCondition">{{ old('terms_condition', $quotation->terms_condition) }}</textarea>
+                                        placeholder="Enter terms and conditions..." x-model="termsCondition">{{ old('terms_condition', $quotation->terms_condition) }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -230,7 +210,7 @@
                             <div x-show="products.length === 0" class="text-center py-8">
                                 <i class="fas fa-box text-gray-300 text-4xl mb-4"></i>
                                 <h4 class="text-lg font-medium text-gray-900 mb-2">No products added</h4>
-                                <p class="text-gray-500 mb-4">Add products to generate quotation</p>
+                                <p class="text-gray-500 mb-4">Add products to the quotation</p>
                                 <button type="button" @click="showProductModal = true"
                                     class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
                                     <i class="fas fa-plus w-4 h-4 mr-2"></i>
@@ -254,12 +234,6 @@
                                                 Unit Price</th>
                                             <th
                                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                                Discount</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                                Taxable Amt</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                                 CGST</th>
                                             <th
                                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -279,8 +253,14 @@
                                         <template x-for="(product, index) in products" :key="index">
                                             <tr>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm font-medium text-gray-900"
-                                                        x-text="product.name"></div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-sm font-medium text-gray-900"
+                                                            x-text="product.name"></span>
+                                                        <button type="button" @click="changeProduct(index)"
+                                                            class="text-xs text-blue-600 hover:text-blue-800 mt-1 text-left">
+                                                            Change Product
+                                                        </button>
+                                                    </div>
                                                     <input type="hidden" :name="`products[${index}][product_id]`"
                                                         :value="product.id">
                                                     <input type="hidden" :name="`products[${index}][gst_percentage]`"
@@ -299,21 +279,6 @@
                                                         @input="calculateProductTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01">
-                                                </td>
-                                                <td class="px-4 py-4">
-                                                    <input type="number"
-                                                        :name="`products[${index}][discount_amount]`"
-                                                        x-model="product.discount_amount"
-                                                        @input="calculateProductTotal(index)"
-                                                        class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                        min="0" step="0.01" placeholder="0.00">
-                                                </td>
-                                                <td class="px-4 py-4">
-                                                    <div class="text-sm text-gray-900 font-medium">
-                                                        ₹<span x-text="product.taxable_amount"></span>
-                                                    </div>
-                                                    <input type="hidden" :name="`products[${index}][taxable_amount]`"
-                                                        :value="product.taxable_amount">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900">
@@ -405,12 +370,6 @@
                                                 Unit Price</th>
                                             <th
                                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                                Discount</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                                Taxable Amt</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                                 GST %</th>
                                             <th
                                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -427,8 +386,14 @@
                                         <template x-for="(service, index) in services" :key="index">
                                             <tr>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm font-medium text-gray-900"
-                                                        x-text="service.name"></div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-sm font-medium text-gray-900"
+                                                            x-text="service.name"></span>
+                                                        <button type="button" @click="changeService(index)"
+                                                            class="text-xs text-green-600 hover:text-green-800 mt-1 text-left">
+                                                            Change Service
+                                                        </button>
+                                                    </div>
                                                     <input type="hidden" :name="`services[${index}][service_id]`"
                                                         :value="service.id">
                                                 </td>
@@ -445,21 +410,6 @@
                                                         @input="calculateServiceTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01">
-                                                </td>
-                                                <td class="px-4 py-4">
-                                                    <input type="number"
-                                                        :name="`services[${index}][discount_amount]`"
-                                                        x-model="service.discount_amount"
-                                                        @input="calculateServiceTotal(index)"
-                                                        class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                        min="0" step="0.01" placeholder="0.00">
-                                                </td>
-                                                <td class="px-4 py-4">
-                                                    <div class="text-sm text-gray-900 font-medium">
-                                                        ₹<span x-text="service.taxable_amount"></span>
-                                                    </div>
-                                                    <input type="hidden" :name="`services[${index}][taxable_amount]`"
-                                                        :value="service.taxable_amount">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900"
@@ -511,20 +461,6 @@
                                             <input type="hidden" name="product_subtotal"
                                                 :value="summary.product_subtotal">
                                         </div>
-                                        <div class="flex justify-between" x-show="summary.product_discount > 0">
-                                            <span class="text-red-600">Product Discount:</span>
-                                            <span class="font-medium text-red-600">-₹<span
-                                                    x-text="summary.product_discount"></span></span>
-                                            <input type="hidden" name="product_discount"
-                                                :value="summary.product_discount">
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-700">Product Taxable Amount:</span>
-                                            <span class="font-medium">₹<span
-                                                    x-text="summary.product_taxable_amount"></span></span>
-                                            <input type="hidden" name="product_taxable_amount"
-                                                :value="summary.product_taxable_amount">
-                                        </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product CGST:</span>
                                             <span class="font-medium">₹<span
@@ -568,20 +504,6 @@
                                             <input type="hidden" name="service_subtotal"
                                                 :value="summary.service_subtotal">
                                         </div>
-                                        <div class="flex justify-between" x-show="summary.service_discount > 0">
-                                            <span class="text-red-600">Service Discount:</span>
-                                            <span class="font-medium text-red-600">-₹<span
-                                                    x-text="summary.service_discount"></span></span>
-                                            <input type="hidden" name="service_discount"
-                                                :value="summary.service_discount">
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span class="text-gray-700">Service Taxable Amount:</span>
-                                            <span class="font-medium">₹<span
-                                                    x-text="summary.service_taxable_amount"></span></span>
-                                            <input type="hidden" name="service_taxable_amount"
-                                                :value="summary.service_taxable_amount">
-                                        </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Service CGST:</span>
                                             <span class="font-medium">₹<span
@@ -620,20 +542,6 @@
                                             <input type="hidden" name="grand_sub_total"
                                                 :value="summary.grand_sub_total">
                                         </div>
-                                        <div class="flex justify-between text-lg" x-show="summary.grand_discount > 0">
-                                            <span class="text-red-600">Total Discount:</span>
-                                            <span class="font-semibold text-red-600">-₹<span
-                                                    x-text="summary.grand_discount"></span></span>
-                                            <input type="hidden" name="grand_discount"
-                                                :value="summary.grand_discount">
-                                        </div>
-                                        <div class="flex justify-between text-lg">
-                                            <span class="text-gray-700">Taxable Amount:</span>
-                                            <span class="font-semibold">₹<span
-                                                    x-text="summary.grand_taxable_amount"></span></span>
-                                            <input type="hidden" name="grand_taxable_amount"
-                                                :value="summary.grand_taxable_amount">
-                                        </div>
                                         <div class="flex justify-between text-lg">
                                             <span class="text-gray-700">Grand GST Total:</span>
                                             <span class="font-semibold">₹<span
@@ -656,50 +564,49 @@
                 </div>
 
                 <!-- Form Actions -->
-                <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-
-                    <div class="flex items-center space-x-3">
-                        <!-- Previous Button -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200 mt-6">
+                    <!-- Left side - Previous button -->
+                    <div>
                         <button type="button" @click="previousStep()" x-show="activeTab !== 'basic'"
-                            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors inline-flex items-center">
-                            <i class="fas fa-arrow-left mr-2"></i>
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-chevron-left mr-2"></i>
                             Previous
                         </button>
+                    </div>
 
-                        <!-- Cancel Button -->
+                    <!-- Right side - Next/Submit buttons -->
+                    <div class="flex items-center space-x-3">
                         <a href="{{ route('quotations.index') }}"
-                            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                             Cancel
                         </a>
 
-                        <!-- Next Button -->
+                        <!-- Next Button (shown when not on last tab) -->
                         <button type="button" @click="nextStep()" x-show="activeTab !== 'summary'"
-                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors inline-flex items-center">
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             Next
-                            <i class="fas fa-arrow-right ml-2"></i>
+                            <i class="fas fa-chevron-right ml-2"></i>
                         </button>
 
-                        <!-- Update Button -->
-                        <div x-show="activeTab === 'summary'">
-                            <button type="submit" :disabled="isSubmitting"
-                                class="px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-lg font-medium transition-colors inline-flex items-center">
-                                <span x-show="!isSubmitting">
-                                    <i class="fas fa-save mr-2"></i>
-                                    Update Quotation
-                                </span>
-                                <span x-show="isSubmitting" class="inline-flex items-center">
-                                    <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10"
-                                            stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    Updating...
-                                </span>
-                            </button>
-                        </div>
+                        <!-- Submit Button (shown only on last tab) -->
+                        <button type="submit" x-show="activeTab === 'summary'" :disabled="isSubmitting"
+                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-green-400 inline-flex items-center">
+                            <span x-show="!isSubmitting">
+                                <i class="fas fa-save mr-2"></i>
+                                Update Quotation
+                            </span>
+                            <span x-show="isSubmitting" class="inline-flex items-center">
+                                <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                Updating...
+                            </span>
+                        </button>
                     </div>
                 </div>
             </form>
@@ -754,7 +661,7 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <button type="button"
-                                                @click="addProduct('{{ $product->id }}', '{{ $product->name }}', {{ $product->gst_percentage }}, {{ $product->is_igst }})"
+                                                @click="selectProduct('{{ $product->id }}', '{{ $product->name }}', {{ $product->gst_percentage }}, {{ $product->is_igst }})"
                                                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
                                                 Select
                                             </button>
@@ -809,7 +716,7 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <button type="button"
-                                                @click="addService('{{ $service->id }}', '{{ $service->name }}', {{ $service->gst_percentage }})"
+                                                @click="selectService('{{ $service->id }}', '{{ $service->name }}', {{ $service->gst_percentage }})"
                                                 class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors">
                                                 Select
                                             </button>
@@ -822,155 +729,27 @@
                 </div>
             </div>
         </div>
-
-        <!-- Convert to Invoice Modal -->
-        <div x-show="showConvertModal" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-                <div class="p-6">
-                    <div class="flex items-center">
-                        <div
-                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
-                            <i class="fas fa-file-invoice text-blue-600"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3 text-center">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Convert to Invoice</h3>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-500">
-                                Are you sure you want to convert this quotation to an invoice? This action cannot be
-                                undone.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <form action="{{ route('quotations.convert-to-invoice', $quotation->id) }}" method="POST"
-                        class="inline">
-                        @csrf
-                        <button type="submit"
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                            <i class="fas fa-file-invoice mr-2"></i>
-                            Convert to Invoice
-                        </button>
-                    </form>
-                    <button type="button" @click="showConvertModal = false"
-                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Help Modal -->
-        <div x-show="showHelpModal" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-gray-900">Edit Quotation Help</h2>
-                    <button @click="showHelpModal = false" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-
-                <div class="p-6 space-y-6">
-                    <!-- Step Guide -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-list-ol text-blue-600 mr-2"></i>Editing Steps
-                        </h3>
-                        <div class="space-y-4">
-                            <div class="flex items-start space-x-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                    1</div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Review Basic Information</h4>
-                                    <p class="text-sm text-gray-600">Check and update customer, contact person, and
-                                        date.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                    2</div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Modify Products</h4>
-                                    <p class="text-sm text-gray-600">Add, remove, or update product quantities and
-                                        prices.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                    3</div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Update Services</h4>
-                                    <p class="text-sm text-gray-600">Modify services as needed for the quotation.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                    4</div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Review & Save</h4>
-                                    <p class="text-sm text-gray-600">Check the summary and save changes.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Additional Options -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-cog text-green-600 mr-2"></i>Additional Options
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-                            <div>• <strong>Convert to Invoice:</strong> Create invoice from quotation</div>
-                            <div>• <strong>Auto-calculations:</strong> Totals update automatically</div>
-                            <div>• <strong>Duplicate Check:</strong> Prevents duplicate items</div>
-                            <div>• <strong>Save Progress:</strong> Use Ctrl+S to save anytime</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-end px-6 py-4 bg-gray-50 border-t border-gray-200">
-                    <button @click="showHelpModal = false"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        Got it!
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('quotationEditManager', () => ({
+        function quotationEditManager() {
+            return {
                 activeTab: 'basic',
                 selectedCustomer: '{{ old('customer', $quotation->customer_id) }}',
                 selectedContactPerson: '{{ old('contact_person', $quotation->contactperson_id) }}',
                 contactPersons: [],
                 quotationDate: '{{ old('quotation_date', $quotation->quotation_date) }}',
-                termsCondition: `{!! old('terms_condition', addslashes($quotation->terms_condition)) !!}`,
+                termsCondition: `{{ old('terms_condition', $quotation->terms_condition) }}`,
                 products: [],
                 services: [],
-                errors: {},
                 isSubmitting: false,
-                showHelpModal: false,
                 showProductModal: false,
                 showServiceModal: false,
-                showConvertModal: false,
                 productSearch: '',
                 serviceSearch: '',
                 customersData: {},
+                currentProductIndex: null,
+                currentServiceIndex: null,
                 summary: {
                     product_subtotal: 0,
                     product_total_cgst: 0,
@@ -987,129 +766,142 @@
                 },
 
                 init() {
-                    console.log('Initializing quotation edit manager...');
+                    
+                    // Clear arrays to prevent duplication
+                    this.products = [];
+                    this.services = [];
+                    
                     this.setupCustomerData();
-                    this.loadExistingData();
-                    console.log('Quotation edit manager initialized');
+                    this.loadExistingProducts();
+                    this.loadExistingServices();
+                    this.updateContactPersons();
+                    console.log('Quotation edit manager initialized successfully');
                 },
 
                 setupCustomerData() {
                     try {
                         this.customersData = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
-                        console.log('Customer data loaded:', this.customersData);
+                        console.log('Customer data loaded:', Object.keys(this.customersData).length, 'customers');
                     } catch (error) {
                         console.error('Error loading customer data:', error);
                         this.customersData = {};
                     }
                 },
 
-                loadExistingData() {
+                loadExistingProducts() {
                     try {
-                        // Clear arrays first to prevent duplication
-                        this.products = [];
-                        this.services = [];
-                        console.log('Loading existing data...');
+                        const existingProducts = @json($quotation->items->where('type', 'product')->values());
 
-                        // Load existing products with correct GST logic
-                        @foreach ($quotation->items->where('type', 'product') as $item)
-                            @if ($item->product)
-                                const isIgst{{ $loop->index }} =
-                                    {{ $item->product->is_igst ? 'true' : 'false' }};
-                                const gstPercentage{{ $loop->index }} =
-                                    {{ $item->product->gst_percentage }};
+                        // Check if products already loaded to prevent duplication
+                        if (this.products.length > 0) {
+                            console.log('Products already loaded, skipping...');
+                            return;
+                        }
 
-                                this.products.push({
-                                    id: {{ $item->product_id }},
-                                    name: `{{ addslashes($item->product->name) }}`,
-                                    quantity: {{ $item->quantity }},
-                                    unit_price: {{ $item->unit_price }},
-                                    discount_amount: {{ $item->discount_amount ?? 0 }},
-                                    taxable_amount: {{ $item->taxable_amount ?? $item->unit_price * $item->quantity }},
-                                    gst_percentage: gstPercentage{{ $loop->index }},
-                                    is_igst: isIgst{{ $loop->index }},
-                                    cgst_rate: isIgst{{ $loop->index }} ? 0 : (
-                                        gstPercentage{{ $loop->index }} /
-                                        2),
-                                    sgst_rate: isIgst{{ $loop->index }} ? 0 : (
-                                        gstPercentage{{ $loop->index }} /
-                                        2),
-                                    igst_rate: isIgst{{ $loop->index }} ?
-                                        gstPercentage{{ $loop->index }} : 0,
-                                    cgst_value: isIgst{{ $loop->index }} ? 0 : parseFloat(
-                                        {{ number_format($item->cgst, 2, '.', '') }}),
-                                    sgst_value: isIgst{{ $loop->index }} ? 0 : parseFloat(
-                                        {{ number_format($item->sgst, 2, '.', '') }}),
-                                    igst_value: isIgst{{ $loop->index }} ? parseFloat(
-                                        {{ number_format($item->igst, 2, '.', '') }}) : 0,
-                                    total: parseFloat(
-                                        {{ number_format($item->total, 2, '.', '') }})
-                                });
-                            @endif
-                        @endforeach
+                        existingProducts.forEach(item => {
+                            const product = {
+                                id: item.product_id,
+                                name: item.product ? item.product.name : 'N/A',
+                                quantity: parseFloat(item.quantity) || 0,
+                                unit_price: parseFloat(item.unit_price) || 0,
+                                gst_percentage: item.product ? parseFloat(item.product.gst_percentage) || 0 : 0,
+                                is_igst: item.product ? parseInt(item.product.is_igst) || 0 : 0,
+                                cgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product.gst_percentage) || 0) / 2) : 0,
+                                sgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product.gst_percentage) || 0) / 2) : 0,
+                                igst_rate: item.product ? (item.product.is_igst ? (parseFloat(item.product.gst_percentage) || 0) : 0) : 0,
+                                cgst_value: parseFloat(item.cgst) || 0,
+                                sgst_value: parseFloat(item.sgst) || 0,
+                                igst_value: parseFloat(item.igst) || 0,
+                                total: parseFloat(item.total) || 0
+                            };
 
-                        // Load existing services
-                        @foreach ($quotation->items->where('type', 'service') as $item)
-                            @if ($item->service)
-                                this.services.push({
-                                    id: {{ $item->service_id }},
-                                    name: `{{ addslashes($item->service->name) }}`,
-                                    quantity: {{ $item->quantity }},
-                                    unit_price: {{ $item->unit_price }},
-                                    discount_amount: {{ $item->discount_amount ?? 0 }},
-                                    taxable_amount: {{ $item->taxable_amount ?? $item->unit_price * $item->quantity }},
-                                    gst_percentage: {{ $item->service->gst_percentage }},
-                                    gst_total: parseFloat(
-                                        {{ number_format($item->gst, 2, '.', '') }}),
-                                    total: parseFloat(
-                                        {{ number_format($item->total, 2, '.', '') }})
-                                });
-                            @endif
-                        @endforeach
+                            this.products.push(product);
+                        });
 
-                        console.log('Products loaded:', this.products.length);
-                        console.log('Services loaded:', this.services.length);
-
-                        // Calculate initial summary after loading data
+                        console.log('Loaded', this.products.length, 'existing products');
+                        // Calculate summary after loading
                         setTimeout(() => {
                             this.calculateSummary();
-                        }, 100);
+                        }, 50);
                     } catch (error) {
-                        console.error('Error loading existing data:', error);
+                        console.error('Error loading existing products:', error);
                     }
                 },
 
+                loadExistingServices() {
+                    try {
+                        const existingServices = @json($quotation->items->where('type', 'service')->values());
 
+                        // Check if services already loaded to prevent duplication
+                        if (this.services.length > 0) {
+                            console.log('Services already loaded, skipping...');
+                            return;
+                        }
+
+                        existingServices.forEach(item => {
+                            const service = {
+                                id: item.service_id,
+                                name: item.service ? item.service.name : 'N/A',
+                                quantity: parseFloat(item.quantity) || 0,
+                                unit_price: parseFloat(item.unit_price) || 0,
+                                gst_percentage: item.service ? parseFloat(item.service.gst_percentage) || 0 : 0,
+                                gst_total: parseFloat(item.gst) || 0,
+                                total: parseFloat(item.total) || 0
+                            };
+
+                            this.services.push(service);
+                        });
+
+                        console.log('Loaded', this.services.length, 'existing services');
+                        // Calculate summary after loading
+                        setTimeout(() => {
+                            this.calculateSummary();
+                        }, 50);
+                    } catch (error) {
+                        console.error('Error loading existing services:', error);
+                    }
+                },
 
                 updateContactPersons() {
                     try {
+                        const currentContactPerson = this.selectedContactPerson;
                         this.contactPersons = this.customersData[this.selectedCustomer] || [];
-                        const validContactIds = this.contactPersons.map(c => c.id.toString());
-                        if (this.selectedContactPerson && !validContactIds.includes(this
-                                .selectedContactPerson
-                                .toString())) {
+                        
+                        // Preserve selected contact person if it exists for the new customer
+                        if (currentContactPerson && this.contactPersons.find(cp => cp.id == currentContactPerson)) {
+                            this.selectedContactPerson = currentContactPerson;
+                        } else {
+                            // Reset contact person if not available for new customer
                             this.selectedContactPerson = '';
                         }
-                        console.log('Contact persons updated:', this.contactPersons.length);
+                        
+                        console.log('Contact persons updated:', this.contactPersons.length, 'contacts available');
+                        console.log('Selected contact person:', this.selectedContactPerson);
                     } catch (error) {
                         console.error('Error updating contact persons:', error);
                         this.contactPersons = [];
+                        this.selectedContactPerson = '';
                     }
                 },
 
                 nextStep() {
                     if (this.activeTab === 'basic') {
-                        if (!this.selectedCustomer || !this.selectedContactPerson || !this
-                            .quotationDate) {
-                            alert('Please fill in all required fields before proceeding.');
+                        if (!this.validateBasicInfo()) {
                             return;
                         }
                         this.activeTab = 'products';
                     } else if (this.activeTab === 'products') {
+                        if (this.products.length === 0) {
+                            if (!confirm('No products added. Continue to services?')) {
+                                return;
+                            }
+                        }
                         this.activeTab = 'services';
                     } else if (this.activeTab === 'services') {
                         this.calculateSummary();
                         this.activeTab = 'summary';
                     }
+                    console.log('Navigated to tab:', this.activeTab);
                 },
 
                 previousStep() {
@@ -1120,73 +912,108 @@
                     } else if (this.activeTab === 'products') {
                         this.activeTab = 'basic';
                     }
+                    console.log('Navigated back to tab:', this.activeTab);
                 },
 
-                addProduct(id, name, gstPercentage, isIgst) {
+                validateBasicInfo() {
+                    if (!this.selectedCustomer || !this.selectedContactPerson || !this.quotationDate) {
+                        alert('Please fill in all required fields before proceeding.');
+                        return false;
+                    }
+                    return true;
+                },
+
+                changeProduct(index) {
+                    this.currentProductIndex = index;
+                    this.showProductModal = true;
+                    console.log('Changing product at index:', index);
+                },
+
+                selectProduct(id, name, gstPercentage, isIgst) {
                     try {
-                        const existingIndex = this.products.findIndex(p => p.id === id);
-                        if (existingIndex !== -1) {
-                            alert(
-                                'Product already added. You can modify the quantity in the products tab.');
-                            this.showProductModal = false;
-                            return;
+                        if (this.currentProductIndex !== null) {
+                            // Changing existing product
+                            this.products[this.currentProductIndex].id = id;
+                            this.products[this.currentProductIndex].name = name;
+                            this.products[this.currentProductIndex].gst_percentage = gstPercentage;
+                            this.products[this.currentProductIndex].is_igst = isIgst;
+                            this.products[this.currentProductIndex].cgst_rate = isIgst ? 0 : (gstPercentage / 2);
+                            this.products[this.currentProductIndex].sgst_rate = isIgst ? 0 : (gstPercentage / 2);
+                            this.products[this.currentProductIndex].igst_rate = isIgst ? gstPercentage : 0;
+
+                            this.calculateProductTotal(this.currentProductIndex);
+                            console.log('Product changed:', name);
+                            this.currentProductIndex = null;
+                        } else {
+                            // Adding new product
+                            const product = {
+                                id: id,
+                                name: name,
+                                quantity: 1,
+                                unit_price: 0,
+                                gst_percentage: gstPercentage,
+                                is_igst: isIgst,
+                                cgst_rate: isIgst ? 0 : (gstPercentage / 2),
+                                sgst_rate: isIgst ? 0 : (gstPercentage / 2),
+                                igst_rate: isIgst ? gstPercentage : 0,
+                                cgst_value: 0,
+                                sgst_value: 0,
+                                igst_value: 0,
+                                total: 0
+                            };
+
+                            this.products.push(product);
+                            this.calculateProductTotal(this.products.length - 1);
+                            console.log('Product added:', name);
                         }
 
-                        const product = {
-                            id: id,
-                            name: name,
-                            quantity: 1,
-                            unit_price: 0,
-                            discount_amount: 0,
-                            taxable_amount: 0,
-                            gst_percentage: gstPercentage,
-                            is_igst: isIgst,
-                            cgst_rate: isIgst ? 0 : (gstPercentage / 2),
-                            sgst_rate: isIgst ? 0 : (gstPercentage / 2),
-                            igst_rate: isIgst ? gstPercentage : 0,
-                            cgst_value: 0,
-                            sgst_value: 0,
-                            igst_value: 0,
-                            total: 0
-                        };
-
-                        this.products.push(product);
                         this.showProductModal = false;
-                        this.calculateProductTotal(this.products.length - 1);
-                        console.log('Product added:', product.name);
+                        this.productSearch = '';
                     } catch (error) {
-                        console.error('Error adding product:', error);
+                        console.error('Error selecting product:', error);
+                        alert('Error adding product. Please try again.');
                     }
                 },
 
-                addService(id, name, gstPercentage) {
+                changeService(index) {
+                    this.currentServiceIndex = index;
+                    this.showServiceModal = true;
+                    console.log('Changing service at index:', index);
+                },
+
+                selectService(id, name, gstPercentage) {
                     try {
-                        const existingIndex = this.services.findIndex(s => s.id === id);
-                        if (existingIndex !== -1) {
-                            alert(
-                                'Service already added. You can modify the quantity in the services tab.');
-                            this.showServiceModal = false;
-                            return;
+                        if (this.currentServiceIndex !== null) {
+                            // Changing existing service
+                            this.services[this.currentServiceIndex].id = id;
+                            this.services[this.currentServiceIndex].name = name;
+                            this.services[this.currentServiceIndex].gst_percentage = gstPercentage;
+
+                            this.calculateServiceTotal(this.currentServiceIndex);
+                            console.log('Service changed:', name);
+                            this.currentServiceIndex = null;
+                        } else {
+                            // Adding new service
+                            const service = {
+                                id: id,
+                                name: name,
+                                quantity: 1,
+                                unit_price: 0,
+                                gst_percentage: gstPercentage,
+                                gst_total: 0,
+                                total: 0
+                            };
+
+                            this.services.push(service);
+                            this.calculateServiceTotal(this.services.length - 1);
+                            console.log('Service added:', name);
                         }
 
-                        const service = {
-                            id: id,
-                            name: name,
-                            quantity: 1,
-                            unit_price: 0,
-                            discount_amount: 0,
-                            taxable_amount: 0,
-                            gst_percentage: gstPercentage,
-                            gst_total: 0,
-                            total: 0
-                        };
-
-                        this.services.push(service);
                         this.showServiceModal = false;
-                        this.calculateServiceTotal(this.services.length - 1);
-                        console.log('Service added:', service.name);
+                        this.serviceSearch = '';
                     } catch (error) {
-                        console.error('Error adding service:', error);
+                        console.error('Error selecting service:', error);
+                        alert('Error adding service. Please try again.');
                     }
                 },
 
@@ -1215,39 +1042,26 @@
 
                         const quantity = parseFloat(product.quantity) || 0;
                         const unitPrice = parseFloat(product.unit_price) || 0;
-                        const discountAmount = parseFloat(product.discount_amount) || 0;
                         const subtotal = quantity * unitPrice;
 
-                        // Ensure discount doesn't exceed subtotal
-                        product.discount_amount = Math.min(discountAmount, subtotal);
-                        const validDiscountAmount = parseFloat(product.discount_amount);
-
-                        // Calculate taxable amount after discount
-                        const taxableAmount = subtotal - validDiscountAmount;
-                        product.taxable_amount = parseFloat(taxableAmount.toFixed(2));
-
-                        // Apply correct GST logic based on is_igst flag on taxable amount
                         if (product.is_igst) {
                             // IGST product - only IGST applies
                             product.cgst_value = 0;
                             product.sgst_value = 0;
-                            product.igst_value = parseFloat(((taxableAmount * product.igst_rate) / 100)
-                                .toFixed(2));
+                            product.igst_value = parseFloat(((subtotal * product.igst_rate) / 100).toFixed(2));
                         } else {
                             // CGST/SGST product - CGST and SGST apply, no IGST
-                            product.cgst_value = parseFloat(((taxableAmount * product.cgst_rate) / 100)
-                                .toFixed(2));
-                            product.sgst_value = parseFloat(((taxableAmount * product.sgst_rate) / 100)
-                                .toFixed(2));
+                            product.cgst_value = parseFloat(((subtotal * product.cgst_rate) / 100).toFixed(2));
+                            product.sgst_value = parseFloat(((subtotal * product.sgst_rate) / 100).toFixed(2));
                             product.igst_value = 0;
                         }
 
-                        product.total = parseFloat((taxableAmount + product.cgst_value + product
-                                .sgst_value + product
-                                .igst_value)
+                        product.total = parseFloat((subtotal + product.cgst_value + product.sgst_value + product.igst_value)
                             .toFixed(2));
 
-                        this.calculateSummary();
+                        // Debounced summary calculation
+                        clearTimeout(this.summaryTimeout);
+                        this.summaryTimeout = setTimeout(() => this.calculateSummary(), 150);
                     } catch (error) {
                         console.error('Error calculating product total:', error);
                     }
@@ -1260,22 +1074,14 @@
 
                         const quantity = parseFloat(service.quantity) || 0;
                         const unitPrice = parseFloat(service.unit_price) || 0;
-                        const discountAmount = parseFloat(service.discount_amount) || 0;
                         const subtotal = quantity * unitPrice;
 
-                        // Ensure discount doesn't exceed subtotal
-                        service.discount_amount = Math.min(discountAmount, subtotal);
-                        const validDiscountAmount = parseFloat(service.discount_amount);
+                        service.gst_total = parseFloat(((subtotal * service.gst_percentage) / 100).toFixed(2));
+                        service.total = parseFloat((subtotal + service.gst_total).toFixed(2));
 
-                        // Calculate taxable amount after discount
-                        const taxableAmount = subtotal - validDiscountAmount;
-                        service.taxable_amount = parseFloat(taxableAmount.toFixed(2));
-
-                        service.gst_total = parseFloat(((taxableAmount * service.gst_percentage) / 100)
-                            .toFixed(2));
-                        service.total = parseFloat((taxableAmount + service.gst_total).toFixed(2));
-
-                        this.calculateSummary();
+                        // Debounced summary calculation
+                        clearTimeout(this.summaryTimeout);
+                        this.summaryTimeout = setTimeout(() => this.calculateSummary(), 150);
                     } catch (error) {
                         console.error('Error calculating service total:', error);
                     }
@@ -1286,90 +1092,58 @@
                         // Reset summary
                         this.summary = {
                             product_subtotal: 0,
-                            product_discount: 0,
-                            product_taxable_amount: 0,
                             product_total_cgst: 0,
                             product_total_sgst: 0,
                             product_total_igst: 0,
                             product_total: 0,
                             service_subtotal: 0,
-                            service_discount: 0,
-                            service_taxable_amount: 0,
                             service_total_cgst: 0,
                             service_total_sgst: 0,
                             service_total: 0,
                             grand_sub_total: 0,
-                            grand_discount: 0,
-                            grand_taxable_amount: 0,
                             grand_gst_total: 0,
                             grand_total: 0
                         };
 
-                        // Calculate product summary with discount and correct GST logic
+                        // Calculate product summary
                         this.products.forEach(product => {
                             const quantity = parseFloat(product.quantity) || 0;
                             const unitPrice = parseFloat(product.unit_price) || 0;
-                            const discountAmount = parseFloat(product.discount_amount) || 0;
                             const subtotal = quantity * unitPrice;
-                            const taxableAmount = subtotal - discountAmount;
 
                             this.summary.product_subtotal += subtotal;
-                            this.summary.product_discount += discountAmount;
-                            this.summary.product_taxable_amount += taxableAmount;
-
-                            // Only add the applicable GST values based on product type
-                            if (product.is_igst) {
-                                this.summary.product_total_igst += parseFloat(product
-                                    .igst_value) || 0;
-                            } else {
-                                this.summary.product_total_cgst += parseFloat(product
-                                    .cgst_value) || 0;
-                                this.summary.product_total_sgst += parseFloat(product
-                                    .sgst_value) || 0;
-                            }
-
+                            this.summary.product_total_cgst += parseFloat(product.cgst_value) || 0;
+                            this.summary.product_total_sgst += parseFloat(product.sgst_value) || 0;
+                            this.summary.product_total_igst += parseFloat(product.igst_value) || 0;
                             this.summary.product_total += parseFloat(product.total) || 0;
                         });
 
-                        // Calculate service summary (services are typically CGST/SGST)
+                        // Calculate service summary
                         this.services.forEach(service => {
                             const quantity = parseFloat(service.quantity) || 0;
                             const unitPrice = parseFloat(service.unit_price) || 0;
-                            const discountAmount = parseFloat(service.discount_amount) || 0;
                             const subtotal = quantity * unitPrice;
-                            const taxableAmount = subtotal - discountAmount;
 
                             this.summary.service_subtotal += subtotal;
-                            this.summary.service_discount += discountAmount;
-                            this.summary.service_taxable_amount += taxableAmount;
                             // For services, split GST equally between CGST and SGST
-                            this.summary.service_total_cgst += (parseFloat(service.gst_total) ||
-                                0) / 2;
-                            this.summary.service_total_sgst += (parseFloat(service.gst_total) ||
-                                0) / 2;
+                            this.summary.service_total_cgst += (parseFloat(service.gst_total) || 0) / 2;
+                            this.summary.service_total_sgst += (parseFloat(service.gst_total) || 0) / 2;
                             this.summary.service_total += parseFloat(service.total) || 0;
                         });
 
                         // Calculate grand totals
-                        this.summary.grand_sub_total = this.summary.product_subtotal + this.summary
-                            .service_subtotal;
-                        this.summary.grand_discount = this.summary.product_discount + this.summary
-                            .service_discount;
-                        this.summary.grand_taxable_amount = this.summary.product_taxable_amount + this
-                            .summary
-                            .service_taxable_amount;
-                        this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary
-                            .product_total_sgst +
-                            this.summary.product_total_igst + this.summary.service_total_cgst + this
-                            .summary
+                        this.summary.grand_sub_total = this.summary.product_subtotal + this.summary.service_subtotal;
+                        this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary.product_total_sgst +
+                            this.summary.product_total_igst + this.summary.service_total_cgst + this.summary
                             .service_total_sgst;
-                        this.summary.grand_total = this.summary.product_total + this.summary
-                            .service_total;
+                        this.summary.grand_total = this.summary.product_total + this.summary.service_total;
 
                         // Round all values to 2 decimal places
                         Object.keys(this.summary).forEach(key => {
                             this.summary[key] = parseFloat(this.summary[key].toFixed(2));
                         });
+
+                        console.log('Summary calculated - Grand Total:', this.summary.grand_total);
                     } catch (error) {
                         console.error('Error calculating summary:', error);
                     }
@@ -1400,36 +1174,47 @@
                 },
 
                 submitForm() {
-                    if (this.isSubmitting) return;
+                    if (this.isSubmitting) {
+                        console.log('Form submission already in progress...');
+                        return;
+                    }
 
                     try {
-                        if (!this.selectedCustomer || !this.selectedContactPerson || !this
-                            .quotationDate) {
-                            this.errors.basic = 'Please fill in all required basic information.';
+                        // Final validation
+                        if (!this.validateBasicInfo()) {
                             this.activeTab = 'basic';
-                            alert('Please fill in all required basic information.');
                             return;
                         }
 
                         if (this.products.length === 0 && this.services.length === 0) {
-                            this.errors.items = 'Please add at least one product or service.';
                             this.activeTab = 'products';
                             alert('Please add at least one product or service.');
                             return;
                         }
 
+                        // Set submitting state
                         this.isSubmitting = true;
-                        this.errors = {};
+
+                        // Final calculation
                         this.calculateSummary();
 
-                        console.log('Submitting form...');
+                        // Submit the form
                         document.getElementById('quotationForm').submit();
                     } catch (error) {
                         console.error('Error submitting form:', error);
                         this.isSubmitting = false;
+                        alert('An error occurred while submitting the form. Please try again.');
                     }
                 }
-            }));
+            }
+        }
+
+        // Initialize Alpine.js
+        document.addEventListener('alpine:init', () => {
+           });
+
+        // Page load event
+        document.addEventListener('DOMContentLoaded', function() {
         });
     </script>
 </x-app-layout>

@@ -56,7 +56,6 @@ class DeliveryChallanController extends Controller
             // Update existing delivery challan
             $existingChallan->update([
                 'delivery_date' => now()->toDateString(),
-                'status' => 'generated',
                 'generated_at' => now()
             ]);
 
@@ -67,7 +66,6 @@ class DeliveryChallanController extends Controller
                 'dc_no' => DeliveryChallan::generateDcNumber(),
                 'invoice_id' => $invoice->id,
                 'delivery_date' => now()->toDateString(),
-                'status' => 'generated',
                 'generated_at' => now()
             ]);
         }
@@ -136,29 +134,7 @@ class DeliveryChallanController extends Controller
         return $pdf->download($filename);
     }
 
-    public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,generated,delivered,cancelled'
-        ]);
-
-        try {
-            $deliveryChallan = DeliveryChallan::findOrFail($id);
-            $deliveryChallan->update([
-                'status' => $request->status
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Status updated successfully'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update status: ' . $e->getMessage()
-            ], 500);
-        }
-    }
+    // Status functionality removed as requested
 
     public function destroy($id)
     {

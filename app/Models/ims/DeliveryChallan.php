@@ -28,7 +28,6 @@ class DeliveryChallan extends Model
         'dc_no',
         'invoice_id',
         'delivery_date',
-        'status',
         'generated_at'
     ];
 

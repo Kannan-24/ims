@@ -98,10 +98,7 @@
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Delivery Date
                                     </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status
-                                    </th>
+
                                     <th
                                         class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Actions
@@ -141,16 +138,7 @@
                                                 {{ \Carbon\Carbon::parse($challan->delivery_date)->format('d M Y') }}
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                            @if ($challan->status == 'delivered') bg-green-100 text-green-800
-                                            @elseif($challan->status == 'generated') bg-blue-100 text-blue-800
-                                            @elseif($challan->status == 'cancelled') bg-red-100 text-red-800
-                                            @else bg-yellow-100 text-yellow-800 @endif">
-                                                {{ ucfirst($challan->status) }}
-                                            </span>
-                                        </td>
+
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-2">
                                                 <a href="{{ route('delivery-challans.show', $challan->id) }}"
@@ -168,23 +156,7 @@
                                                     title="Download PDF">
                                                     <i class="fas fa-download"></i>
                                                 </a>
-                                                <select
-                                                    class="status-select text-xs border border-gray-300 bg-white text-gray-700 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                    data-challan-id="{{ $challan->id }}"
-                                                    data-current-status="{{ $challan->status }}">
-                                                    <option value="pending"
-                                                        {{ $challan->status == 'pending' ? 'selected' : '' }}>Pending
-                                                    </option>
-                                                    <option value="generated"
-                                                        {{ $challan->status == 'generated' ? 'selected' : '' }}>
-                                                        Generated</option>
-                                                    <option value="delivered"
-                                                        {{ $challan->status == 'delivered' ? 'selected' : '' }}>
-                                                        Delivered</option>
-                                                    <option value="cancelled"
-                                                        {{ $challan->status == 'cancelled' ? 'selected' : '' }}>
-                                                        Cancelled</option>
-                                                </select>
+
                                                 <button @click="deleteChallan('{{ $challan->id }}')"
                                                     class="text-red-600 hover:text-red-900 transition-colors"
                                                     title="Delete">
@@ -251,20 +223,12 @@
                             <ul class="text-sm text-gray-600 space-y-1">
                                 <li>• View delivery challan details by clicking the eye icon</li>
                                 <li>• Download PDF documents for printing</li>
-                                <li>• Update delivery status using the dropdown</li>
+
                                 <li>• Delete challans that are no longer needed</li>
                             </ul>
                         </div>
 
-                        <div>
-                            <h4 class="font-medium text-gray-900 mb-2">Status Types</h4>
-                            <ul class="text-sm text-gray-600 space-y-1">
-                                <li>• <span class="text-yellow-600">Pending:</span> Awaiting processing</li>
-                                <li>• <span class="text-blue-600">Generated:</span> Challan created</li>
-                                <li>• <span class="text-green-600">Delivered:</span> Successfully delivered</li>
-                                <li>• <span class="text-red-600">Cancelled:</span> Delivery cancelled</li>
-                            </ul>
-                        </div>
+
                     </div>
 
                     <div class="mt-6 flex justify-end">
@@ -285,70 +249,9 @@
 
                 init() {
                     // Initialize component
-                    this.setupStatusListeners();
                 },
 
-                setupStatusListeners() {
-                    // Handle status changes
-                    document.querySelectorAll('.status-select').forEach(select => {
-                        select.addEventListener('change', (e) => {
-                            const challanId = e.target.dataset.challanId;
-                            const newStatus = e.target.value;
-                            const currentStatus = e.target.dataset.currentStatus;
 
-                            if (newStatus === currentStatus) return;
-
-                            this.updateStatus(challanId, newStatus, e.target);
-                        });
-                    });
-                },
-
-                updateStatus(challanId, status, selectElement) {
-                    fetch(`/ims/delivery-challans/${challanId}/status`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                    'content')
-                            },
-                            body: JSON.stringify({
-                                status: status
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                selectElement.dataset.currentStatus = status;
-
-                                // Update status badge
-                                const statusBadge = selectElement.closest('tr').querySelector('.rounded-full');
-                                statusBadge.className =
-                                'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ';
-
-                                if (status === 'delivered') {
-                                    statusBadge.className += 'bg-green-100 text-green-800';
-                                } else if (status === 'generated') {
-                                    statusBadge.className += 'bg-blue-100 text-blue-800';
-                                } else if (status === 'cancelled') {
-                                    statusBadge.className += 'bg-red-100 text-red-800';
-                                } else {
-                                    statusBadge.className += 'bg-yellow-100 text-yellow-800';
-                                }
-
-                                statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-
-                                this.showAlert('success', data.message);
-                            } else {
-                                this.showAlert('error', data.message || 'Failed to update status');
-                                selectElement.value = selectElement.dataset.currentStatus; // Reset select
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            this.showAlert('error', 'An error occurred while updating status');
-                            selectElement.value = selectElement.dataset.currentStatus; // Reset select
-                        });
-                },
 
                 deleteChallan(challanId) {
                     if (confirm('Are you sure you want to delete this delivery challan?')) {
