@@ -41,7 +41,7 @@ class Product extends Model
     public function suppliers()
     {
         return $this->belongsToMany(Supplier::class, 'product_suppliers')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     public function purchaseItems()

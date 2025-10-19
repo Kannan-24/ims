@@ -14,33 +14,28 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-gray-50" 
-      x-data="{ 
-          sidebarOpen: false, 
-          sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true', 
-          sidebarHovering: false,
-          darkMode: localStorage.getItem('darkMode') === 'true'
-      }" 
-      x-init="
-          $watch('sidebarCollapsed', value => localStorage.setItem('sidebarCollapsed', value));
-          $watch('darkMode', value => localStorage.setItem('darkMode', value));
-      "
-      :class="darkMode ? 'dark' : ''"
-      @toggle-dark-mode.window="darkMode = !darkMode">
-    
+<body class="font-sans antialiased bg-gray-50" x-data="{
+    sidebarOpen: false,
+    sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+    sidebarHovering: false,
+    darkMode: localStorage.getItem('darkMode') === 'true'
+}" x-init="$watch('sidebarCollapsed', value => localStorage.setItem('sidebarCollapsed', value));
+$watch('darkMode', value => localStorage.setItem('darkMode', value));"
+    :class="darkMode ? 'dark' : ''" @toggle-dark-mode.window="darkMode = !darkMode">
+
     <!-- Top Navigation -->
     @include('components.top-navigation')
-    
+
     <!-- Sidebar -->
     @include('components.sidebar')
-    
+
     <!-- Main Content -->
-    <div class="transition-all duration-300 ease-in-out" 
-         :class="[
-             (sidebarCollapsed && !sidebarHovering) ? 'lg:ml-24' : 'lg:ml-64',
-             $store.notifications && $store.notifications.panelOpen ? 'blur-sm' : ''
-         ]">
-        
+    <div class="transition-all duration-300 ease-in-out"
+        :class="[
+            (sidebarCollapsed && !sidebarHovering) ? 'lg:ml-24' : 'lg:ml-64',
+            $store.notifications && $store.notifications.panelOpen ? 'blur-sm' : ''
+        ]">
+
         <!-- Password Expiry Banner -->
         @php
             $authUser = auth()->user();
@@ -58,7 +53,8 @@
             @endphp
             @if ($showBanner)
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-20" data-password-expiry-banner>
-                    <div class="relative rounded-lg border p-4 flex items-start gap-4 shadow-sm {{ $mustChange || ($daysLeft !== null && $daysLeft < 0) ? 'bg-red-50 border-red-200 text-red-800' : 'bg-amber-50 border-amber-200 text-amber-800' }}">
+                    <div
+                        class="relative rounded-lg border p-4 flex items-start gap-4 shadow-sm {{ $mustChange || ($daysLeft !== null && $daysLeft < 0) ? 'bg-red-50 border-red-200 text-red-800' : 'bg-amber-50 border-amber-200 text-amber-800' }}">
                         <div class="shrink-0">
                             @if ($mustChange || ($daysLeft !== null && $daysLeft < 0))
                                 <i class="fas fa-exclamation-triangle text-red-500"></i>
@@ -68,13 +64,18 @@
                         </div>
                         <div class="flex-1 text-sm leading-6">
                             @if ($mustChange)
-                                <strong>Password Change Required:</strong> Your password must be changed before you can continue using the system.
+                                <strong>Password Change Required:</strong> Your password must be changed before you can
+                                continue using the system.
                             @elseif($daysLeft !== null && $daysLeft < 0)
-                                <strong>Password Expired:</strong> Your password expired {{ abs($daysLeft) }} day{{ abs($daysLeft) === 1 ? '' : 's' }} ago. Please update it now.
+                                <strong>Password Expired:</strong> Your password expired {{ abs($daysLeft) }}
+                                day{{ abs($daysLeft) === 1 ? '' : 's' }} ago. Please update it now.
                             @elseif($daysLeft !== null && $daysLeft === 0)
-                                <strong>Password Expires Today:</strong> Your password expires today. Please update it now.
+                                <strong>Password Expires Today:</strong> Your password expires today. Please update it
+                                now.
                             @elseif($daysLeft !== null)
-                                <strong>Password Expiring Soon:</strong> Your password will expire in <strong>{{ $daysLeft }}</strong> day{{ $daysLeft === 1 ? '' : 's' }}. Update it now to avoid interruption.
+                                <strong>Password Expiring Soon:</strong> Your password will expire in
+                                <strong>{{ $daysLeft }}</strong> day{{ $daysLeft === 1 ? '' : 's' }}. Update it now
+                                to avoid interruption.
                             @else
                                 <strong>Password Required:</strong> Please set your password now.
                             @endif
@@ -85,11 +86,9 @@
                                 <i class="fas fa-key mr-2"></i>
                                 Update Password
                             </a>
-                            <button type="button" 
-                                    onclick="this.closest('[data-password-expiry-banner]').remove()"
-                                    class="p-2 text-gray-400 hover:text-gray-600 transition-colors" 
-                                    aria-label="Dismiss"
-                                    title="Dismiss">
+                            <button type="button" onclick="this.closest('[data-password-expiry-banner]').remove()"
+                                class="p-2 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Dismiss"
+                                title="Dismiss">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -108,24 +107,22 @@
                     'success' => 'fa-check-circle',
                     'error' => 'fa-exclamation-circle',
                     'warning' => 'fa-exclamation-triangle',
-                    'info' => 'fa-info-circle'
+                    'info' => 'fa-info-circle',
                 ];
                 $colorMap = [
                     'success' => 'bg-green-50 border-green-200 text-green-800',
                     'error' => 'bg-red-50 border-red-200 text-red-800',
                     'warning' => 'bg-amber-50 border-amber-200 text-amber-800',
-                    'info' => 'bg-blue-50 border-blue-200 text-blue-800'
+                    'info' => 'bg-blue-50 border-blue-200 text-blue-800',
                 ];
                 ?>
                 <div class="flash-message {{ $colorMap[$status] ?? $colorMap['info'] }} border rounded-lg p-4 shadow-lg transform transition-all duration-300"
-                     x-data="{ show: true }"
-                     x-show="show"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 transform scale-95"
-                     x-transition:enter-end="opacity-100 transform scale-100"
-                     x-transition:leave="transition ease-in duration-200"
-                     x-transition:leave-start="opacity-100 transform scale-100"
-                     x-transition:leave-end="opacity-0 transform scale-95">
+                    x-data="{ show: true }" x-show="show" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95">
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <i class="fas {{ $iconMap[$status] ?? $iconMap['info'] }} text-lg"></i>
@@ -143,14 +140,12 @@
             @if ($errors->any())
                 @foreach ($errors->all() as $error)
                     <div class="flash-message bg-red-50 border-red-200 text-red-800 border rounded-lg p-4 shadow-lg transform transition-all duration-300"
-                         x-data="{ show: true }"
-                         x-show="show"
-                         x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform scale-95"
-                         x-transition:enter-end="opacity-100 transform scale-100"
-                         x-transition:leave="transition ease-in duration-200"
-                         x-transition:leave-start="opacity-100 transform scale-100"
-                         x-transition:leave-end="opacity-0 transform scale-95">
+                        x-data="{ show: true }" x-show="show" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-95"
+                        x-transition:enter-end="opacity-100 transform scale-100"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 transform scale-100"
+                        x-transition:leave-end="opacity-0 transform scale-95">
                         <div class="flex items-start">
                             <div class="flex-shrink-0">
                                 <i class="fas fa-exclamation-circle text-lg"></i>
@@ -168,14 +163,12 @@
 
             @if (session()->has('success'))
                 <div class="flash-message bg-green-50 border-green-200 text-green-800 border rounded-lg p-4 shadow-lg transform transition-all duration-300"
-                     x-data="{ show: true }"
-                     x-show="show"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 transform scale-95"
-                     x-transition:enter-end="opacity-100 transform scale-100"
-                     x-transition:leave="transition ease-in duration-200"
-                     x-transition:leave-start="opacity-100 transform scale-100"
-                     x-transition:leave-end="opacity-0 transform scale-95">
+                    x-data="{ show: true }" x-show="show" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95">
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <i class="fas fa-check-circle text-lg"></i>
@@ -192,14 +185,12 @@
 
             @if (session()->has('error'))
                 <div class="flash-message bg-red-50 border-red-200 text-red-800 border rounded-lg p-4 shadow-lg transform transition-all duration-300"
-                     x-data="{ show: true }"
-                     x-show="show"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 transform scale-95"
-                     x-transition:enter-end="opacity-100 transform scale-100"
-                     x-transition:leave="transition ease-in duration-200"
-                     x-transition:leave-start="opacity-100 transform scale-100"
-                     x-transition:leave-end="opacity-0 transform scale-95">
+                    x-data="{ show: true }" x-show="show" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95">
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <i class="fas fa-exclamation-circle text-lg"></i>
@@ -232,27 +223,21 @@
     </div>
 
     <!-- Global Search Modal -->
-    <div x-data="{ searchOpen: false }" 
-         @keydown.ctrl.k.window.prevent="searchOpen = true"
-         @keydown.escape.window="searchOpen = false">
-        <div x-show="searchOpen" 
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-start justify-center pt-20">
+    <div x-data="{ searchOpen: false }" @keydown.ctrl.k.window.prevent="searchOpen = true"
+        @keydown.escape.window="searchOpen = false">
+        <div x-show="searchOpen" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-start justify-center pt-20">
             <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-96 overflow-hidden"
-                 @click.away="searchOpen = false">
+                @click.away="searchOpen = false">
                 <div class="p-4 border-b border-gray-200">
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-search text-gray-400"></i>
-                        <input type="text" 
-                               placeholder="Search pages, features, or content..."
-                               class="flex-1 outline-none text-lg"
-                               x-ref="searchInput"
-                               @keydown.escape="searchOpen = false">
+                        <input type="text" placeholder="Search pages, features, or content..."
+                            class="flex-1 outline-none text-lg" x-ref="searchInput"
+                            @keydown.escape="searchOpen = false">
                         <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">ESC</span>
                     </div>
                 </div>
@@ -342,11 +327,11 @@
             function handleLinkClick(e) {
                 const link = e.target.closest('a[href]');
                 if (!link) return;
-                
+
                 const href = link.getAttribute('href');
                 if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
                 if (link.target === '_blank' || link.hasAttribute('download')) return;
-                
+
                 if (globalDirty && !confirm(WARNING_MESSAGE)) {
                     e.preventDefault();
                     e.stopImmediatePropagation();
@@ -362,7 +347,7 @@
                 document.addEventListener('change', handleFormChange, true);
                 document.addEventListener('submit', handleFormSubmit, true);
                 document.addEventListener('click', handleLinkClick, true);
-                
+
                 // Global utilities
                 window.UnsavedChanges = {
                     refreshInitialStates() {
@@ -388,31 +373,34 @@
     </script>
 
 
-    
+
     <!-- Additional Scripts -->
     @stack('scripts')
-    
+
     <!-- Page Loading Indicator -->
-    <div id="page-loading" class="fixed top-0 left-0 w-full h-1 bg-blue-600 transform scale-x-0 transition-transform duration-300 z-50"></div>
-    
+    <div id="page-loading"
+        class="fixed top-0 left-0 w-full h-1 bg-blue-600 transform scale-x-0 transition-transform duration-300 z-50">
+    </div>
+
     <script>
         // Page loading indicator
         document.addEventListener('DOMContentLoaded', function() {
             const loadingBar = document.getElementById('page-loading');
-            
+
             // Show loading bar on navigation
             document.addEventListener('click', function(e) {
                 const link = e.target.closest('a[href]');
-                if (link && !link.target && !link.href.startsWith('#') && !link.href.startsWith('javascript:')) {
+                if (link && !link.target && !link.href.startsWith('#') && !link.href.startsWith(
+                        'javascript:')) {
                     loadingBar.style.transform = 'scaleX(0.3)';
                 }
             });
-            
+
             // Show loading bar on form submission
             document.addEventListener('submit', function(e) {
                 loadingBar.style.transform = 'scaleX(0.6)';
             });
-            
+
             // Complete loading bar
             window.addEventListener('load', function() {
                 loadingBar.style.transform = 'scaleX(1)';

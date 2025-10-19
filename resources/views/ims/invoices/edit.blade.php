@@ -1031,8 +1031,10 @@
                         // Load existing products from the invoice
                         @foreach ($invoice->items->where('type', 'product') as $item)
                             @if ($item->product)
-                                const isIgst{{ $loop->index }} = {{ $item->product->is_igst ? 'true' : 'false' }};
-                                const gstPercentage{{ $loop->index }} = {{ $item->product->gst_percentage }};
+                                const isIgst{{ $loop->index }} =
+                                    {{ $item->product->is_igst ? 'true' : 'false' }};
+                                const gstPercentage{{ $loop->index }} =
+                                    {{ $item->product->gst_percentage }};
 
                                 this.products.push({
                                     id: {{ $item->product_id }},
@@ -1041,11 +1043,14 @@
                                     unit_price: {{ $item->unit_price }},
                                     gst_percentage: gstPercentage{{ $loop->index }},
                                     is_igst: isIgst{{ $loop->index }},
-                                    cgst_rate: isIgst{{ $loop->index }} ? 0 : (gstPercentage{{ $loop->index }} /
+                                    cgst_rate: isIgst{{ $loop->index }} ? 0 : (
+                                        gstPercentage{{ $loop->index }} /
                                         2),
-                                    sgst_rate: isIgst{{ $loop->index }} ? 0 : (gstPercentage{{ $loop->index }} /
+                                    sgst_rate: isIgst{{ $loop->index }} ? 0 : (
+                                        gstPercentage{{ $loop->index }} /
                                         2),
-                                    igst_rate: isIgst{{ $loop->index }} ? gstPercentage{{ $loop->index }} : 0,
+                                    igst_rate: isIgst{{ $loop->index }} ?
+                                        gstPercentage{{ $loop->index }} : 0,
                                     cgst_value: isIgst{{ $loop->index }} ? 0 : parseFloat(
                                         {{ number_format($item->cgst, 2, '.', '') }}),
                                     sgst_value: isIgst{{ $loop->index }} ? 0 : parseFloat(
@@ -1053,11 +1058,13 @@
                                     igst_value: isIgst{{ $loop->index }} ? parseFloat(
                                         {{ number_format($item->igst, 2, '.', '') }}) : 0,
                                     discount_amount: parseFloat(
-                                        {{ number_format($item->discount_amount ?? 0, 2, '.', '') }}),
+                                        {{ number_format($item->discount_amount ?? 0, 2, '.', '') }}
+                                        ),
                                     taxable_amount: parseFloat(
                                         {{ number_format($item->taxable_amount ?? $item->quantity * $item->unit_price, 2, '.', '') }}
                                     ),
-                                    total: parseFloat({{ number_format($item->total, 2, '.', '') }})
+                                    total: parseFloat(
+                                        {{ number_format($item->total, 2, '.', '') }})
                                 });
                             @endif
                         @endforeach
@@ -1072,12 +1079,15 @@
                                     unit_price: {{ $item->unit_price }},
                                     gst_percentage: {{ $item->service->gst_percentage }},
                                     discount_amount: parseFloat(
-                                        {{ number_format($item->discount_amount ?? 0, 2, '.', '') }}),
+                                        {{ number_format($item->discount_amount ?? 0, 2, '.', '') }}
+                                        ),
                                     taxable_amount: parseFloat(
                                         {{ number_format($item->taxable_amount ?? $item->quantity * $item->unit_price, 2, '.', '') }}
                                     ),
-                                    gst_total: parseFloat({{ number_format($item->gst, 2, '.', '') }}),
-                                    total: parseFloat({{ number_format($item->total, 2, '.', '') }})
+                                    gst_total: parseFloat(
+                                        {{ number_format($item->gst, 2, '.', '') }}),
+                                    total: parseFloat(
+                                        {{ number_format($item->total, 2, '.', '') }})
                                 });
                             @endif
                         @endforeach
@@ -1086,9 +1096,11 @@
                         console.log('Services loaded:', this.services.length);
 
                         // Load courier charges and final total
-                        this.courierCharges = parseFloat({{ number_format($invoice->courier_charges ?? 0, 2, '.', '') }});
+                        this.courierCharges = parseFloat(
+                            {{ number_format($invoice->courier_charges ?? 0, 2, '.', '') }});
                         this.finalTotal = parseFloat(
-                            {{ number_format($invoice->grand_total ?? $invoice->total, 2, '.', '') }});
+                            {{ number_format($invoice->grand_total ?? $invoice->total, 2, '.', '') }}
+                            );
 
                         console.log('Loaded courier charges:', this.courierCharges);
                         console.log('Loaded final total:', this.finalTotal);
@@ -1110,9 +1122,11 @@
                             this.submitForm();
                         }
 
-                        if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                        if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.altKey && !e
+                            .metaKey) {
                             const activeElement = document.activeElement;
-                            if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA') {
+                            if (activeElement.tagName !== 'INPUT' && activeElement.tagName !==
+                                'TEXTAREA') {
                                 e.preventDefault();
                                 this.showHelpModal = true;
                             }
@@ -1126,7 +1140,9 @@
                                 this.showProductModal = false;
                             } else if (this.showServiceModal) {
                                 this.showServiceModal = false;
-                            } else if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
+                            } else if (confirm(
+                                    'Are you sure you want to cancel? All changes will be lost.'
+                                    )) {
                                 window.location.href = '{{ route('invoices.index') }}';
                             }
                         }
@@ -1137,7 +1153,8 @@
                     try {
                         this.contactPersons = this.customersData[this.selectedCustomer] || [];
                         const validContactIds = this.contactPersons.map(c => c.id.toString());
-                        if (this.selectedContactPerson && !validContactIds.includes(this.selectedContactPerson
+                        if (this.selectedContactPerson && !validContactIds.includes(this
+                                .selectedContactPerson
                                 .toString())) {
                             this.selectedContactPerson = '';
                         }
@@ -1150,7 +1167,8 @@
 
                 nextStep() {
                     if (this.activeTab === 'basic') {
-                        if (!this.selectedCustomer || !this.selectedContactPerson || !this.invoiceDate || !this.orderDate) {
+                        if (!this.selectedCustomer || !this.selectedContactPerson || !this
+                            .invoiceDate || !this.orderDate) {
                             alert('Please fill in all required fields before proceeding.');
                             return;
                         }
@@ -1187,7 +1205,8 @@
 
                 selectProduct(id, name, gstPercentage, isIgst) {
                     try {
-                        if (this.currentEditingType === 'product' && this.currentEditingIndex !== null) {
+                        if (this.currentEditingType === 'product' && this.currentEditingIndex !==
+                            null) {
                             // Update existing product
                             const product = this.products[this.currentEditingIndex];
                             product.id = id;
@@ -1203,7 +1222,8 @@
                             // Add new product
                             const existingIndex = this.products.findIndex(p => p.id === id);
                             if (existingIndex !== -1) {
-                                alert('Product already added. You can modify the quantity in the products tab.');
+                                alert(
+                                    'Product already added. You can modify the quantity in the products tab.');
                                 this.showProductModal = false;
                                 return;
                             }
@@ -1239,7 +1259,8 @@
 
                 selectService(id, name, gstPercentage) {
                     try {
-                        if (this.currentEditingType === 'service' && this.currentEditingIndex !== null) {
+                        if (this.currentEditingType === 'service' && this.currentEditingIndex !==
+                            null) {
                             // Update existing service
                             const service = this.services[this.currentEditingIndex];
                             service.id = id;
@@ -1251,7 +1272,8 @@
                             // Add new service
                             const existingIndex = this.services.findIndex(s => s.id === id);
                             if (existingIndex !== -1) {
-                                alert('Service already added. You can modify the quantity in the services tab.');
+                                alert(
+                                    'Service already added. You can modify the quantity in the services tab.');
                                 this.showServiceModal = false;
                                 return;
                             }
@@ -1320,15 +1342,19 @@
                             // IGST product - only IGST applies
                             product.cgst_value = 0;
                             product.sgst_value = 0;
-                            product.igst_value = parseFloat(((taxableAmount * product.igst_rate) / 100).toFixed(2));
+                            product.igst_value = parseFloat(((taxableAmount * product.igst_rate) / 100)
+                                .toFixed(2));
                         } else {
                             // CGST/SGST product - CGST and SGST apply, no IGST
-                            product.cgst_value = parseFloat(((taxableAmount * product.cgst_rate) / 100).toFixed(2));
-                            product.sgst_value = parseFloat(((taxableAmount * product.sgst_rate) / 100).toFixed(2));
+                            product.cgst_value = parseFloat(((taxableAmount * product.cgst_rate) / 100)
+                                .toFixed(2));
+                            product.sgst_value = parseFloat(((taxableAmount * product.sgst_rate) / 100)
+                                .toFixed(2));
                             product.igst_value = 0;
                         }
 
-                        product.total = parseFloat((taxableAmount + product.cgst_value + product.sgst_value + product
+                        product.total = parseFloat((taxableAmount + product.cgst_value + product
+                                .sgst_value + product
                                 .igst_value)
                             .toFixed(2));
 
@@ -1356,7 +1382,8 @@
                         const taxableAmount = subtotal - validDiscountAmount;
                         service.taxable_amount = parseFloat(taxableAmount.toFixed(2));
 
-                        service.gst_total = parseFloat(((taxableAmount * service.gst_percentage) / 100).toFixed(2));
+                        service.gst_total = parseFloat(((taxableAmount * service.gst_percentage) / 100)
+                            .toFixed(2));
                         service.total = parseFloat((taxableAmount + service.gst_total).toFixed(2));
 
                         this.calculateSummary();
@@ -1403,10 +1430,13 @@
 
                             // Only add the applicable GST values based on product type
                             if (product.is_igst) {
-                                this.summary.product_total_igst += parseFloat(product.igst_value) || 0;
+                                this.summary.product_total_igst += parseFloat(product
+                                    .igst_value) || 0;
                             } else {
-                                this.summary.product_total_cgst += parseFloat(product.cgst_value) || 0;
-                                this.summary.product_total_sgst += parseFloat(product.sgst_value) || 0;
+                                this.summary.product_total_cgst += parseFloat(product
+                                    .cgst_value) || 0;
+                                this.summary.product_total_sgst += parseFloat(product
+                                    .sgst_value) || 0;
                             }
 
                             this.summary.product_total += parseFloat(product.total) || 0;
@@ -1424,20 +1454,28 @@
                             this.summary.service_discount += discountAmount;
                             this.summary.service_taxable_amount += taxableAmount;
                             // For services, split GST equally between CGST and SGST
-                            this.summary.service_total_cgst += (parseFloat(service.gst_total) || 0) / 2;
-                            this.summary.service_total_sgst += (parseFloat(service.gst_total) || 0) / 2;
+                            this.summary.service_total_cgst += (parseFloat(service.gst_total) ||
+                                0) / 2;
+                            this.summary.service_total_sgst += (parseFloat(service.gst_total) ||
+                                0) / 2;
                             this.summary.service_total += parseFloat(service.total) || 0;
                         });
 
                         // Calculate grand totals
-                        this.summary.grand_sub_total = this.summary.product_subtotal + this.summary.service_subtotal;
-                        this.summary.grand_discount = this.summary.product_discount + this.summary.service_discount;
-                        this.summary.grand_taxable_amount = this.summary.product_taxable_amount + this.summary
+                        this.summary.grand_sub_total = this.summary.product_subtotal + this.summary
+                            .service_subtotal;
+                        this.summary.grand_discount = this.summary.product_discount + this.summary
+                            .service_discount;
+                        this.summary.grand_taxable_amount = this.summary.product_taxable_amount + this
+                            .summary
                             .service_taxable_amount;
-                        this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary.product_total_sgst +
-                            this.summary.product_total_igst + this.summary.service_total_cgst + this.summary
+                        this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary
+                            .product_total_sgst +
+                            this.summary.product_total_igst + this.summary.service_total_cgst + this
+                            .summary
                             .service_total_sgst;
-                        this.summary.grand_total = this.summary.product_total + this.summary.service_total;
+                        this.summary.grand_total = this.summary.product_total + this.summary
+                            .service_total;
 
                         // Round all values to 2 decimal places
                         Object.keys(this.summary).forEach(key => {
@@ -1454,7 +1492,8 @@
                 calculateFinalTotal() {
                     try {
                         const courierCharges = parseFloat(this.courierCharges) || 0;
-                        this.finalTotal = parseFloat((this.summary.grand_total + courierCharges).toFixed(2));
+                        this.finalTotal = parseFloat((this.summary.grand_total + courierCharges)
+                            .toFixed(2));
                         console.log('Final total calculated:', {
                             courierCharges: courierCharges,
                             grandTotal: this.summary.grand_total,
@@ -1494,7 +1533,8 @@
 
                     try {
                         // Validation
-                        if (!this.selectedCustomer || !this.selectedContactPerson || !this.invoiceDate || !this.orderDate) {
+                        if (!this.selectedCustomer || !this.selectedContactPerson || !this
+                            .invoiceDate || !this.orderDate) {
                             this.errors.basic = 'Please fill in all required basic information.';
                             this.activeTab = 'basic';
                             alert('Please fill in all required basic information.');
