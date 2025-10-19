@@ -47,12 +47,6 @@
                     <p class="text-sm text-gray-600 mt-1">Update supplier information and contact details</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <!-- Help Button -->
-                    <a href="{{ route('suppliers.help') }}"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                        Help
-                    </a>
                     <a href="{{ route('suppliers.show', $supplier) }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
                         <i class="fas fa-arrow-left w-4 h-4 mr-2"></i>
@@ -114,8 +108,8 @@
                                         Supplier ID
                                     </label>
                                     <input type="text" name="supplier_id" id="supplier_id"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('supplier_id') border-red-500 @enderror"
-                                        value="{{ old('supplier_id', $supplier->supplier_id) }}">
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed focus:ring-0 focus:border-gray-300 @error('supplier_id') border-red-500 @enderror"
+                                        value="{{ old('supplier_id', $supplier->supplier_id) }}" readonly>
                                     @error('supplier_id')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -257,45 +251,39 @@
 
                 </div>
 
-                <!-- Form Actions -->
-                <div class="flex items-center justify-end space-x-3 mt-8 pt-6 border-t border-gray-200">
-                    <a href="{{ route('suppliers.show', $supplier) }}"
-                        class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
-                        Cancel
-                    </a>
-                    <button type="submit"
-                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-                        <i class="fas fa-save mr-2"></i>
-                        Update Supplier
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Help Modal -->
-        <div x-show="showHelpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
-            x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
-            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                <div class="mt-3">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-medium text-gray-900">Help & Instructions</h3>
-                        <button @click="showHelpModal = false" class="text-gray-400 hover:text-gray-600">
-                            <i class="fas fa-times"></i>
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                    <!-- Left side - Previous button -->
+                    <div>
+                        <button type="button" @click="previousTab()" x-show="activeTab !== 'info'"
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-chevron-left mr-2"></i>
+                            Previous
                         </button>
                     </div>
-                    <div class="mt-4 text-sm text-gray-600">
-                        <ul class="space-y-2">
-                            <li><strong>Supplier Information:</strong> Update basic company details and contact information.</li>
-                            <li><strong>Address Details:</strong> Modify complete address information for shipping and billing.</li>
-                            <li><strong>Required Fields:</strong> Fields marked with (*) are required and must be filled.</li>
-                            <li><strong>Changes:</strong> All changes will be saved when you click "Update Supplier".</li>
-                            <li><strong>Help:</strong> Press 'H' for complete help documentation with shortcuts.</li>
-                        </ul>
+
+                    <!-- Right side - Next/Submit buttons -->
+                    <div class="flex items-center space-x-3">
+                        <a href="{{ route('suppliers.show', $supplier) }}"
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </a>
+                        
+                        <!-- Next Button (shown when not on last tab) -->
+                        <button type="button" @click="nextTab()" x-show="activeTab !== 'address'"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            Next
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </button>
+                        
+                        <!-- Submit Button (shown only on last tab) -->
+                        <button type="submit" x-show="activeTab === 'address'"
+                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            Update Supplier
+                        </button>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -304,116 +292,24 @@
         function supplierEditManager() {
             return {
                 activeTab: 'info',
-                showHelpModal: false,
-                
                 init() {
-                    this.bindKeyboardEvents();
+                    // Initialization logic if needed
                 },
-
                 nextTab() {
                     if (this.activeTab === 'info') {
                         this.activeTab = 'address';
                     }
                 },
-
                 previousTab() {
                     if (this.activeTab === 'address') {
                         this.activeTab = 'info';
                     }
                 },
-
-                bindKeyboardEvents() {
-                    document.addEventListener('keydown', (e) => {
-                        // Don't trigger shortcuts when typing in inputs
-                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                            // Allow Ctrl+S even when in inputs
-                            if (e.ctrlKey && e.key === 's') {
-                                e.preventDefault();
-                                this.submitForm();
-                            }
-                            return;
-                        }
-
-                        // Save supplier - Ctrl+S
-                        if (e.ctrlKey && e.key === 's') {
-                            e.preventDefault();
-                            this.submitForm();
-                        }
-
-                        // Show help - H key
-                        if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.altKey) {
-                            e.preventDefault();
-                            window.location.href = '{{ route('suppliers.help') }}';
-                        }
-
-                        // Cancel and exit - Escape key
-                        if (e.key === 'Escape') {
-                            e.preventDefault();
-                            if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
-                                window.location.href = '{{ route('suppliers.show', $supplier) }}';
-                            }
-                        }
-
-                        // Next tab - Right arrow + Ctrl
-                        if (e.key === 'ArrowRight' && e.ctrlKey) {
-                            e.preventDefault();
-                            this.nextTab();
-                        }
-
-                        // Previous tab - Left arrow + Ctrl
-                        if (e.key === 'ArrowLeft' && e.ctrlKey) {
-                            e.preventDefault();
-                            this.previousTab();
-                        }
-
-                        // Back to list - Ctrl+B
-                        if (e.ctrlKey && e.key === 'b') {
-                            e.preventDefault();
-                            window.location.href = '{{ route('suppliers.index') }}';
-                        }
-
-                        // View supplier - Ctrl+V
-                        if (e.ctrlKey && e.key === 'v') {
-                            e.preventDefault();
-                            window.location.href = '{{ route('suppliers.show', $supplier) }}';
-                        }
-                    });
-                },
-                
                 submitForm() {
-                    const form = document.getElementById('supplierForm');
-                    
-                    // Add deleted contact IDs to form
-                    this.contactsToDelete.forEach(id => {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'deleted_contacts[]';
-                        input.value = id;
-                        form.appendChild(input);
-                    });
-                    
-                    // Basic validation
-                    const requiredFields = ['company_name', 'contact_person', 'email', 'phone', 'address', 'city', 'state', 'country'];
-                    let isValid = true;
-                    
-                    requiredFields.forEach(field => {
-                        const input = document.getElementById(field);
-                        if (!input.value.trim()) {
-                            input.classList.add('border-red-500');
-                            isValid = false;
-                        } else {
-                            input.classList.remove('border-red-500');
-                        }
-                    });
-                    
-                    if (isValid) {
-                        form.submit();
-                    } else {
-                        alert('Please fill in all required fields.');
-                    }
+                    document.getElementById('supplierForm').submit();
                 }
             }
-        }
+        }   
     </script>
     @endpush
 </x-app-layout>

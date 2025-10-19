@@ -33,12 +33,6 @@
                     <p class="text-sm text-gray-600 mt-1">Manage supplier information and contact details</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <!-- Help Button -->
-                    <a href="{{ route('suppliers.help') }}"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                        Help
-                    </a>
                     <!-- Add Supplier Button -->
                     <a href="{{ route('suppliers.create') }}"
                         class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
@@ -160,12 +154,17 @@
                                                 title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <button
-                                                @click="confirmDelete('{{ $supplier->id }}', '{{ $supplier->company_name }}')"
-                                                class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                                                title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                            <form method="POST"
+                                                action="{{ route('suppliers.destroy', $supplier->id) }}"
+                                                onsubmit="return confirm('Are you sure you want to delete this supplier?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                                                    title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
@@ -198,132 +197,5 @@
                 @endif
             </div>
         </div>
-
-        <!-- Delete Confirmation Modal -->
-        <div x-show="showDeleteModal"
-            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
-            x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
-            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                <div class="mt-3 text-center">
-                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                        <i class="fas fa-exclamation-triangle text-red-600"></i>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-900 mt-4">Delete Supplier</h3>
-                    <div class="mt-2 px-7 py-3">
-                        <p class="text-sm text-gray-500">
-                            Are you sure you want to delete "<span x-text="supplierToDelete.name"></span>"?
-                            This action cannot be undone.
-                        </p>
-                    </div>
-                    <div class="flex items-center justify-center space-x-4 mt-4">
-                        <button @click="showDeleteModal = false"
-                            class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 text-sm font-medium rounded-lg transition-colors">
-                            Cancel
-                        </button>
-                        <button @click="deleteSupplier()"
-                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-
-    @push('scripts')
-        <script>
-            function supplierManager() {
-                return {
-                    showDeleteModal: false,
-                    supplierToDelete: {
-                        id: null,
-                        name: ''
-                    },
-
-                    init() {
-                        this.bindKeyboardEvents();
-                    },
-
-                    bindKeyboardEvents() {
-                        document.addEventListener('keydown', (e) => {
-                            // Don't trigger shortcuts when typing in inputs
-                            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName ===
-                                'SELECT') {
-                                return;
-                            }
-
-                            // Create new supplier - N key or Ctrl+N
-                            if ((e.key.toLowerCase() === 'n' && !e.ctrlKey && !e.altKey) || (e.ctrlKey && e.key ===
-                                'n')) {
-                                e.preventDefault();
-                                window.location.href = '{{ route('suppliers.create') }}';
-                            }
-
-                            // Show help - H key
-                            if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.altKey) {
-                                e.preventDefault();
-                                window.location.href = '{{ route('suppliers.help') }}';
-                            }
-
-                            // Focus search - S key or Ctrl+F
-                            if ((e.key.toLowerCase() === 's' && !e.ctrlKey && !e.altKey) || (e.ctrlKey && e.key ===
-                                'f')) {
-                                e.preventDefault();
-                                const searchInput = document.querySelector('input[name="search"]');
-                                if (searchInput) {
-                                    searchInput.focus();
-                                }
-                            }
-
-                            // Refresh page - F5 or Ctrl+R
-                            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
-                                e.preventDefault();
-                                window.location.reload();
-                            }
-
-                            // Back to dashboard - Escape
-                            if (e.key === 'Escape') {
-                                e.preventDefault();
-                                window.location.href = '{{ route('dashboard') }}';
-                            }
-                        });
-                    },
-
-                    confirmDelete(id, name) {
-                        this.supplierToDelete = {
-                            id,
-                            name
-                        };
-                        this.showDeleteModal = true;
-                    },
-
-                    deleteSupplier() {
-                        if (this.supplierToDelete.id) {
-                            // Create form and submit
-                            const form = document.createElement('form');
-                            form.method = 'POST';
-                            form.action = `/suppliers/${this.supplierToDelete.id}`;
-
-                            const csrfToken = document.createElement('input');
-                            csrfToken.type = 'hidden';
-                            csrfToken.name = '_token';
-                            csrfToken.value = '{{ csrf_token() }}';
-
-                            const methodField = document.createElement('input');
-                            methodField.type = 'hidden';
-                            methodField.name = '_method';
-                            methodField.value = 'DELETE';
-
-                            form.appendChild(csrfToken);
-                            form.appendChild(methodField);
-                            document.body.appendChild(form);
-                            form.submit();
-                        }
-                    }
-                }
-            }
-        </script>
-    @endpush
 </x-app-layout>

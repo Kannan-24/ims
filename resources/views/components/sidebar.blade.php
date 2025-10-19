@@ -209,10 +209,7 @@
                         <i class="fas fa-calendar-alt nav-icon"></i>
                         <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Calendar</span>
                     </a>
-                    <a href="{{ route('hotkeys.index') }}" class="nav-subitem {{ request()->routeIs('hotkeys.*') ? 'active' : '' }}">
-                        <i class="fas fa-keyboard nav-icon"></i>
-                        <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Hotkeys</span>
-                    </a>
+                    
                     <a href="{{ route('notes.index') }}" class="nav-subitem {{ request()->routeIs('notes.*') ? 'active' : '' }}">
                         <i class="fas fa-sticky-note nav-icon"></i>
                         <span class="nav-text" x-show="!sidebarCollapsed || (sidebarCollapsed && sidebarHovering)">Notes</span>

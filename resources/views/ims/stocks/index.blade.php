@@ -33,18 +33,14 @@
                     <p class="text-sm text-gray-600 mt-1">Manage inventory levels and stock entries</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <!-- Help Button -->
-                    <a href="{{ route('stocks.help') }}"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                        Help
-                    </a>
                     <!-- New Stock Button -->
-                    <a href="{{ route('stocks.create') }}"
-                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-plus w-4 h-4 mr-2"></i>
-                        Add Stock Entry
-                    </a>
+                    @if (!$stocks->isEmpty())
+                        <a href="{{ route('stocks.create') }}"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                            <i class="fas fa-plus w-4 h-4 mr-2"></i>
+                            Add Stock Entry
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -106,8 +102,7 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200" id="stockTableBody">
                             @forelse ($stocks as $stock)
-                                <tr class="hover:bg-gray-50 stock-row" data-stock-id="{{ $stock->id }}"
-                                    :class="selectedRowIndex === {{ $loop->index }} ? 'bg-blue-50 ring-2 ring-blue-500' : ''">
+                                <tr class="hover:bg-gray-50 stock-row" data-stock-id="{{ $stock->id }}">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div
@@ -216,114 +211,6 @@
                 @endif
             </div>
         </div>
-
-        <!-- Help Modal -->
-        <div x-show="showHelpModal" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-gray-900">Stock Management Help</h2>
-                    <button @click="closeHelpModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-
-                <div class="p-6 space-y-6">
-                    <!-- Keyboard Shortcuts -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-keyboard text-blue-600 mr-2"></i>Keyboard Shortcuts
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">New Stock</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">N</kbd>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Manual Entry</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">M</kbd>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Search</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">S</kbd>
-                                </div>
-                            </div>
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Navigate Down</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">↓</kbd>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">Navigate Up</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">↑</kbd>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-700">View Details</span>
-                                    <kbd
-                                        class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-sm">Enter</kbd>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Features -->
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-cogs text-green-600 mr-2"></i>Features & Actions
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-3">
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Stock Overview</h4>
-                                    <p class="text-sm text-gray-600">View total products, quantities, sold items, and
-                                        available stock.</p>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Manual Entry</h4>
-                                    <p class="text-sm text-gray-600">Add stock manually without purchase orders.</p>
-                                </div>
-                            </div>
-                            <div class="space-y-3">
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Stock Status</h4>
-                                    <p class="text-sm text-gray-600">Visual indicators for stock levels: In Stock, Low
-                                        Stock, Critical.</p>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium text-gray-900">Product Details</h4>
-                                    <p class="text-sm text-gray-600">Click on any row to view detailed stock
-                                        information.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tips -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-blue-900 mb-3">
-                            <i class="fas fa-lightbulb text-blue-600 mr-2"></i>Pro Tips
-                        </h3>
-                        <div class="space-y-2 text-sm text-blue-800">
-                            <div>• Use keyboard shortcuts for faster navigation</div>
-                            <div>• Monitor stock levels with color-coded status indicators</div>
-                            <div>• Search by product name, supplier, or unit type</div>
-                            <div>• Manual entries get automatic batch code generation</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-end px-6 py-4 bg-gray-50 border-t border-gray-200">
-                    <button @click="closeHelpModal()"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        Got it!
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Floating Action Button for Mobile -->
@@ -343,103 +230,16 @@
     <script>
         function stockManager() {
             return {
-                showHelpModal: false,
-                selectedRowIndex: -1,
-                totalRows: 0,
-
+                selectedRowIndex: null,
                 init() {
-                    this.totalRows = document.querySelectorAll('.stock-row').length;
-                    this.setupKeyboardShortcuts();
-                },
-
-                setupKeyboardShortcuts() {
-                    document.addEventListener('keydown', (e) => {
-                        // Ignore if user is typing in an input field
-                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                            return;
-                        }
-
-                        // Handle Ctrl+N for new stock
-                        if (e.ctrlKey && e.key.toLowerCase() === 'n') {
-                            e.preventDefault();
-                            window.location.href = '{{ route('stocks.create') }}';
-                            return;
-                        }
-
-                        switch (e.key.toLowerCase()) {
-                            case 'n':
-                                e.preventDefault();
-                                window.location.href = '{{ route('stocks.create') }}';
-                                break;
-                            case 'm':
-                                e.preventDefault();
-                                window.location.href = '{{ route('stocks.manual.create') }}';
-                                break;
-                            case 's':
-                                e.preventDefault();
-                                document.getElementById('searchInput').focus();
-                                break;
-                            case 'h':
-                                e.preventDefault();
-                                this.showHelpModal = true;
-                                break;
-                            case 'escape':
-                                this.closeHelpModal();
-                                break;
-                            case 'arrowdown':
-                                e.preventDefault();
-                                this.navigateDown();
-                                break;
-                            case 'arrowup':
-                                e.preventDefault();
-                                this.navigateUp();
-                                break;
-                            case 'enter':
-                                e.preventDefault();
-                                this.viewSelectedStock();
-                                break;
-                        }
+                    const rows = document.querySelectorAll('.stock-row');
+                    rows.forEach((row, index) => {
+                        row.addEventListener('click', () => {
+                            this.selectedRowIndex = index;
+                        });
                     });
                 },
-
-                navigateDown() {
-                    if (this.selectedRowIndex < this.totalRows - 1) {
-                        this.selectedRowIndex++;
-                        this.scrollToSelectedRow();
-                    }
-                },
-
-                navigateUp() {
-                    if (this.selectedRowIndex > 0) {
-                        this.selectedRowIndex--;
-                        this.scrollToSelectedRow();
-                    }
-                },
-
-                scrollToSelectedRow() {
-                    const selectedRow = document.querySelector(`.stock-row:nth-child(${this.selectedRowIndex + 1})`);
-                    if (selectedRow) {
-                        selectedRow.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                    }
-                },
-
-                viewSelectedStock() {
-                    if (this.selectedRowIndex >= 0) {
-                        const selectedRow = document.querySelector(`.stock-row:nth-child(${this.selectedRowIndex + 1})`);
-                        if (selectedRow) {
-                            const stockId = selectedRow.dataset.stockId;
-                            window.location.href = `/stocks/${stockId}`;
-                        }
-                    }
-                },
-
-                closeHelpModal() {
-                    this.showHelpModal = false;
-                }
-            }
+            };
         }
     </script>
 </x-app-layout>

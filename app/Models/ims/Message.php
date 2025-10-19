@@ -31,11 +31,13 @@ class Message extends Model
         'message',
         'attachment',
         'attachment_name',
-        'is_read'
+        'is_read',
+        'read_at'
     ];
 
     protected $casts = [
         'is_read' => 'boolean',
+        'read_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

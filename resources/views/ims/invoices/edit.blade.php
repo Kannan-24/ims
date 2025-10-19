@@ -3,7 +3,7 @@
         {{ __('Edit Invoice') }} - {{ config('app.name', 'SKM') }}
     </x-slot>
 
-    <div class="bg-white min-h-screen" x-data="invoiceEditManager()" x-init="init()">
+    <div class="bg-white min-h-screen" x-data="invoiceEditManager" x-init="init()">
         <!-- Breadcrumbs -->
         <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
             <nav class="flex" aria-label="Breadcrumb">
@@ -958,8 +958,8 @@
     </div>
 
     <script>
-        function invoiceEditManager() {
-            return {
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('invoiceEditManager', () => ({
                 activeTab: 'basic',
                 invoiceNo: '{{ old('invoice_no', $invoice->invoice_no) }}',
                 orderNo: '{{ old('order_no', $invoice->order_no) }}',
@@ -1528,12 +1528,7 @@
                         this.isSubmitting = false;
                     }
                 }
-            }
-        }
-
-        // Ensure Alpine.js is ready
-        document.addEventListener('alpine:init', () => {
-            console.log('Alpine.js initialized for invoice edit');
+            }));
         });
 
         // Add any additional event listeners or initialization
@@ -1542,4 +1537,3 @@
         });
     </script>
 </x-app-layout>
-s

@@ -10,7 +10,7 @@
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">
                     <li class="inline-flex items-center">
                         <a href="{{ route('dashboard') }}"
-                           class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
                             <i class="fas fa-home mr-2"></i>
                             Dashboard
                         </a>
@@ -33,18 +33,14 @@
                     <p class="text-sm text-gray-600 mt-1">Manage and track all your quotations</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <!-- Help Button -->
-                    <button @click="showHelp = true"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                        Help
-                    </button>
                     <!-- New Quotation Button -->
-                    <a href="{{ route('quotations.create') }}"
-                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-plus w-4 h-4 mr-2"></i>
-                        New Quotation
-                    </a>
+                    @if (!$quotations->isEmpty())
+                        <a href="{{ route('quotations.create') }}"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                            <i class="fas fa-plus w-4 h-4 mr-2"></i>
+                            New Quotation
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -54,30 +50,31 @@
             <!-- Search and Filters -->
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
                 <div class="p-4">
-                    <form method="GET" action="{{ route('quotations.index') }}" class="flex flex-wrap items-end gap-4">
+                    <form method="GET" action="{{ route('quotations.index') }}"
+                        class="flex flex-wrap items-end gap-4">
                         <div class="flex-1 min-w-[260px]">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
                             <input type="text" name="search" value="{{ request('search') }}"
-                                   placeholder="Search by Quotation Code or Company Name"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                placeholder="Search by Quotation Code or Company Name"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
                             <input type="date" name="from" value="{{ request('from') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">To Date</label>
                             <input type="date" name="to" value="{{ request('to') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         <div class="flex items-center space-x-2">
                             <button type="submit"
-                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
                                 <i class="fas fa-search mr-2"></i>Filter
                             </button>
                             <a href="{{ route('quotations.index') }}"
-                               class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors">
+                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors">
                                 <i class="fas fa-times mr-2"></i>Reset
                             </a>
                         </div>
@@ -92,7 +89,7 @@
                         <h2 class="text-lg font-semibold text-gray-900">Quotations List</h2>
                         <div class="text-sm text-gray-500">
                             Total:
-                            {{ ($quotations instanceof \Illuminate\Pagination\Paginator || $quotations instanceof \Illuminate\Pagination\LengthAwarePaginator) ? $quotations->total() : $quotations->count() }}
+                            {{ $quotations instanceof \Illuminate\Pagination\Paginator || $quotations instanceof \Illuminate\Pagination\LengthAwarePaginator ? $quotations->total() : $quotations->count() }}
                             quotations
                         </div>
                     </div>
@@ -104,7 +101,7 @@
                         <h3 class="text-lg font-medium text-gray-900 mb-2">No quotations found</h3>
                         <p class="text-gray-500 mb-6">Get started by creating your first quotation.</p>
                         <a href="{{ route('quotations.create') }}"
-                           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
                             <i class="fas fa-plus mr-2"></i>Create Quotation
                         </a>
                     </div>
@@ -113,69 +110,86 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quotation Details</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amounts</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        #</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Quotation Details</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Customer</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Amounts</th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($quotations as $quotation)
                                     <tr class="hover:bg-gray-50 transition-colors">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ ($quotations instanceof \Illuminate\Pagination\LengthAwarePaginator || $quotations instanceof \Illuminate\Pagination\Paginator)
-                                                ? ($loop->iteration + ($quotations->currentPage() - 1) * $quotations->perPage())
+                                            {{ $quotations instanceof \Illuminate\Pagination\LengthAwarePaginator ||
+                                            $quotations instanceof \Illuminate\Pagination\Paginator
+                                                ? $loop->iteration + ($quotations->currentPage() - 1) * $quotations->perPage()
                                                 : $loop->iteration }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <div
+                                                    class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                                                     <i class="fas fa-file-alt text-blue-600"></i>
                                                 </div>
                                                 <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ $quotation->quotation_code }}</div>
-                                                    <div class="text-xs inline-flex px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 mt-1">
+                                                    <div class="text-sm font-medium text-gray-900">
+                                                        {{ $quotation->quotation_code }}</div>
+                                                    <div
+                                                        class="text-xs inline-flex px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 mt-1">
                                                         {{ \Illuminate\Support\Carbon::parse($quotation->quotation_date)->format('d M Y') }}
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ $quotation->customer->company_name }}</div>
+                                            <div class="text-sm text-gray-900">{{ $quotation->customer->company_name }}
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-semibold text-gray-900"> ₹{{ number_format($quotation->total, 2) }}</div>
+                                            <div class="text-sm font-semibold text-gray-900">
+                                                ₹{{ number_format($quotation->total, 2) }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-3">
                                                 <a href="{{ route('emails.create') }}?quotation_id={{ $quotation->id }}"
-                                                   class="text-green-600 hover:text-green-900 transition-colors"
-                                                   title="Email Quotation">
+                                                    class="text-green-600 hover:text-green-900 transition-colors"
+                                                    title="Email Quotation">
                                                     <i class="fas fa-envelope"></i>
                                                 </a>
                                                 <a href="{{ route('quotations.pdf', $quotation->id) }}"
-                                                   class="text-blue-600 hover:text-blue-900 transition-colors"
-                                                   title="Download PDF" target="_blank">
+                                                    class="text-blue-600 hover:text-blue-900 transition-colors"
+                                                    title="Download PDF" target="_blank">
                                                     <i class="fas fa-file-pdf"></i>
                                                 </a>
                                                 <a href="{{ route('quotations.show', $quotation) }}"
-                                                   class="text-indigo-600 hover:text-indigo-900 transition-colors"
-                                                   title="View Details">
+                                                    class="text-indigo-600 hover:text-indigo-900 transition-colors"
+                                                    title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 <a href="{{ route('quotations.edit', $quotation) }}"
-                                                   class="text-yellow-600 hover:text-yellow-900 transition-colors"
-                                                   title="Edit Quotation">
+                                                    class="text-yellow-600 hover:text-yellow-900 transition-colors"
+                                                    title="Edit Quotation">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('quotations.destroy', $quotation) }}" method="POST" class="inline">
+                                                <form action="{{ route('quotations.destroy', $quotation) }}"
+                                                    method="POST" class="inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                            class="text-red-600 hover:text-red-900 transition-colors"
-                                                            title="Delete Quotation"
-                                                            onclick="return confirm('Are you sure you want to delete this quotation?')">
+                                                        class="text-red-600 hover:text-red-900 transition-colors"
+                                                        title="Delete Quotation"
+                                                        onclick="return confirm('Are you sure you want to delete this quotation?')">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -198,49 +212,10 @@
         </div>
     </div>
 
-    <!-- Help Modal -->
-    <div x-show="showHelp" x-cloak
-         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
-         @click.away="showHelp = false">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-            <div class="mt-3">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <i class="fas fa-question-circle text-blue-600 mr-2"></i>
-                        Quotation Management Help
-                    </h3>
-                    <button @click="showHelp = false" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="space-y-4 text-gray-700">
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-2">Managing Quotations</h4>
-                        <ul class="list-disc list-inside space-y-1 text-sm">
-                            <li>View all quotations with details</li>
-                            <li>Search by quotation code or company name</li>
-                            <li>Filter by date range</li>
-                            <li>Download PDF and email quotations</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-2">Actions</h4>
-                        <ul class="list-disc list-inside space-y-1 text-sm">
-                            <li>Email Quotation</li>
-                            <li>Download PDF</li>
-                            <li>View, Edit, Delete</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Scripts -->
     <script>
         function quotationIndexManager() {
             return {
-                showHelp: false,
                 init() {}
             }
         }

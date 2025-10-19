@@ -76,7 +76,7 @@
                                             </div>
                                             <div>
                                                 <p class="text-sm font-medium text-gray-900">{{ $stock->product->name ?? 'N/A' }}</p>
-                                                <p class="text-sm text-gray-500">{{ $stock->product->sku ?? 'N/A' }}</p>
+                                                <p class="text-sm text-gray-500">{{ $stock->product->hsn_code ?? 'N/A' }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -207,31 +207,6 @@
 
                 <!-- Sidebar -->
                 <div class="space-y-6">
-                    <!-- Quick Stats -->
-                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h2 class="text-lg font-semibold text-gray-900">Quick Stats</h2>
-                        </div>
-                        <div class="p-6 space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-500">Price per Unit</span>
-                                <span class="text-sm font-medium text-gray-900">₹{{ number_format($stock->price, 2) }}</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-500">Total Value</span>
-                                <span class="text-sm font-medium text-gray-900">₹{{ number_format($stock->quantity * $stock->price, 2) }}</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-500">Sold Value</span>
-                                <span class="text-sm font-medium text-gray-900">₹{{ number_format($stock->sold * $stock->price, 2) }}</span>
-                            </div>
-                            <div class="flex items-center justify-between border-t pt-4">
-                                <span class="text-sm text-gray-500">Remaining Value</span>
-                                <span class="text-sm font-bold text-green-600">₹{{ number_format(($stock->quantity - $stock->sold) * $stock->price, 2) }}</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Product Summary -->
                     @if($productTotals)
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">

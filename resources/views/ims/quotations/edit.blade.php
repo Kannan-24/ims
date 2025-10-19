@@ -3,7 +3,7 @@
         {{ __('Edit Quotation') }} - {{ config('app.name', 'SKM') }}
     </x-slot>
 
-    <div class="bg-white min-h-screen" x-data="quotationEditManager()" x-init="init()">
+    <div class="bg-white min-h-screen" x-data="quotationEditManager" x-init="init()">
         <!-- Breadcrumbs -->
         <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
             <nav class="flex" aria-label="Breadcrumb">
@@ -657,10 +657,7 @@
 
                 <!-- Form Actions -->
                 <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-                    <div class="text-sm text-gray-500">
-                        <kbd class="px-2 py-1 bg-gray-100 rounded text-xs">Ctrl+S</kbd> to save •
-                        <kbd class="px-2 py-1 bg-gray-100 rounded text-xs">Esc</kbd> to cancel
-                    </div>
+
                     <div class="flex items-center space-x-3">
                         <!-- Previous Button -->
                         <button type="button" @click="previousStep()" x-show="activeTab !== 'basic'"
@@ -955,8 +952,8 @@
     </div>
 
     <script>
-        function quotationEditManager() {
-            return {
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('quotationEditManager', () => ({
                 activeTab: 'basic',
                 selectedCustomer: '{{ old('customer', $quotation->customer_id) }}',
                 selectedContactPerson: '{{ old('contact_person', $quotation->contactperson_id) }}',
@@ -991,7 +988,6 @@
 
                 init() {
                     console.log('Initializing quotation edit manager...');
-                    this.bindKeyboardEvents();
                     this.setupCustomerData();
                     this.loadExistingData();
                     console.log('Quotation edit manager initialized');
@@ -1074,37 +1070,7 @@
                     }
                 },
 
-                bindKeyboardEvents() {
-                    document.addEventListener('keydown', (e) => {
-                        if (e.ctrlKey && e.key === 's') {
-                            e.preventDefault();
-                            this.submitForm();
-                        }
 
-                        if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                            const activeElement = document.activeElement;
-                            if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA') {
-                                e.preventDefault();
-                                this.showHelpModal = true;
-                            }
-                        }
-
-                        if (e.key === 'Escape') {
-                            e.preventDefault();
-                            if (this.showHelpModal) {
-                                this.showHelpModal = false;
-                            } else if (this.showProductModal) {
-                                this.showProductModal = false;
-                            } else if (this.showServiceModal) {
-                                this.showServiceModal = false;
-                            } else if (this.showConvertModal) {
-                                this.showConvertModal = false;
-                            } else if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
-                                window.location.href = '{{ route('quotations.index') }}';
-                            }
-                        }
-                    });
-                },
 
                 updateContactPersons() {
                     try {
@@ -1434,12 +1400,7 @@
                         this.isSubmitting = false;
                     }
                 }
-            }
-        }
-
-        // Ensure Alpine.js is ready
-        document.addEventListener('alpine:init', () => {
-            console.log('Alpine.js initialized');
+            }));
         });
     </script>
 </x-app-layout>

@@ -47,11 +47,6 @@
                                     <i class="fas fa-user-plus w-4 h-4 mr-3"></i>
                                     Add Customer
                                 </a>
-                                <a href="{{ route('hotkeys.index') }}"
-                                    class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
-                                    <i class="fas fa-keyboard w-4 h-4 mr-3"></i>
-                                    Manage Hotkeys
-                                </a>
                             </div>
                         </div>
                     </div>

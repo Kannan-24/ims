@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ims\CalendarController;
-use App\Http\Controllers\ims\HotkeyController;
+
 use App\Http\Controllers\ims\CustomerController;
 use App\Http\Controllers\ims\SupplierController;
 use App\Http\Controllers\ims\ProductController;
@@ -40,19 +40,7 @@ Route::middleware(['auth', 'verified'])->prefix('ims')->group(function () {
         Route::patch('/events/{event}/move', [CalendarController::class, 'move'])->name('events.move');
     });
 
-    // Hotkey Management Routes
-    Route::get('/hotkeys', [HotkeyController::class, 'index'])->name('hotkeys.index');
-    Route::post('/hotkeys', [HotkeyController::class, 'store'])->name('hotkeys.store');
-    Route::put('/hotkeys/{hotkey}', [HotkeyController::class, 'update'])->name('hotkeys.update');
-    Route::delete('/hotkeys/{hotkey}', [HotkeyController::class, 'destroy'])->name('hotkeys.destroy');
-    Route::patch('/hotkeys/{hotkey}/toggle', [HotkeyController::class, 'toggle'])->name('hotkeys.toggle');
-    Route::get('/hotkeys/active', [HotkeyController::class, 'active'])->name('hotkeys.active');
-    Route::get('/hotkeys/actions', [HotkeyController::class, 'getActions'])->name('hotkeys.actions');
 
-    // Bulk operations for hotkeys
-    Route::delete('/hotkeys/bulk/delete', [HotkeyController::class, 'bulkDelete'])->name('hotkeys.bulk.delete');
-    Route::patch('/hotkeys/bulk/activate', [HotkeyController::class, 'bulkActivate'])->name('hotkeys.bulk.activate');
-    Route::patch('/hotkeys/bulk/deactivate', [HotkeyController::class, 'bulkDeactivate'])->name('hotkeys.bulk.deactivate');
 
     // Chat Routes
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');

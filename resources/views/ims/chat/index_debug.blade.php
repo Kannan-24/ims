@@ -4,10 +4,7 @@
     </x-slot>
 
     <!-- Add Alpine.js CDN for testing -->
-    </head>
-
-<body class="bg-gray-50 dark:bg-gray-900">
-    <div class="container mx-auto p-4 h-screen flex" x-data="whatsappChat">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <div class="flex h-screen bg-gray-100 overflow-hidden" x-data="whatsappChat()" x-init="init()">
         <!-- Mobile Overlay -->
@@ -207,8 +204,8 @@
     </div>
 
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('whatsappChat', () => ({
+        function whatsappChat() {
+            return {
                 // State
                 showMobileSidebar: window.innerWidth >= 1024,
                 selectedUser: null,
@@ -253,7 +250,7 @@
                 async loadUsers() {
                     try {
                         console.log('Loading users...');
-                        const response = await fetch('/api/chat/users', {
+                        const response = await fetch('/chat/users', {
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                                 'Accept': 'application/json',
@@ -261,8 +258,7 @@
                         });
                         
                         if (response.ok) {
-                            const data = await response.json();
-                            this.users = data.users || [];
+                            this.users = await response.json();
                             this.filteredUsers = this.users;
                             console.log('Users loaded:', this.users);
                         } else {
@@ -335,9 +331,8 @@
                     
                     // Focus message input
                     this.$nextTick(() => {
-                        const messageInput = document.querySelector('textarea[x-model="newMessage"]');
-                        if (messageInput) {
-                            messageInput.focus();
+                        if (this.$refs.messageInput) {
+                            this.$refs.messageInput.focus();
                         }
                     });
                 },
@@ -347,7 +342,7 @@
                     if (!this.selectedUserId) return;
 
                     try {
-                        const response = await fetch(`/api/chat/messages/${this.selectedUserId}`, {
+                        const response = await fetch(`/chat/messages/${this.selectedUserId}`, {
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                                 'Accept': 'application/json',
@@ -355,8 +350,7 @@
                         });
                         
                         if (response.ok) {
-                            const data = await response.json();
-                            this.messages = data.messages || [];
+                            this.messages = await response.json();
                             this.scrollToBottom();
                             
                             if (this.messages.length > 0) {
@@ -417,7 +411,7 @@
                     this.scrollToBottom();
 
                     try {
-                        const response = await fetch('/api/chat/send', {
+                        const response = await fetch('/chat/send', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -463,7 +457,7 @@
                 // Handle typing indicator
                 handleTyping() {
                     // Auto-resize textarea
-                    const textarea = document.querySelector('textarea[x-model="newMessage"]');
+                    const textarea = this.$refs.messageInput;
                     if (textarea) {
                         textarea.style.height = 'auto';
                         textarea.style.height = Math.min(textarea.scrollHeight, 80) + 'px';
@@ -490,54 +484,31 @@
                 async checkNewMessages() {
                     if (!this.selectedUserId) return;
 
-                    try {
-                        const response = await fetch(`/api/chat/messages/${this.selectedUserId}?after=${this.lastMessageId}`, {
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'Accept': 'application/json',
-                            }
-                        });
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            const newMessages = data.messages || [];
-                            
-                            if (newMessages.length > 0) {
-                                this.messages = [...this.messages, ...newMessages];
-                                this.lastMessageId = Math.max(...newMessages.map(m => m.id));
-                                this.scrollToBottom();
-                                this.playNotificationSound();
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error checking new messages:', error);
+                    // For demo purposes, simulate new messages occasionally
+                    if (Math.random() < 0.1) { // 10% chance
+                        const demoMessage = {
+                            id: Date.now() + Math.random(),
+                            message: 'This is a new message!',
+                            sender_id: this.selectedUserId,
+                            receiver_id: this.currentUserId,
+                            created_at: new Date().toISOString(),
+                            read_at: null
+                        };
+                        this.messages.push(demoMessage);
+                        this.scrollToBottom();
+                        this.playNotificationSound();
                     }
                 },
 
                 // Update users list
                 async updateUsersList() {
-                    try {
-                        const response = await fetch('/api/chat/users', {
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'Accept': 'application/json',
-                            }
-                        });
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            this.users = data.users || [];
-                            this.filteredUsers = this.users;
-                        }
-                    } catch (error) {
-                        console.error('Error updating users list:', error);
-                    }
+                    // Skip for demo
                 },
 
                 // Scroll to bottom of messages
                 scrollToBottom() {
                     this.$nextTick(() => {
-                        const container = document.getElementById('messages-container');
+                        const container = this.$refs.messagesContainer;
                         if (container) {
                             container.scrollTop = container.scrollHeight;
                         }
@@ -626,14 +597,16 @@
                         clearTimeout(this.typingTimer);
                     }
                 }
-            }));
-        });
+            }
+        }
 
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             // Any cleanup needed
         });
     </script>
+
+    <style>
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 6px;

@@ -40,12 +40,6 @@
                     <p class="text-sm text-gray-600 mt-1">Add new stock entry to inventory</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <!-- Help Button -->
-                    <a href="{{ route('stocks.help') }}"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                        Help
-                    </a>
                     <!-- Back Button -->
                     <a href="{{ route('stocks.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors">
@@ -218,7 +212,6 @@
                 activeTab: 'basic',
 
                 init() {
-                    this.setupKeyboardShortcuts();
                     // Set initial unit type if product is pre-selected
                     if (this.selectedProduct) {
                         this.updateProductInfo();
@@ -235,30 +228,6 @@
                         this.unitType = '';
                     }
                 },
-
-                setupKeyboardShortcuts() {
-                    document.addEventListener('keydown', (e) => {
-                        // Ignore if user is typing in an input field
-                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                            if (e.key === 'Escape') {
-                                e.target.blur();
-                            }
-                            return;
-                        }
-
-                        switch (e.key.toLowerCase()) {
-                            case 'escape':
-                                window.location.href = '{{ route("stocks.index") }}';
-                                break;
-                        }
-
-                        // Ctrl+S to save (only if not in input field)
-                        if (e.ctrlKey && e.key === 's') {
-                            e.preventDefault();
-                            document.querySelector('form').submit();
-                        }
-                    });
-                }
             }
         }
     </script>

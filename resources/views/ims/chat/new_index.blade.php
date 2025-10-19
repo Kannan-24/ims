@@ -3,12 +3,6 @@
         {{ __('Chat') }} - {{ config('app.name', 'IMS') }}
     </x-slot>
 
-    <!-- Add Alpine.js CDN for testing -->
-    </head>
-
-<body class="bg-gray-50 dark:bg-gray-900">
-    <div class="container mx-auto p-4 h-screen flex" x-data="whatsappChat">
-
     <div class="flex h-screen bg-gray-100 overflow-hidden" x-data="whatsappChat()" x-init="init()">
         <!-- Mobile Overlay -->
         <div x-show="showMobileSidebar" x-transition:enter="transition-opacity ease-out duration-300"
@@ -75,14 +69,8 @@
                     </div>
                 </template>
                 
-                <!-- Loading state -->
-                <div x-show="users.length === 0 && filteredUsers.length === 0" class="p-8 text-center">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-4"></div>
-                    <p class="text-gray-500">Loading contacts...</p>
-                </div>
-                
                 <!-- No users found -->
-                <div x-show="users.length > 0 && filteredUsers.length === 0" class="p-8 text-center">
+                <div x-show="filteredUsers.length === 0" class="p-8 text-center">
                     <i class="fas fa-users text-gray-300 text-4xl mb-4"></i>
                     <p class="text-gray-500">No contacts found</p>
                 </div>
@@ -150,13 +138,8 @@
                                     <div class="flex items-center justify-end mt-1 space-x-1">
                                         <span class="text-xs opacity-75" x-text="formatMessageTime(message.created_at)"></span>
                                         <template x-if="message.sender_id === currentUserId">
-                                            <template x-if="message.temp">
-                                                <i class="fas fa-clock text-xs opacity-50"></i>
-                                            </template>
-                                            <template x-if="!message.temp">
-                                                <i class="fas fa-check-double text-xs opacity-75"
-                                                   :class="message.read_at ? 'text-blue-400' : ''"></i>
-                                            </template>
+                                            <i class="fas fa-check-double text-xs opacity-75"
+                                               :class="message.read_at ? 'text-blue-400' : ''"></i>
                                         </template>
                                     </div>
                                 </div>
@@ -186,8 +169,7 @@
                             </button>
                             <div class="flex-1 max-h-20 overflow-y-auto">
                                 <textarea x-model="newMessage" 
-                                         @keydown.enter.prevent="!$event.shiftKey && sendMessage()"
-                                         @keydown.enter.shift="newMessage += '\n'"
+                                         @keydown.enter.prevent="sendMessage()"
                                          @input="handleTyping()"
                                          placeholder="Type a message"
                                          rows="1"
@@ -207,8 +189,8 @@
     </div>
 
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('whatsappChat', () => ({
+        function whatsappChat() {
+            return {
                 // State
                 showMobileSidebar: window.innerWidth >= 1024,
                 selectedUser: null,
@@ -226,7 +208,6 @@
 
                 // Initialize
                 init() {
-                    console.log('Chat initialized');
                     this.loadUsers();
                     this.startPolling();
                     this.setupEventListeners();
@@ -252,7 +233,6 @@
                 // Load users
                 async loadUsers() {
                     try {
-                        console.log('Loading users...');
                         const response = await fetch('/api/chat/users', {
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -261,44 +241,34 @@
                         });
                         
                         if (response.ok) {
-                            const data = await response.json();
-                            this.users = data.users || [];
+                            this.users = await response.json();
                             this.filteredUsers = this.users;
-                            console.log('Users loaded:', this.users);
-                        } else {
-                            console.error('Failed to load users:', response.status);
-                            this.loadDemoUsers();
                         }
                     } catch (error) {
                         console.error('Error loading users:', error);
-                        this.loadDemoUsers();
+                        // Fallback demo data
+                        this.users = [
+                            {
+                                id: 2,
+                                name: 'John Doe',
+                                email: 'john@example.com',
+                                online: true,
+                                last_message: 'Hello there!',
+                                last_message_time: new Date().toISOString(),
+                                unread_count: 2
+                            },
+                            {
+                                id: 3,
+                                name: 'Jane Smith',
+                                email: 'jane@example.com',
+                                online: false,
+                                last_message: 'How are you?',
+                                last_message_time: new Date(Date.now() - 3600000).toISOString(),
+                                unread_count: 0
+                            }
+                        ];
+                        this.filteredUsers = this.users;
                     }
-                },
-
-                // Load demo users for testing
-                loadDemoUsers() {
-                    this.users = [
-                        {
-                            id: 2,
-                            name: 'John Doe',
-                            email: 'john@example.com',
-                            online: true,
-                            last_message: 'Hello there!',
-                            last_message_time: new Date().toISOString(),
-                            unread_count: 2
-                        },
-                        {
-                            id: 3,
-                            name: 'Jane Smith',
-                            email: 'jane@example.com',
-                            online: false,
-                            last_message: 'How are you?',
-                            last_message_time: new Date(Date.now() - 3600000).toISOString(),
-                            unread_count: 0
-                        }
-                    ];
-                    this.filteredUsers = this.users;
-                    console.log('Demo users loaded');
                 },
 
                 // Filter users based on search
@@ -317,7 +287,6 @@
 
                 // Select user to chat with
                 async selectUser(user) {
-                    console.log('Selecting user:', user.name);
                     this.selectedUser = user;
                     this.selectedUserId = user.id;
                     this.messages = [];
@@ -335,9 +304,8 @@
                     
                     // Focus message input
                     this.$nextTick(() => {
-                        const messageInput = document.querySelector('textarea[x-model="newMessage"]');
-                        if (messageInput) {
-                            messageInput.focus();
+                        if (this.$refs.messageInput) {
+                            this.$refs.messageInput.focus();
                         }
                     });
                 },
@@ -355,44 +323,36 @@
                         });
                         
                         if (response.ok) {
-                            const data = await response.json();
-                            this.messages = data.messages || [];
+                            this.messages = await response.json();
                             this.scrollToBottom();
                             
                             if (this.messages.length > 0) {
                                 this.lastMessageId = Math.max(...this.messages.map(m => m.id));
                             }
-                        } else {
-                            console.error('Failed to load messages');
-                            this.loadDemoMessages();
                         }
                     } catch (error) {
                         console.error('Error loading messages:', error);
-                        this.loadDemoMessages();
+                        // Demo messages for testing
+                        this.messages = [
+                            {
+                                id: 1,
+                                message: 'Hello! How are you today?',
+                                sender_id: this.selectedUserId,
+                                receiver_id: this.currentUserId,
+                                created_at: new Date(Date.now() - 3600000).toISOString(),
+                                read_at: null
+                            },
+                            {
+                                id: 2,
+                                message: 'I\'m doing great, thanks for asking!',
+                                sender_id: this.currentUserId,
+                                receiver_id: this.selectedUserId,
+                                created_at: new Date(Date.now() - 3000000).toISOString(),
+                                read_at: new Date(Date.now() - 2900000).toISOString()
+                            }
+                        ];
+                        this.scrollToBottom();
                     }
-                },
-
-                // Load demo messages
-                loadDemoMessages() {
-                    this.messages = [
-                        {
-                            id: 1,
-                            message: 'Hello! How are you today?',
-                            sender_id: this.selectedUserId,
-                            receiver_id: this.currentUserId,
-                            created_at: new Date(Date.now() - 3600000).toISOString(),
-                            read_at: null
-                        },
-                        {
-                            id: 2,
-                            message: 'I\'m doing great, thanks for asking!',
-                            sender_id: this.currentUserId,
-                            receiver_id: this.selectedUserId,
-                            created_at: new Date(Date.now() - 3000000).toISOString(),
-                            read_at: new Date(Date.now() - 2900000).toISOString()
-                        }
-                    ];
-                    this.scrollToBottom();
                 },
 
                 // Send message
@@ -417,7 +377,7 @@
                     this.scrollToBottom();
 
                     try {
-                        const response = await fetch('/api/chat/send', {
+                        const response = await fetch('/api/chat/messages', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -431,39 +391,35 @@
                         });
 
                         if (response.ok) {
-                            const result = await response.json();
-                            if (result.success) {
-                                // Replace temp message with real one
-                                const tempIndex = this.messages.findIndex(m => m.temp && m.id === tempMessage.id);
-                                if (tempIndex !== -1) {
-                                    this.messages[tempIndex] = result.message;
-                                }
-                                
-                                // Update last message in users list
-                                const userIndex = this.users.findIndex(u => u.id === this.selectedUserId);
-                                if (userIndex !== -1) {
-                                    this.users[userIndex].last_message = messageText;
-                                    this.users[userIndex].last_message_time = result.message.created_at;
-                                }
+                            const savedMessage = await response.json();
+                            // Replace temp message with real one
+                            const tempIndex = this.messages.findIndex(m => m.temp && m.id === tempMessage.id);
+                            if (tempIndex !== -1) {
+                                this.messages[tempIndex] = savedMessage;
+                            }
+                            
+                            // Update last message in users list
+                            const userIndex = this.users.findIndex(u => u.id === this.selectedUserId);
+                            if (userIndex !== -1) {
+                                this.users[userIndex].last_message = messageText;
+                                this.users[userIndex].last_message_time = savedMessage.created_at;
                             }
                         } else {
                             // Remove temp message on error
                             this.messages = this.messages.filter(m => m.id !== tempMessage.id);
                             console.error('Failed to send message');
-                            this.showToast('Failed to send message. Please try again.', 'error');
                         }
                     } catch (error) {
                         // Remove temp message on error
                         this.messages = this.messages.filter(m => m.id !== tempMessage.id);
                         console.error('Error sending message:', error);
-                        this.showToast('Network error. Please check your connection.', 'error');
                     }
                 },
 
                 // Handle typing indicator
                 handleTyping() {
                     // Auto-resize textarea
-                    const textarea = document.querySelector('textarea[x-model="newMessage"]');
+                    const textarea = this.$refs.messageInput;
                     if (textarea) {
                         textarea.style.height = 'auto';
                         textarea.style.height = Math.min(textarea.scrollHeight, 80) + 'px';
@@ -483,7 +439,7 @@
                             await this.checkNewMessages();
                         }
                         await this.updateUsersList();
-                    }, 3000); // Poll every 3 seconds
+                    }, 2000); // Poll every 2 seconds
                 },
 
                 // Check for new messages
@@ -499,14 +455,11 @@
                         });
                         
                         if (response.ok) {
-                            const data = await response.json();
-                            const newMessages = data.messages || [];
-                            
+                            const newMessages = await response.json();
                             if (newMessages.length > 0) {
-                                this.messages = [...this.messages, ...newMessages];
+                                this.messages.push(...newMessages);
                                 this.lastMessageId = Math.max(...newMessages.map(m => m.id));
                                 this.scrollToBottom();
-                                this.playNotificationSound();
                             }
                         }
                     } catch (error) {
@@ -516,28 +469,14 @@
 
                 // Update users list
                 async updateUsersList() {
-                    try {
-                        const response = await fetch('/api/chat/users', {
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'Accept': 'application/json',
-                            }
-                        });
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            this.users = data.users || [];
-                            this.filteredUsers = this.users;
-                        }
-                    } catch (error) {
-                        console.error('Error updating users list:', error);
-                    }
+                    // This would update unread counts and last messages
+                    // Implementation depends on your backend API
                 },
 
                 // Scroll to bottom of messages
                 scrollToBottom() {
                     this.$nextTick(() => {
-                        const container = document.getElementById('messages-container');
+                        const container = this.$refs.messagesContainer;
                         if (container) {
                             container.scrollTop = container.scrollHeight;
                         }
@@ -566,57 +505,6 @@
                     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 },
 
-                // Play notification sound
-                playNotificationSound() {
-                    try {
-                        // Create a simple beep sound using Web Audio API
-                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        const oscillator = audioContext.createOscillator();
-                        const gainNode = audioContext.createGain();
-                        
-                        oscillator.connect(gainNode);
-                        gainNode.connect(audioContext.destination);
-                        
-                        oscillator.frequency.value = 800;
-                        oscillator.type = 'sine';
-                        
-                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                        
-                        oscillator.start(audioContext.currentTime);
-                        oscillator.stop(audioContext.currentTime + 0.1);
-                    } catch (error) {
-                        console.log('Could not play notification sound:', error);
-                    }
-                },
-
-                // Show toast notification
-                showToast(message, type = 'info') {
-                    // Create toast element
-                    const toast = document.createElement('div');
-                    toast.className = `fixed top-4 right-4 z-50 p-3 rounded-lg shadow-lg text-white text-sm transform translate-x-full transition-transform duration-300 ${
-                        type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-                    }`;
-                    toast.textContent = message;
-                    
-                    document.body.appendChild(toast);
-                    
-                    // Animate in
-                    setTimeout(() => {
-                        toast.classList.remove('translate-x-full');
-                    }, 100);
-                    
-                    // Remove after 3 seconds
-                    setTimeout(() => {
-                        toast.classList.add('translate-x-full');
-                        setTimeout(() => {
-                            if (toast.parentNode) {
-                                toast.parentNode.removeChild(toast);
-                            }
-                        }, 300);
-                    }, 3000);
-                },
-
                 // Cleanup
                 destroy() {
                     if (this.pollInterval) {
@@ -626,14 +514,16 @@
                         clearTimeout(this.typingTimer);
                     }
                 }
-            }));
-        });
+            }
+        }
 
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             // Any cleanup needed
         });
     </script>
+
+    <style>
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 6px;

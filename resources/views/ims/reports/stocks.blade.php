@@ -405,27 +405,7 @@
                                 <li>• Export with customized data sets</li>
                             </ul>
                         </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-900 mb-2">Keyboard Shortcuts:</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between">
-                                    <span>Search</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">S</kbd>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Download</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">D</kbd>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Print</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">P</kbd>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Back to Reports</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Esc</kbd>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>

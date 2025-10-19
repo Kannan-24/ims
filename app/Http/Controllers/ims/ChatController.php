@@ -53,12 +53,21 @@ class ChatController extends Controller
         Message::where('sender_id', $user->id)
             ->where('receiver_id', $currentUserId)
             ->where('is_read', false)
-            ->update(['is_read' => true]);
+            ->update(['is_read' => true, 'read_at' => now()]);
 
-        return response()->json([
-            'messages' => $messages,
-            'lastMessageId' => $messages->last()?->id ?? 0
-        ]);
+        // Format messages for the frontend
+        $formattedMessages = $messages->map(function ($message) {
+            return [
+                'id' => $message->id,
+                'message' => $message->message,
+                'sender_id' => $message->sender_id,
+                'receiver_id' => $message->receiver_id,
+                'created_at' => $message->created_at->toISOString(),
+                'read_at' => $message->read_at ? $message->read_at->toISOString() : null,
+            ];
+        });
+
+        return response()->json($formattedMessages);
     }
 
     /**
@@ -160,15 +169,9 @@ class ChatController extends Controller
     {
         $currentUserId = Auth::id();
 
-        // Only get users who have either sent or received messages from current user
+        // Get all users except current user
         $users = User::where('id', '!=', $currentUserId)
             ->select('id', 'name', 'email', 'profile_photo', 'role', 'phone', 'created_at', 'employee_id')
-            ->whereExists(function ($query) use ($currentUserId) {
-                $query->select(DB::raw(1))
-                    ->from('messages')
-                    ->whereRaw('messages.sender_id = users.id AND messages.receiver_id = ?', [$currentUserId])
-                    ->orWhereRaw('messages.receiver_id = users.id AND messages.sender_id = ?', [$currentUserId]);
-            })
             ->get();
 
         $usersWithMessages = $users->map(function ($user) use ($currentUserId) {
@@ -183,7 +186,10 @@ class ChatController extends Controller
                 ->where('is_read', false)
                 ->count();
 
-            $user->last_message = $lastMessage?->message ?? '';
+            // Check if user is online (you can implement your own logic)
+            $user->online = true; // For demo purposes, set all users as online
+
+            $user->last_message = $lastMessage?->message ?? null;
             $user->last_message_time = $lastMessage?->created_at ?? null;
             $user->unread_count = $unreadCount;
 

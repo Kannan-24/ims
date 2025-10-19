@@ -3,7 +3,7 @@
         {{ __('Invoice Details') }} - {{ config('app.name', 'SKM') }}
     </x-slot>
 
-    <div class="bg-white min-h-screen" x-data="invoiceShowManager()" x-init="init()">
+        <div class="bg-white min-h-screen" x-data="invoiceShowManager" x-init="init()">
         <!-- Breadcrumbs -->
         <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
             <nav class="flex" aria-label="Breadcrumb">
@@ -69,13 +69,6 @@
 
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex items-center space-x-3 justify-end flex-wrap">
-                <!-- Print Button -->
-                <button @click="printInvoice()"
-                    class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                    <i class="fas fa-print w-4 h-4 mr-2"></i>
-                    Print
-                </button>
-
                 <!-- PDF Button -->
                 <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
                     class="inline-flex items-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-sm font-medium rounded-lg transition-colors">
@@ -185,13 +178,6 @@
                     class="py-2 px-1 border-b-2 font-medium text-sm">
                     <i class="fas fa-calculator mr-2"></i>
                     Summary
-                </button>
-                <button type="button" @click="activeTab = 'preview'"
-                    :class="activeTab === 'preview' ? 'border-blue-500 text-blue-600' :
-                        'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                    class="py-2 px-1 border-b-2 font-medium text-sm">
-                    <i class="fas fa-eye mr-2"></i>
-                    Print Preview
                 </button>
             </nav>
         </div>
@@ -693,309 +679,130 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Print Preview Tab -->
-            <div x-show="activeTab === 'preview'" x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden" id="printable-content">
-                    <!-- Print Header -->
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 print:hidden">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-900">Print Preview</h3>
-                            <div class="flex space-x-2">
-                                <button @click="printInvoice()"
-                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
-                                    <i class="fas fa-print mr-2"></i>Print
-                                </button>
-                                <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
-                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors">
-                                    <i class="fas fa-download mr-2"></i>Download PDF
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Printable Content -->
-                    <div class="p-8 print:p-0">
-                        <!-- Company Header -->
-                        <div class="text-center mb-8">
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ config('app.name', 'SKM') }}</h1>
-                            <p class="text-gray-600">Your Company Address Line 1</p>
-                            <p class="text-gray-600">Your Company Address Line 2</p>
-                            <p class="text-gray-600">Phone: +91 XXXXX XXXXX | Email: info@company.com</p>
-                            <p class="text-gray-600">GST: 29XXXXXXXXXXXXX</p>
-                            <div class="mt-4 pt-4 border-t border-gray-300">
-                                <h2 class="text-2xl font-semibold text-gray-800">TAX INVOICE</h2>
-                            </div>
-                        </div>
-
-                        <!-- Invoice Info -->
-                        <div class="grid grid-cols-2 gap-8 mb-8">
-                            <div>
-                                <h3 class="font-semibold text-gray-900 mb-3">Bill To:</h3>
-                                <div class="text-gray-700">
-                                    <p class="font-medium">{{ $invoice->customer->company_name ?? 'N/A' }}</p>
-                                    @if ($contactPerson)
-                                        <p>{{ $contactPerson->name }}</p>
-                                        <p>{{ $contactPerson->phone_no ?? 'N/A' }}</p>
-                                        <p>{{ $contactPerson->email ?? 'N/A' }}</p>
-                                    @endif
-                                    <p>{{ $invoice->customer->address ?? 'N/A' }}</p>
-                                    @if ($invoice->customer->gst_number)
-                                        <p>GST: {{ $invoice->customer->gst_number }}</p>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="space-y-2">
-                                    <div>
-                                        <span class="font-medium">Invoice #:</span>
-                                        <span>{{ $invoice->invoice_no }}</span>
-                                    </div>
-                                    <div>
-                                        <span class="font-medium">Order #:</span>
-                                        <span>{{ $invoice->order_no ?? 'N/A' }}</span>
-                                    </div>
-                                    <div>
-                                        <span class="font-medium">Invoice Date:</span>
-                                        <span>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('F d, Y') }}</span>
-                                    </div>
-                                    <div>
-                                        <span class="font-medium">Order Date:</span>
-                                        <span>{{ \Carbon\Carbon::parse($invoice->order_date)->format('F d, Y') }}</span>
-                                    </div>
-                                    <div>
-                                        <span class="font-medium">Due Date:</span>
-                                        <span>{{ \Carbon\Carbon::parse($invoice->invoice_date)->addDays(30)->format('F d, Y') }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Items Table -->
-                        <div class="mb-8">
-                            <table class="w-full border-collapse border border-gray-300">
-                                <thead>
-                                    <tr class="bg-gray-50">
-                                        <th class="border border-gray-300 px-4 py-2 text-left">Item</th>
-                                        <th class="border border-gray-300 px-4 py-2 text-center">Qty</th>
-                                        <th class="border border-gray-300 px-4 py-2 text-right">Unit Price</th>
-                                        <th class="border border-gray-300 px-4 py-2 text-right">CGST</th>
-                                        <th class="border border-gray-300 px-4 py-2 text-right">SGST</th>
-                                        <th class="border border-gray-300 px-4 py-2 text-right">IGST</th>
-                                        <th class="border border-gray-300 px-4 py-2 text-right">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($invoice->items as $item)
-                                        <tr>
-                                            <td class="border border-gray-300 px-4 py-2">
-                                                <div class="font-medium">
-                                                    {{ $item->type === 'product' ? $item->product->name ?? 'Product not found' : $item->service->name ?? 'Service not found' }}
-                                                </div>
-                                            </td>
-                                            <td class="border border-gray-300 px-4 py-2 text-center">
-                                                {{ number_format($item->quantity) }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-right">
-                                                ₹{{ number_format($item->unit_price, 2) }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-right">
-                                                ₹{{ number_format($item->cgst, 2) }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-right">
-                                                ₹{{ number_format($item->sgst, 2) }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-right">
-                                                ₹{{ number_format($item->igst, 2) }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-right font-medium">
-                                                ₹{{ number_format($item->total, 2) }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr class="bg-gray-50">
-                                        <td colspan="6"
-                                            class="border border-gray-300 px-4 py-2 text-right font-bold">Grand Total:
-                                        </td>
-                                        <td class="border border-gray-300 px-4 py-2 text-right font-bold text-lg">
-                                            ₹{{ number_format($invoice->total, 2) }}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-
-                        <!-- Footer -->
-                        <div class="text-center text-gray-600 text-sm border-t border-gray-300 pt-4">
-                            <p>Thank you for your business!</p>
-                            <p class="mt-2">This is a computer generated invoice and does not require signature.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
     <script>
-        function invoiceShowManager() {
-            return {
-                activeTab: 'overview',
+    function invoiceShowManager() {
+        return {
+            activeTab: 'overview',
 
-                init() {
-                    console.log('Invoice show page initialized');
-                    this.bindKeyboardEvents();
-                },
+            init() {
+                console.log('Invoice show page initialized');
+            },
 
-                bindKeyboardEvents() {
-                    document.addEventListener('keydown', (e) => {
-                        if (e.ctrlKey && e.key === 'p') {
-                            e.preventDefault();
-                            this.printInvoice();
-                        }
-                    });
-                },
+            generateDeliveryChallan() {
+                if (confirm('Generate delivery challan for this invoice?')) {
+                    this.showToast('info', 'Generating delivery challan...');
 
-                printInvoice() {
-                    window.print();
-                },
-
-                generateDeliveryChallan() {
-                    if (confirm('Generate delivery challan for this invoice?')) {
-                        this.showToast('info', 'Generating delivery challan...');
-
-                        fetch('/ims/delivery-challans/generate', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                        'content')
-                                },
-                                body: JSON.stringify({
-                                    invoice_id: {{ $invoice->id }}
-                                })
+                    fetch('/ims/delivery-challans/generate', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content')
+                            },
+                            body: JSON.stringify({
+                                invoice_id: {{ $invoice->id }}
                             })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    this.showToast('success', data.message);
-                                    if (confirm('Would you like to view the generated delivery challan?')) {
-                                        window.open(data.pdf_url, '_blank');
-                                    }
-                                } else {
-                                    this.showToast('error', data.message || 'Failed to generate delivery challan');
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                this.showToast('success', data.message);
+                                if (confirm('Would you like to view the generated delivery challan?')) {
+                                    window.open(data.pdf_url, '_blank');
                                 }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                this.showToast('error', 'An error occurred while generating delivery challan');
-                            });
-                    }
-                },
-
-                deleteInvoice() {
-                    if (confirm('Are you sure you want to delete this invoice? This action cannot be undone.')) {
-                        // Create form and submit
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = '{{ route('invoices.destroy', $invoice->id) }}';
-
-                        const csrfToken = document.createElement('input');
-                        csrfToken.type = 'hidden';
-                        csrfToken.name = '_token';
-                        csrfToken.value = '{{ csrf_token() }}';
-                        form.appendChild(csrfToken);
-
-                        const methodField = document.createElement('input');
-                        methodField.type = 'hidden';
-                        methodField.name = '_method';
-                        methodField.value = 'DELETE';
-                        form.appendChild(methodField);
-
-                        document.body.appendChild(form);
-                        form.submit();
-                    }
-                },
-
-                showToast(type, message) {
-                    const existingToasts = document.querySelectorAll('.toast-notification');
-                    existingToasts.forEach(toast => toast.remove());
-
-                    const toastDiv = document.createElement('div');
-                    toastDiv.className =
-                        `toast-notification fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm transition-all duration-300 transform translate-x-0`;
-
-                    let bgColor, textColor, icon;
-                    switch (type) {
-                        case 'success':
-                            bgColor = 'bg-green-100 border border-green-200';
-                            textColor = 'text-green-800';
-                            icon = 'fa-check-circle';
-                            break;
-                        case 'error':
-                            bgColor = 'bg-red-100 border border-red-200';
-                            textColor = 'text-red-800';
-                            icon = 'fa-exclamation-circle';
-                            break;
-                        case 'info':
-                            bgColor = 'bg-blue-100 border border-blue-200';
-                            textColor = 'text-blue-800';
-                            icon = 'fa-info-circle';
-                            break;
-                        default:
-                            bgColor = 'bg-gray-100 border border-gray-200';
-                            textColor = 'text-gray-800';
-                            icon = 'fa-bell';
-                    }
-
-                    toastDiv.className += ` ${bgColor} ${textColor}`;
-                    toastDiv.innerHTML = `
-                        <div class="flex items-center">
-                            <i class="fas ${icon} mr-3 text-lg"></i>
-                            <div class="flex-1">
-                                <p class="font-medium">${message}</p>
-                            </div>
-                            <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-lg hover:opacity-70">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    `;
-
-                    document.body.appendChild(toastDiv);
-
-                    if (type !== 'info') {
-                        setTimeout(() => {
-                            if (toastDiv.parentNode) {
-                                toastDiv.remove();
+                            } else {
+                                this.showToast('error', data.message || 'Failed to generate delivery challan');
                             }
-                        }, 5000);
-                    }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            this.showToast('error', 'An error occurred while generating delivery challan');
+                        });
+                }
+            },
+
+            deleteInvoice() {
+                if (confirm('Are you sure you want to delete this invoice? This action cannot be undone.')) {
+                    // Create form and submit
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route('invoices.destroy', $invoice->id) }}';
+
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfToken);
+
+                    const methodField = document.createElement('input');
+                    methodField.type = 'hidden';
+                    methodField.name = '_method';
+                    methodField.value = 'DELETE';
+                    form.appendChild(methodField);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            },
+
+            showToast(type, message) {
+                const existingToasts = document.querySelectorAll('.toast-notification');
+                existingToasts.forEach(toast => toast.remove());
+
+                const toastDiv = document.createElement('div');
+                toastDiv.className =
+                    `toast-notification fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm transition-all duration-300 transform translate-x-0`;
+
+                let bgColor, textColor, icon;
+                switch (type) {
+                    case 'success':
+                        bgColor = 'bg-green-100 border border-green-200';
+                        textColor = 'text-green-800';
+                        icon = 'fa-check-circle';
+                        break;
+                    case 'error':
+                        bgColor = 'bg-red-100 border border-red-200';
+                        textColor = 'text-red-800';
+                        icon = 'fa-exclamation-circle';
+                        break;
+                    case 'info':
+                        bgColor = 'bg-blue-100 border border-blue-200';
+                        textColor = 'text-blue-800';
+                        icon = 'fa-info-circle';
+                        break;
+                    default:
+                        bgColor = 'bg-gray-100 border border-gray-200';
+                        textColor = 'text-gray-800';
+                        icon = 'fa-bell';
+                }
+
+                toastDiv.className += ` ${bgColor} ${textColor}`;
+                toastDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas ${icon} mr-3 text-lg"></i>
+                        <div class="flex-1">
+                            <p class="font-medium">${message}</p>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-lg hover:opacity-70">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+
+                document.body.appendChild(toastDiv);
+
+                if (type !== 'info') {
+                    setTimeout(() => {
+                        if (toastDiv.parentNode) {
+                            toastDiv.remove();
+                        }
+                    }, 5000);
                 }
             }
         }
-
-        // Print styles
-        document.addEventListener('DOMContentLoaded', function() {
-            const style = document.createElement('style');
-            style.textContent = `
-                @media print {
-                    body * {
-                        visibility: hidden;
-                    }
-                    #printable-content,
-                    #printable-content * {
-                        visibility: visible;
-                    }
-                    #printable-content {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
-                    }
-                    .print\\:hidden {
-                        display: none !important;
-                    }
-                    .print\\:p-0 {
-                        padding: 0 !important;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        });
-    </script>
+    }
+</script>
 </x-app-layout>

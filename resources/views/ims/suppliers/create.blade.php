@@ -37,12 +37,6 @@
                 <p class="text-sm text-gray-600 mt-1">Add supplier information and contact details</p>
             </div>
             <div class="flex items-center space-x-3">
-                <!-- Help Button -->
-                <a href="{{ route('suppliers.help') }}"
-                    class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                    <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                    Help
-                </a>
                 <a href="{{ route('suppliers.index') }}"
                     class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
                     <i class="fas fa-arrow-left w-4 h-4 mr-2"></i>
@@ -54,7 +48,8 @@
 
     <!-- Content -->
     <div class="p-6">
-        <form action="{{ route('suppliers.store') }}" method="POST" id="supplierForm" x-data="supplierCreateManager()" x-init="init()" @submit.prevent="submitForm">
+        <form action="{{ route('suppliers.store') }}" method="POST" id="supplierForm" x-data="supplierCreateManager()"
+            x-init="init()" @submit.prevent="submitForm">
             @csrf
 
             <!-- Tab Navigation -->
@@ -107,7 +102,8 @@
                                 <input type="text" name="supplier_id" id="supplier_id"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
                                     x-model="nextSupplierId" readonly>
-                                <p class="mt-1 text-xs text-gray-500">Supplier ID will be auto-generated when you save</p>
+                                <p class="mt-1 text-xs text-gray-500">Supplier ID will be auto-generated when you save
+                                </p>
                             </div>
 
                             <!-- Contact Person -->
@@ -179,109 +175,110 @@
                     </div>
                 </div>
 
-                    <!-- Address Details Tab -->
-                    <div x-show="activeTab === 'address'" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                        <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Address Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Street Address <span class="text-red-500">*</span>
-                                    </label>
-                                    <textarea name="address" id="address" rows="3"
-                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('address') ? 'border-red-500' : 'border-gray-300' }}"
-                                        required>{{ old('address') }}</textarea>
-                                    @error('address')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                <!-- Address Details Tab -->
+                <div x-show="activeTab === 'address'" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Address Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Street Address <span class="text-red-500">*</span>
+                                </label>
+                                <textarea name="address" id="address" rows="3"
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('address') ? 'border-red-500' : 'border-gray-300' }}"
+                                    required>{{ old('address') }}</textarea>
+                                @error('address')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        City <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="city" id="city"
-                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('city') ? 'border-red-500' : 'border-gray-300' }}"
-                                        value="{{ old('city') }}" required>
-                                    @error('city')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    City <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="city" id="city"
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('city') ? 'border-red-500' : 'border-gray-300' }}"
+                                    value="{{ old('city') }}" required>
+                                @error('city')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        State/Province <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="state" id="state"
-                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('state') ? 'border-red-500' : 'border-gray-300' }}"
-                                        value="{{ old('state') }}" required>
-                                    @error('state')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    State/Province <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="state" id="state"
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('state') ? 'border-red-500' : 'border-gray-300' }}"
+                                    value="{{ old('state') }}" required>
+                                @error('state')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Postal Code
-                                    </label>
-                                    <input type="text" name="postal_code" id="postal_code"
-                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('postal_code') ? 'border-red-500' : 'border-gray-300' }}"
-                                        value="{{ old('postal_code') }}">
-                                    @error('postal_code')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Postal Code
+                                </label>
+                                <input type="text" name="postal_code" id="postal_code"
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('postal_code') ? 'border-red-500' : 'border-gray-300' }}"
+                                    value="{{ old('postal_code') }}">
+                                @error('postal_code')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Country <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="country" id="country"
-                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('country') ? 'border-red-500' : 'border-gray-300' }}"
-                                        value="{{ old('country') }}" required>
-                                    @error('country')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Country <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="country" id="country"
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $errors->has('country') ? 'border-red-500' : 'border-gray-300' }}"
+                                    value="{{ old('country') }}" required>
+                                @error('country')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
                     </div>
-
                 </div>
 
-                <!-- Form Actions -->
-                <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-                    <!-- Left side - Cancel button -->
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                <!-- Left side - Previous button -->
+                <div>
+                    <button type="button" @click="previousTab()" x-show="activeTab !== 'info'"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-chevron-left mr-2"></i>
+                        Previous
+                    </button>
+                </div>
+
+                <!-- Right side - Next/Submit buttons -->
+                <div class="flex items-center space-x-3">
                     <a href="{{ route('suppliers.index') }}"
-                        class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                         Cancel
                     </a>
 
-                    <!-- Right side - Navigation buttons -->
-                    <div class="flex items-center space-x-3">
-                        <!-- Previous Button -->
-                        <button type="button" @click="previousTab()" x-show="activeTab !== 'info'"
-                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
-                            <i class="fas fa-arrow-left mr-2"></i>
-                            Previous
-                        </button>
+                    <!-- Next Button (shown when not on last tab) -->
+                    <button type="button" @click="nextTab()" x-show="activeTab === 'info'"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Next
+                        <i class="fas fa-chevron-right ml-2"></i>
+                    </button>
 
-                        <!-- Next Button -->
-                        <button type="button" @click="nextTab()" x-show="activeTab === 'info'"
-                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
-                            Next
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </button>
-
-                        <!-- Submit Button -->
-                        <button type="submit" x-show="activeTab === 'address'"
-                            class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
-                            <i class="fas fa-save mr-2"></i>
-                            Create Supplier
-                        </button>
-                    </div>
+                    <!-- Submit Button (shown only on last tab) -->
+                    <button type="submit" x-show="activeTab === 'address'"
+                        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-save mr-2"></i>
+                        Create Supplier
+                    </button>
                 </div>
+            </div>
         </form>
     </div>
 
@@ -294,59 +291,7 @@
 
                     init() {
                         this.generateNextSupplierId();
-                        this.bindKeyboardEvents();
-                    },
 
-                    bindKeyboardEvents() {
-                        document.addEventListener('keydown', (e) => {
-                            // Don't trigger shortcuts when typing in inputs
-                            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                                // Allow Ctrl+S even when in inputs
-                                if (e.ctrlKey && e.key === 's') {
-                                    e.preventDefault();
-                                    this.submitForm();
-                                }
-                                return;
-                            }
-
-                            // Save supplier - Ctrl+S
-                            if (e.ctrlKey && e.key === 's') {
-                                e.preventDefault();
-                                this.submitForm();
-                            }
-
-                            // Show help - H key
-                            if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.altKey) {
-                                e.preventDefault();
-                                window.location.href = '{{ route('suppliers.help') }}';
-                            }
-
-                            // Cancel and exit - Escape key
-                            if (e.key === 'Escape') {
-                                e.preventDefault();
-                                if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
-                                    window.location.href = '{{ route('suppliers.index') }}';
-                                }
-                            }
-
-                            // Next tab - Right arrow + Ctrl
-                            if (e.key === 'ArrowRight' && e.ctrlKey) {
-                                e.preventDefault();
-                                this.nextTab();
-                            }
-
-                            // Previous tab - Left arrow + Ctrl
-                            if (e.key === 'ArrowLeft' && e.ctrlKey) {
-                                e.preventDefault();
-                                this.previousTab();
-                            }
-
-                            // Back to list - Ctrl+B
-                            if (e.ctrlKey && e.key === 'b') {
-                                e.preventDefault();
-                                window.location.href = '{{ route('suppliers.index') }}';
-                            }
-                        });
                     },
 
                     async generateNextSupplierId() {
@@ -362,77 +307,22 @@
                     },
 
                     nextTab() {
-                        const tabs = ['info', 'address'];
-                        const currentIndex = tabs.indexOf(this.activeTab);
-                        if (currentIndex < tabs.length - 1) {
-                            // Validate current tab before moving to next
-                            if (this.validateCurrentTab()) {
-                                this.activeTab = tabs[currentIndex + 1];
-                            }
+                        if (this.activeTab === 'info') {
+                            this.activeTab = 'address';
                         }
                     },
 
                     previousTab() {
-                        const tabs = ['info', 'address'];
-                        const currentIndex = tabs.indexOf(this.activeTab);
-                        if (currentIndex > 0) {
-                            this.activeTab = tabs[currentIndex - 1];
+                        if (this.activeTab === 'address') {
+                            this.activeTab = 'info';
                         }
-                    },
-
-                    validateCurrentTab() {
-                        let requiredFields = [];
-
-                        if (this.activeTab === 'info') {
-                            requiredFields = ['company_name', 'contact_person', 'email', 'phone'];
-                        } else if (this.activeTab === 'address') {
-                            requiredFields = ['address', 'city', 'state', 'country'];
-                        }
-
-                        let isValid = true;
-                        requiredFields.forEach(field => {
-                            const input = document.getElementById(field);
-                            if (input && !input.value.trim()) {
-                                input.classList.add('border-red-500');
-                                isValid = false;
-                            } else if (input) {
-                                input.classList.remove('border-red-500');
-                            }
-                        });
-
-                        if (!isValid) {
-                            alert('Please fill in all required fields before proceeding.');
-                        }
-
-                        return isValid;
                     },
 
                     submitForm() {
-                        const form = document.getElementById('supplierForm');
-
-                        // Basic validation
-                        const requiredFields = ['company_name', 'contact_person', 'email', 'phone', 'address', 'city', 'state',
-                            'country'
-                        ];
-                        let isValid = true;
-
-                        requiredFields.forEach(field => {
-                            const input = document.getElementById(field);
-                            if (!input.value.trim()) {
-                                input.classList.add('border-red-500');
-                                isValid = false;
-                            } else {
-                                input.classList.remove('border-red-500');
-                            }
-                        });
-
-                        if (isValid) {
-                            form.submit();
-                        } else {
-                            alert('Please fill in all required fields.');
-                        }
+                        // Submit the form
+                        document.getElementById('supplierForm').submit();
                     }
-                }
+                };
             }
         </script>
     @endpush

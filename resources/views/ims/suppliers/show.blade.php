@@ -42,12 +42,6 @@
                     <p class="text-sm text-gray-600 mt-1">Supplier Details and Information</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    {{-- Help Button --}}
-                    <a href="{{ route('suppliers.help', $supplier) }}"
-                        class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                        Help
-                    </a>
                     <!-- Edit Button -->
                     <a href="{{ route('suppliers.edit', $supplier) }}"
                         class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
@@ -409,51 +403,8 @@
                 showDeleteConfirm: false,
                 
                 init() {
-                    this.bindKeyboardEvents();
                 },
 
-                bindKeyboardEvents() {
-                    document.addEventListener('keydown', (e) => {
-                        // Don't trigger shortcuts when typing in inputs
-                        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                            return;
-                        }
-
-                        // Edit supplier - E key or Ctrl+E
-                        if ((e.key.toLowerCase() === 'e' && !e.ctrlKey && !e.altKey) || (e.ctrlKey && e.key === 'e')) {
-                            e.preventDefault();
-                            window.location.href = '{{ route('suppliers.edit', $supplier) }}';
-                        }
-
-                        // Show help - H key
-                        if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.altKey) {
-                            e.preventDefault();
-                            window.location.href = '{{ route('suppliers.help') }}';
-                        }
-
-                        // Back to list - Escape or Ctrl+B
-                        if (e.key === 'Escape' || (e.ctrlKey && e.key === 'b')) {
-                            e.preventDefault();
-                            window.location.href = '{{ route('suppliers.index') }}';
-                        }
-
-                        // Delete supplier - Delete key
-                        if (e.key === 'Delete' && !e.ctrlKey && !e.altKey) {
-                            e.preventDefault();
-                            this.showDeleteConfirm = true;
-                        }
-
-                        // Switch tabs with numbers (1: overview, 2: products, 3: transactions)
-                        if (!e.ctrlKey && !e.altKey && e.key >= '1' && e.key <= '3') {
-                            e.preventDefault();
-                            const tabs = ['overview', 'products', 'transactions'];
-                            const tabIndex = parseInt(e.key) - 1;
-                            if (tabs[tabIndex]) {
-                                this.activeTab = tabs[tabIndex];
-                            }
-                        }
-                    });
-                }
             }
         }
     </script>

@@ -307,27 +307,7 @@
                                 <li>• Print: Quick print current view</li>
                             </ul>
                         </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-900 mb-2">Keyboard Shortcuts:</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between">
-                                    <span>Search</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">S</kbd>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Export Excel</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">E</kbd>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Export PDF</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">P</kbd>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Back to Reports</span>
-                                    <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Esc</kbd>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -347,45 +327,7 @@
                         this.bindKeyboardEvents();
                     },
 
-                    bindKeyboardEvents() {
-                        document.addEventListener('keydown', (e) => {
-                            // Don't trigger shortcuts when typing in inputs
-                            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName ===
-                                'SELECT') {
-                                return;
-                            }
 
-                            // Search focus - S key
-                            if (e.key.toLowerCase() === 's' && !e.ctrlKey && !e.altKey) {
-                                e.preventDefault();
-                                document.querySelector('input[x-model="searchQuery"]').focus();
-                            }
-
-                            // Export Excel - E key
-                            if (e.key.toLowerCase() === 'e' && !e.ctrlKey && !e.altKey) {
-                                e.preventDefault();
-                                window.location.href = '{{ route('reports.supplier.excel') }}';
-                            }
-
-                            // Export PDF - P key
-                            if (e.key.toLowerCase() === 'p' && !e.ctrlKey && !e.altKey) {
-                                e.preventDefault();
-                                window.open('{{ route('reports.supplier.pdf') }}', '_blank');
-                            }
-
-                            // Show help - H key
-                            if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.altKey) {
-                                e.preventDefault();
-                                this.showHelpModal = true;
-                            }
-
-                            // Back to reports - Escape key
-                            if (e.key === 'Escape' && !this.showHelpModal) {
-                                e.preventDefault();
-                                window.location.href = '{{ route('reports.index') }}';
-                            }
-                        });
-                    },
 
                     filterSuppliers() {
                         const query = this.searchQuery.toLowerCase();

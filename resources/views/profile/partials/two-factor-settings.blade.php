@@ -415,7 +415,7 @@
     <script>
         function openModal(id){ const m=document.getElementById(id); if(!m) return; m.classList.remove('hidden'); m.classList.add('flex'); }
         function closeModal(id){ const m=document.getElementById(id); if(!m) return; m.classList.add('hidden'); m.classList.remove('flex'); }
-        document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('[id$="-modal"]').forEach(el=> closeModal(el.id)); }});
+
         async function sendMgmtEmailCode(btn){
             btn.disabled = true; const original=btn.textContent; btn.textContent='Sending...';
             try {

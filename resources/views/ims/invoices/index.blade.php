@@ -33,12 +33,6 @@
                     <p class="text-sm text-gray-600 mt-1">Manage and track all your invoices</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <!-- Help Button -->
-                    <button @click="showHelp = true"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-question-circle w-4 h-4 mr-2"></i>
-                        Help
-                    </button>
                     <!-- New Invoice Button -->
                     <a href="{{ route('invoices.create') }}"
                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
@@ -204,50 +198,11 @@
         </div>
     </div>
 
-    <!-- Help Modal -->
-    <div x-show="showHelp" x-cloak
-         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
-         @click.away="showHelp = false">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-            <div class="mt-3">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <i class="fas fa-question-circle text-blue-600 mr-2"></i>
-                        Invoice Management Help
-                    </h3>
-                    <button @click="showHelp = false" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="space-y-4 text-gray-700">
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-2">Managing Invoices</h4>
-                        <ul class="list-disc list-inside space-y-1 text-sm">
-                            <li>View all invoices with details</li>
-                            <li>Search by invoice number or company name</li>
-                            <li>Filter by date range</li>
-                            <li>Download PDF, email, and generate delivery challans</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-2">Actions</h4>
-                        <ul class="list-disc list-inside space-y-1 text-sm">
-                            <li>Email Invoice</li>
-                            <li>Create Delivery Challan</li>
-                            <li>Download PDF</li>
-                            <li>View, Edit, Delete</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Scripts -->
     <script>
         function invoiceIndexManager() {
             return {
-                showHelp: false,
                 init() {}
             }
         }

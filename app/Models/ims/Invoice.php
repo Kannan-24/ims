@@ -42,6 +42,24 @@ class Invoice extends Model
     ];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'invoice_date' => 'date',
+        'order_date' => 'date',
+        'sub_total' => 'decimal:2',
+        'cgst' => 'decimal:2',
+        'sgst' => 'decimal:2',
+        'igst' => 'decimal:2',
+        'gst' => 'decimal:2',
+        'total' => 'decimal:2',
+        'courier_charges' => 'decimal:2',
+        'grand_total' => 'decimal:2',
+    ];
+
+    /**
      * Get the customer associated with the invoice.
      */
     public function customer()

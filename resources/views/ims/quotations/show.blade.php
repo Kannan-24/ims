@@ -44,34 +44,16 @@
                     <div class="flex items-center space-x-4 mt-1">
                         <span class="text-sm text-gray-600">Created:
                             {{ $quotation->created_at->format('M d, Y') }}</span>
-                        <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                            {{ $quotation->status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : ($quotation->status === 'approved'
-                                    ? 'bg-green-100 text-green-800'
-                                    : ($quotation->status === 'rejected'
-                                        ? 'bg-red-100 text-red-800'
-                                        : 'bg-gray-100 text-gray-800')) }}">
-                            {{ ucfirst($quotation->status ?? 'Draft') }}
-                        </span>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <!-- Print Button -->
-                    <button @click="printQuotation()"
-                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-print w-4 h-4 mr-2"></i>
-                        Print
-                    </button>
-
-                    <!-- PDF Download Button -->
-                    <button @click="downloadPDF()"
-                        class="inline-flex items-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-sm font-medium rounded-lg transition-colors">
-                        <i class="fas fa-file-pdf w-4 h-4 mr-2"></i>
-                        PDF
-                    </button>
-
+                    <!-- Download Invoice Button -->
+                    <a href="{{ route('quotations.pdf', $quotation->id) }}"
+                        class="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-lg transition-colors"
+                        target="_blank">
+                        <i class="fas fa-download w-4 h-4 mr-2"></i>
+                        Download PDF
+                    </a>
                     <!-- Convert to Invoice Button -->
                     @if (!$quotation->converted_to_invoice)
                         <button @click="showConvertModal = true"
@@ -128,13 +110,6 @@
                         <i class="fas fa-calculator mr-2"></i>
                         Summary
                     </button>
-                    <button type="button" @click="activeTab = 'preview'"
-                        :class="activeTab === 'preview' ? 'border-blue-500 text-blue-600' :
-                            'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                        class="py-2 px-1 border-b-2 font-medium text-sm">
-                        <i class="fas fa-eye mr-2"></i>
-                        Print Preview
-                    </button>
                 </nav>
             </div>
 
@@ -163,13 +138,13 @@
                                 <div>
                                     <span class="text-sm font-medium text-gray-500">Email:</span>
                                     <p class="text-sm text-gray-900">
-                                        {{ $quotation->contactPerson->email ?? ($quotation->customer->email ?? 'N/A') }}
+                                        {{ $quotation->contactPerson->email  }}
                                     </p>
                                 </div>
                                 <div>
                                     <span class="text-sm font-medium text-gray-500">Phone:</span>
                                     <p class="text-sm text-gray-900">
-                                        {{ $quotation->contactPerson->phone ?? ($quotation->customer->phone ?? 'N/A') }}
+                                        {{ $quotation->contactPerson->phone_no ?? 'N/A' }}
                                     </p>
                                 </div>
                                 <div>
@@ -203,20 +178,7 @@
                                         {{ \Carbon\Carbon::parse($quotation->quotation_date)->addDays(30)->format('F d, Y') }}
                                     </p>
                                 </div>
-                                <div>
-                                    <span class="text-sm font-medium text-gray-500">Status:</span>
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                        {{ $quotation->status === 'pending'
-                                            ? 'bg-yellow-100 text-yellow-800'
-                                            : ($quotation->status === 'approved'
-                                                ? 'bg-green-100 text-green-800'
-                                                : ($quotation->status === 'rejected'
-                                                    ? 'bg-red-100 text-red-800'
-                                                    : 'bg-gray-100 text-gray-800')) }}">
-                                        {{ ucfirst($quotation->status ?? 'Draft') }}
-                                    </span>
-                                </div>
+                               
                                 @if ($quotation->converted_to_invoice)
                                     <div>
                                         <span class="text-sm font-medium text-gray-500">Converted to Invoice:</span>
@@ -556,151 +518,13 @@
                                 <div class="flex justify-between text-lg">
                                     <span class="text-gray-700">Total GST:</span>
                                     <span
-                                        class="font-semibold">₹{{ number_format(($quotation->cgst ?? 0) + ($quotation->sgst ?? 0) + ($quotation->igst ?? 0) + ($quotation->gst ?? 0), 2) }}</span>
+                                        class="font-semibold">₹{{ number_format(($quotation->cgst ?? 0) + ($quotation->sgst ?? 0) + ($quotation->igst ?? 0), 2) }}</span>
                                 </div>
                                 <div class="border-t border-gray-300 pt-4 flex justify-between text-2xl font-bold">
                                     <span class="text-gray-900">Grand Total:</span>
                                     <span
                                         class="text-yellow-600">₹{{ number_format($quotation->total ?? $quotation->items->sum('total'), 2) }}</span>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Print Preview Tab -->
-                <div x-show="activeTab === 'preview'" x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden" id="printable-content">
-                        <!-- Print Header -->
-                        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 print:hidden">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold text-gray-900">Print Preview</h3>
-                                <div class="flex space-x-2">
-                                    <button @click="printQuotation()"
-                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
-                                        <i class="fas fa-print mr-2"></i>Print
-                                    </button>
-                                    <button @click="downloadPDF()"
-                                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors">
-                                        <i class="fas fa-download mr-2"></i>Download PDF
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Printable Content -->
-                        <div class="p-8 print:p-0">
-                            <!-- Company Header -->
-                            <div class="text-center mb-8">
-                                <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ config('app.name', 'SKM') }}</h1>
-                                <p class="text-gray-600">Your Company Address Line 1</p>
-                                <p class="text-gray-600">Your Company Address Line 2</p>
-                                <p class="text-gray-600">Phone: +91 XXXXX XXXXX | Email: info@company.com</p>
-                                <div class="mt-4 pt-4 border-t border-gray-300">
-                                    <h2 class="text-2xl font-semibold text-gray-800">QUOTATION</h2>
-                                </div>
-                            </div>
-
-                            <!-- Quotation Info -->
-                            <div class="grid grid-cols-2 gap-8 mb-8">
-                                <div>
-                                    <h3 class="font-semibold text-gray-900 mb-3">Bill To:</h3>
-                                    <div class="text-gray-700">
-                                        <p class="font-medium">{{ $quotation->customer->company_name ?? 'N/A' }}</p>
-                                        <p>{{ $quotation->contactPerson->name ?? 'N/A' }}</p>
-                                        <p>{{ $quotation->customer->address ?? 'N/A' }}</p>
-                                        <p>{{ $quotation->contactPerson->phone ?? ($quotation->customer->phone ?? 'N/A') }}
-                                        </p>
-                                        <p>{{ $quotation->contactPerson->email ?? ($quotation->customer->email ?? 'N/A') }}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="space-y-2">
-                                        <div>
-                                            <span class="font-medium">Quotation #:</span>
-                                            <span>{{ $quotation->quotation_no ?? 'QUO-' . str_pad($quotation->id, 4, '0', STR_PAD_LEFT) }}</span>
-                                        </div>
-                                        <div>
-                                            <span class="font-medium">Date:</span>
-                                            <span>{{ \Carbon\Carbon::parse($quotation->quotation_date)->format('F d, Y') }}</span>
-                                        </div>
-                                        <div>
-                                            <span class="font-medium">Valid Until:</span>
-                                            <span>{{ \Carbon\Carbon::parse($quotation->quotation_date)->addDays(30)->format('F d, Y') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Items Table -->
-                            <div class="mb-8">
-                                <table class="w-full border-collapse border border-gray-300">
-                                    <thead>
-                                        <tr class="bg-gray-50">
-                                            <th class="border border-gray-300 px-4 py-2 text-left">Item</th>
-                                            <th class="border border-gray-300 px-4 py-2 text-center">Qty</th>
-                                            <th class="border border-gray-300 px-4 py-2 text-right">Unit Price</th>
-                                            <th class="border border-gray-300 px-4 py-2 text-right">GST</th>
-                                            <th class="border border-gray-300 px-4 py-2 text-right">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($quotation->items as $item)
-                                            <tr>
-                                                <td class="border border-gray-300 px-4 py-2">
-                                                    <div class="font-medium">
-                                                        {{ $item->type === 'product' ? $item->product->name ?? 'Product not found' : $item->service->name ?? 'Service not found' }}
-                                                    </div>
-                                                    @if ($item->type === 'product' && $item->product)
-                                                        <div class="text-sm text-gray-500">HSN:
-                                                            {{ $item->product->hsn_code }}</div>
-                                                    @endif
-                                                </td>
-                                                <td class="border border-gray-300 px-4 py-2 text-center">
-                                                    {{ number_format($item->quantity) }}</td>
-                                                <td class="border border-gray-300 px-4 py-2 text-right">
-                                                    ₹{{ number_format($item->unit_price, 2) }}</td>
-                                                <td class="border border-gray-300 px-4 py-2 text-right">
-                                                    @if ($item->type === 'product')
-                                                        ₹{{ number_format($item->cgst + $item->sgst + $item->igst, 2) }}
-                                                    @else
-                                                        ₹{{ number_format($item->gst, 2) }}
-                                                    @endif
-                                                </td>
-                                                <td class="border border-gray-300 px-4 py-2 text-right font-medium">
-                                                    ₹{{ number_format($item->total, 2) }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                    <tfoot>
-                                        <tr class="bg-gray-50">
-                                            <td colspan="4"
-                                                class="border border-gray-300 px-4 py-2 text-right font-bold">Grand
-                                                Total:</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-right font-bold text-lg">
-                                                ₹{{ number_format($quotation->total ?? $quotation->items->sum('total'), 2) }}
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-
-                            <!-- Terms and Conditions -->
-                            @if ($quotation->terms_condition)
-                                <div class="mb-8">
-                                    <h3 class="font-semibold text-gray-900 mb-3">Terms and Conditions:</h3>
-                                    <div class="text-gray-700 text-sm whitespace-pre-line">
-                                        {{ $quotation->terms_condition }}</div>
-                                </div>
-                            @endif
-
-                            <!-- Footer -->
-                            <div class="text-center text-gray-600 text-sm border-t border-gray-300 pt-4">
-                                <p>Thank you for your business!</p>
-                                <p class="mt-2">This is a computer generated quotation and does not require
-                                    signature.</p>
                             </div>
                         </div>
                     </div>

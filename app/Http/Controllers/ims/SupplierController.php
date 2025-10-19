@@ -236,7 +236,7 @@ class SupplierController extends Controller
         return response()->json([
             'supplier' => [
                 'supplier_id' => $supplier->id,
-                'name' => $supplier->supplier_name,
+                'name' => $supplier->name,
                 'contact_person' => $supplier->contact_person,
                 'email' => $supplier->email,
                 'phone' => $supplier->phone_number,
@@ -250,14 +250,6 @@ class SupplierController extends Controller
             ],
             'gst' => $supplier->gst,
         ]);
-    }
-
-    /**
-     * Display help page for suppliers.
-     */
-    public function help()
-    {
-        return view('ims.suppliers.help');
     }
 
     /**
