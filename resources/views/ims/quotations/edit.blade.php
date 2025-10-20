@@ -779,7 +779,7 @@
                 loadExistingProducts() {
                     try {
                         const existingProducts = @json($quotation->items->where('type', 'product')->values());
-                        
+
                         console.log('Raw existing products data:', existingProducts);
 
                         // Check if products already loaded to prevent duplication
@@ -789,7 +789,7 @@
 
                         existingProducts.forEach((item, index) => {
                             console.log(`Processing product item ${index}:`, item);
-                            
+
                             const product = {
                                 id: item.product_id,
                                 name: item.product ? item.product.name : 'N/A',
@@ -827,7 +827,7 @@
                 loadExistingServices() {
                     try {
                         const existingServices = @json($quotation->items->where('type', 'service')->values());
-                        
+
                         console.log('Raw existing services data:', existingServices);
 
                         // Check if services already loaded to prevent duplication
@@ -837,7 +837,7 @@
 
                         existingServices.forEach((item, index) => {
                             console.log(`Processing service item ${index}:`, item);
-                            
+
                             const service = {
                                 id: item.service_id,
                                 name: item.service ? item.service.name : 'N/A',
