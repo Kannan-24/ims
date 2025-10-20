@@ -27,7 +27,8 @@
                     <li aria-current="page">
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-sm font-medium text-gray-500">Edit Invoice #{{ $invoice->invoice_no }}</span>
+                            <span class="text-sm font-medium text-gray-500">Edit Invoice
+                                #{{ $invoice->invoice_no }}</span>
                         </div>
                     </li>
                 </ol>
@@ -70,7 +71,8 @@
 
         <!-- Content -->
         <div class="p-6">
-            <form action="{{ route('invoices.update', $invoice->id) }}" method="POST" id="invoiceForm" @submit.prevent="submitForm">
+            <form action="{{ route('invoices.update', $invoice->id) }}" method="POST" id="invoiceForm"
+                @submit.prevent="submitForm">
                 @csrf
                 @method('PUT')
 
@@ -170,9 +172,9 @@
                                         x-model="selectedContactPerson" :disabled="!selectedCustomer">
                                         <option value="">Select Contact Person</option>
                                         <template x-for="contact in contactPersons" :key="contact.id">
-                                            <option :value="contact.id" 
-                                                    :selected="contact.id == selectedContactPerson"
-                                                    x-text="contact.name"></option>
+                                            <option :value="contact.id"
+                                                :selected="contact.id == selectedContactPerson" x-text="contact.name">
+                                            </option>
                                         </template>
                                     </select>
                                 </div>
@@ -184,7 +186,8 @@
                                     </label>
                                     <input type="date" name="invoice_date" required
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                        value="{{ old('invoice_date', $invoice->invoice_date) }}" x-model="invoiceDate">
+                                        value="{{ old('invoice_date', $invoice->invoice_date) }}"
+                                        x-model="invoiceDate">
                                 </div>
 
                                 <!-- Order Date -->
@@ -229,14 +232,30 @@
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">CGST</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">SGST</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">IGST</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Product</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Qty</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Unit Price</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                CGST</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                SGST</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                IGST</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Total</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
@@ -244,51 +263,67 @@
                                             <tr>
                                                 <td class="px-4 py-4">
                                                     <div class="flex flex-col">
-                                                        <span class="text-sm font-medium text-gray-900" x-text="product.name"></span>
+                                                        <span class="text-sm font-medium text-gray-900"
+                                                            x-text="product.name"></span>
                                                         <button type="button" @click="changeProduct(index)"
                                                             class="text-xs text-blue-600 hover:text-blue-800 mt-1 text-left">
                                                             Change Product
                                                         </button>
                                                     </div>
-                                                    <input type="hidden" :name="`products[${index}][product_id]`" :value="product.id">
-                                                    <input type="hidden" :name="`products[${index}][gst_percentage]`" :value="product.gst_percentage">
+                                                    <input type="hidden" :name="`products[${index}][product_id]`"
+                                                        :value="product.id">
+                                                    <input type="hidden" :name="`products[${index}][gst_percentage]`"
+                                                        :value="product.gst_percentage">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <input type="number" :name="`products[${index}][quantity]`"
-                                                        x-model="product.quantity" @input="calculateProductTotal(index)"
+                                                        x-model="product.quantity"
+                                                        @input="calculateProductTotal(index)"
                                                         class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="1">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <input type="number" :name="`products[${index}][unit_price]`"
-                                                        x-model="product.unit_price" @input="calculateProductTotal(index)"
+                                                        x-model="product.unit_price"
+                                                        @input="calculateProductTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900">
-                                                        <span x-text="product.cgst_rate"></span>% = ₹<span x-text="product.cgst_value"></span>
+                                                        <span x-text="product.cgst_rate"></span>% = ₹<span
+                                                            x-text="product.cgst_value"></span>
                                                     </div>
-                                                    <input type="hidden" :name="`products[${index}][cgst]`" :value="product.cgst_rate">
-                                                    <input type="hidden" :name="`products[${index}][cgst_value]`" :value="product.cgst_value">
+                                                    <input type="hidden" :name="`products[${index}][cgst]`"
+                                                        :value="product.cgst_rate">
+                                                    <input type="hidden" :name="`products[${index}][cgst_value]`"
+                                                        :value="product.cgst_value">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900">
-                                                        <span x-text="product.sgst_rate"></span>% = ₹<span x-text="product.sgst_value"></span>
+                                                        <span x-text="product.sgst_rate"></span>% = ₹<span
+                                                            x-text="product.sgst_value"></span>
                                                     </div>
-                                                    <input type="hidden" :name="`products[${index}][sgst]`" :value="product.sgst_rate">
-                                                    <input type="hidden" :name="`products[${index}][sgst_value]`" :value="product.sgst_value">
+                                                    <input type="hidden" :name="`products[${index}][sgst]`"
+                                                        :value="product.sgst_rate">
+                                                    <input type="hidden" :name="`products[${index}][sgst_value]`"
+                                                        :value="product.sgst_value">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <div class="text-sm text-gray-900">
-                                                        <span x-text="product.igst_rate"></span>% = ₹<span x-text="product.igst_value"></span>
+                                                        <span x-text="product.igst_rate"></span>% = ₹<span
+                                                            x-text="product.igst_value"></span>
                                                     </div>
-                                                    <input type="hidden" :name="`products[${index}][igst]`" :value="product.igst_rate">
-                                                    <input type="hidden" :name="`products[${index}][igst_value]`" :value="product.igst_value">
+                                                    <input type="hidden" :name="`products[${index}][igst]`"
+                                                        :value="product.igst_rate">
+                                                    <input type="hidden" :name="`products[${index}][igst_value]`"
+                                                        :value="product.igst_value">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm font-medium text-gray-900">₹<span x-text="product.total"></span></div>
-                                                    <input type="hidden" :name="`products[${index}][total]`" :value="product.total">
+                                                    <div class="text-sm font-medium text-gray-900">₹<span
+                                                            x-text="product.total"></span></div>
+                                                    <input type="hidden" :name="`products[${index}][total]`"
+                                                        :value="product.total">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <button type="button" @click="removeProduct(index)"
@@ -333,13 +368,27 @@
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST Amount</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Service</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Qty</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Unit Price</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                GST %</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                GST Amount</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Total</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
@@ -347,37 +396,47 @@
                                             <tr>
                                                 <td class="px-4 py-4">
                                                     <div class="flex flex-col">
-                                                        <span class="text-sm font-medium text-gray-900" x-text="service.name"></span>
+                                                        <span class="text-sm font-medium text-gray-900"
+                                                            x-text="service.name"></span>
                                                         <button type="button" @click="changeService(index)"
                                                             class="text-xs text-green-600 hover:text-green-800 mt-1 text-left">
                                                             Change Service
                                                         </button>
                                                     </div>
-                                                    <input type="hidden" :name="`services[${index}][service_id]`" :value="service.id">
+                                                    <input type="hidden" :name="`services[${index}][service_id]`"
+                                                        :value="service.id">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <input type="number" :name="`services[${index}][quantity]`"
-                                                        x-model="service.quantity" @input="calculateServiceTotal(index)"
+                                                        x-model="service.quantity"
+                                                        @input="calculateServiceTotal(index)"
                                                         class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="1">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <input type="number" :name="`services[${index}][unit_price]`"
-                                                        x-model="service.unit_price" @input="calculateServiceTotal(index)"
+                                                        x-model="service.unit_price"
+                                                        @input="calculateServiceTotal(index)"
                                                         class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         min="0" step="0.01">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm text-gray-900" x-text="service.gst_percentage + '%'"></div>
-                                                    <input type="hidden" :name="`services[${index}][gst_percentage]`" :value="service.gst_percentage">
+                                                    <div class="text-sm text-gray-900"
+                                                        x-text="service.gst_percentage + '%'"></div>
+                                                    <input type="hidden" :name="`services[${index}][gst_percentage]`"
+                                                        :value="service.gst_percentage">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm text-gray-900">₹<span x-text="service.gst_total"></span></div>
-                                                    <input type="hidden" :name="`services[${index}][gst_total]`" :value="service.gst_total">
+                                                    <div class="text-sm text-gray-900">₹<span
+                                                            x-text="service.gst_total"></span></div>
+                                                    <input type="hidden" :name="`services[${index}][gst_total]`"
+                                                        :value="service.gst_total">
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-sm font-medium text-gray-900">₹<span x-text="service.total"></span></div>
-                                                    <input type="hidden" :name="`services[${index}][total]`" :value="service.total">
+                                                    <div class="text-sm font-medium text-gray-900">₹<span
+                                                            x-text="service.total"></span></div>
+                                                    <input type="hidden" :name="`services[${index}][total]`"
+                                                        :value="service.total">
                                                 </td>
                                                 <td class="px-4 py-4">
                                                     <button type="button" @click="removeService(index)"
@@ -406,28 +465,39 @@
                                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product Subtotal:</span>
-                                            <span class="font-medium">₹<span x-text="summary.product_subtotal"></span></span>
-                                            <input type="hidden" name="product_subtotal" :value="summary.product_subtotal">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.product_subtotal"></span></span>
+                                            <input type="hidden" name="product_subtotal"
+                                                :value="summary.product_subtotal">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product CGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.product_total_cgst"></span></span>
-                                            <input type="hidden" name="product_total_cgst" :value="summary.product_total_cgst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.product_total_cgst"></span></span>
+                                            <input type="hidden" name="product_total_cgst"
+                                                :value="summary.product_total_cgst">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product SGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.product_total_sgst"></span></span>
-                                            <input type="hidden" name="product_total_sgst" :value="summary.product_total_sgst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.product_total_sgst"></span></span>
+                                            <input type="hidden" name="product_total_sgst"
+                                                :value="summary.product_total_sgst">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Product IGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.product_total_igst"></span></span>
-                                            <input type="hidden" name="product_total_igst" :value="summary.product_total_igst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.product_total_igst"></span></span>
+                                            <input type="hidden" name="product_total_igst"
+                                                :value="summary.product_total_igst">
                                         </div>
-                                        <div class="flex justify-between border-t border-blue-300 pt-3 text-lg font-bold">
+                                        <div
+                                            class="flex justify-between border-t border-blue-300 pt-3 text-lg font-bold">
                                             <span class="text-gray-900">Product Total:</span>
-                                            <span class="text-blue-600">₹<span x-text="summary.product_total"></span></span>
-                                            <input type="hidden" name="product_total" :value="summary.product_total">
+                                            <span class="text-blue-600">₹<span
+                                                    x-text="summary.product_total"></span></span>
+                                            <input type="hidden" name="product_total"
+                                                :value="summary.product_total">
                                         </div>
                                     </div>
                                 </div>
@@ -438,23 +508,32 @@
                                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Service Subtotal:</span>
-                                            <span class="font-medium">₹<span x-text="summary.service_subtotal"></span></span>
-                                            <input type="hidden" name="service_subtotal" :value="summary.service_subtotal">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.service_subtotal"></span></span>
+                                            <input type="hidden" name="service_subtotal"
+                                                :value="summary.service_subtotal">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Service CGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.service_total_cgst"></span></span>
-                                            <input type="hidden" name="service_total_cgst" :value="summary.service_total_cgst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.service_total_cgst"></span></span>
+                                            <input type="hidden" name="service_total_cgst"
+                                                :value="summary.service_total_cgst">
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-gray-700">Service SGST:</span>
-                                            <span class="font-medium">₹<span x-text="summary.service_total_sgst"></span></span>
-                                            <input type="hidden" name="service_total_sgst" :value="summary.service_total_sgst">
+                                            <span class="font-medium">₹<span
+                                                    x-text="summary.service_total_sgst"></span></span>
+                                            <input type="hidden" name="service_total_sgst"
+                                                :value="summary.service_total_sgst">
                                         </div>
-                                        <div class="flex justify-between border-t border-green-300 pt-3 text-lg font-bold">
+                                        <div
+                                            class="flex justify-between border-t border-green-300 pt-3 text-lg font-bold">
                                             <span class="text-gray-900">Service Total:</span>
-                                            <span class="text-green-600">₹<span x-text="summary.service_total"></span></span>
-                                            <input type="hidden" name="service_total" :value="summary.service_total">
+                                            <span class="text-green-600">₹<span
+                                                    x-text="summary.service_total"></span></span>
+                                            <input type="hidden" name="service_total"
+                                                :value="summary.service_total">
                                         </div>
                                     </div>
                                 </div>
@@ -467,17 +546,23 @@
                                     <div class="space-y-4">
                                         <div class="flex justify-between text-lg">
                                             <span class="text-gray-700">Grand Subtotal:</span>
-                                            <span class="font-semibold">₹<span x-text="summary.grand_sub_total"></span></span>
-                                            <input type="hidden" name="grand_sub_total" :value="summary.grand_sub_total">
+                                            <span class="font-semibold">₹<span
+                                                    x-text="summary.grand_sub_total"></span></span>
+                                            <input type="hidden" name="grand_sub_total"
+                                                :value="summary.grand_sub_total">
                                         </div>
                                         <div class="flex justify-between text-lg">
                                             <span class="text-gray-700">Grand GST Total:</span>
-                                            <span class="font-semibold">₹<span x-text="summary.grand_gst_total"></span></span>
-                                            <input type="hidden" name="grand_gst_total" :value="summary.grand_gst_total">
+                                            <span class="font-semibold">₹<span
+                                                    x-text="summary.grand_gst_total"></span></span>
+                                            <input type="hidden" name="grand_gst_total"
+                                                :value="summary.grand_gst_total">
                                         </div>
-                                        <div class="flex justify-between border-t border-yellow-300 pt-4 text-2xl font-bold">
+                                        <div
+                                            class="flex justify-between border-t border-yellow-300 pt-4 text-2xl font-bold">
                                             <span class="text-gray-900">Grand Total:</span>
-                                            <span class="text-yellow-600">₹<span x-text="summary.grand_total"></span></span>
+                                            <span class="text-yellow-600">₹<span
+                                                    x-text="summary.grand_total"></span></span>
                                             <input type="hidden" name="grand_total" :value="summary.grand_total">
                                         </div>
                                     </div>
@@ -504,14 +589,14 @@
                             class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                             Cancel
                         </a>
-                        
+
                         <!-- Next Button (shown when not on last tab) -->
                         <button type="button" @click="nextStep()" x-show="activeTab !== 'summary'"
                             class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             Next
                             <i class="fas fa-chevron-right ml-2"></i>
                         </button>
-                        
+
                         <!-- Submit Button (shown only on last tab) -->
                         <button type="submit" x-show="activeTab === 'summary'" :disabled="isSubmitting"
                             class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-green-400 inline-flex items-center">
@@ -561,11 +646,16 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">HSN Code</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product
+                                        Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">HSN
+                                        Code</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -576,7 +666,8 @@
                                         <td class="px-6 py-4 text-sm text-gray-900">
                                             {{ $product->stock->sum('quantity') - $product->stock->sum('sold') }}
                                         </td>
-                                        <td class="px-6 py-4 text-sm text-gray-900">{{ $product->gst_percentage }}%</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900">{{ $product->gst_percentage }}%
+                                        </td>
                                         <td class="px-6 py-4">
                                             <button type="button"
                                                 @click="selectProduct('{{ $product->id }}', '{{ $product->name }}', {{ $product->gst_percentage }}, {{ $product->is_igst }})"
@@ -618,16 +709,20 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service
+                                        Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">GST %
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($services as $service)
                                     <tr class="service-row">
                                         <td class="px-6 py-4 text-sm text-gray-900">{{ $service->name }}</td>
-                                        <td class="px-6 py-4 text-sm text-gray-900">{{ $service->gst_percentage }}%</td>
+                                        <td class="px-6 py-4 text-sm text-gray-900">{{ $service->gst_percentage }}%
+                                        </td>
                                         <td class="px-6 py-4">
                                             <button type="button"
                                                 @click="selectService('{{ $service->id }}', '{{ $service->name }}', {{ $service->gst_percentage }})"
@@ -646,511 +741,528 @@
     </div>
 
     <script>
-    function invoiceEditManager() {
-        return {
-            activeTab: 'basic',
-            invoiceNo: '{{ old('invoice_no', $invoice->invoice_no) }}',
-            orderNo: '{{ old('order_no', $invoice->order_no) }}',
-            selectedCustomer: '{{ old('customer', $invoice->customer_id) }}',
-            selectedContactPerson: '{{ old('contact_person', $invoice->contactperson_id) }}',
-            contactPersons: [],
-            invoiceDate: '{{ old('invoice_date', $invoice->invoice_date) }}',
-            orderDate: '{{ old('order_date', $invoice->order_date) }}',
-            products: [],
-            services: [],
-            isSubmitting: false,
-            showProductModal: false,
-            showServiceModal: false,
-            productSearch: '',
-            serviceSearch: '',
-            customersData: {},
-            currentProductIndex: null,
-            currentServiceIndex: null,
-            summary: {
-                product_subtotal: 0,
-                product_total_cgst: 0,
-                product_total_sgst: 0,
-                product_total_igst: 0,
-                product_total: 0,
-                service_subtotal: 0,
-                service_total_cgst: 0,
-                service_total_sgst: 0,
-                service_total: 0,
-                grand_sub_total: 0,
-                grand_gst_total: 0,
-                grand_total: 0
-            },
+        function invoiceEditManager() {
+            return {
+                activeTab: 'basic',
+                invoiceNo: '{{ old('invoice_no', $invoice->invoice_no) }}',
+                orderNo: '{{ old('order_no', $invoice->order_no) }}',
+                selectedCustomer: '{{ old('customer', $invoice->customer_id) }}',
+                selectedContactPerson: '{{ old('contact_person', $invoice->contactperson_id) }}',
+                contactPersons: [],
+                invoiceDate: '{{ old('invoice_date', $invoice->invoice_date) }}',
+                orderDate: '{{ old('order_date', $invoice->order_date) }}',
+                products: [],
+                services: [],
+                isSubmitting: false,
+                showProductModal: false,
+                showServiceModal: false,
+                productSearch: '',
+                serviceSearch: '',
+                customersData: {},
+                currentProductIndex: null,
+                currentServiceIndex: null,
+                summary: {
+                    product_subtotal: 0,
+                    product_total_cgst: 0,
+                    product_total_sgst: 0,
+                    product_total_igst: 0,
+                    product_total: 0,
+                    service_subtotal: 0,
+                    service_total_cgst: 0,
+                    service_total_sgst: 0,
+                    service_total: 0,
+                    grand_sub_total: 0,
+                    grand_gst_total: 0,
+                    grand_total: 0
+                },
 
-            init() {
-                console.log('Initializing invoice edit manager...');
-                console.log('Current User:', 'Kannan-24');
-                console.log('Current DateTime (UTC):', '2025-10-19 13:46:05');
-                
-                // Clear arrays to prevent duplication
-                this.products = [];
-                this.services = [];
-                
-                this.setupCustomerData();
-                this.loadExistingProducts();
-                this.loadExistingServices();
-                this.updateContactPersons();
-                console.log('Invoice edit manager initialized successfully');
-            },
+                init() {
+                    console.log('Initializing invoice edit manager...');
+                    console.log('Current User:', 'Kannan-24');
+                    console.log('Current DateTime (UTC):', '2025-10-19 13:46:05');
 
-            setupCustomerData() {
-                try {
-                    this.customersData = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
-                    console.log('Customer data loaded:', Object.keys(this.customersData).length, 'customers');
-                } catch (error) {
-                    console.error('Error loading customer data:', error);
-                    this.customersData = {};
-                }
-            },
+                    // Clear arrays to prevent duplication
+                    this.products = [];
+                    this.services = [];
 
-            loadExistingProducts() {
-                try {
-                    const existingProducts = @json($invoice->items->where('type', 'product')->values());
-                    
-                    // Check if products already loaded to prevent duplication
-                    if (this.products.length > 0) {
-                        console.log('Products already loaded, skipping...');
-                        return;
+                    this.setupCustomerData();
+                    this.loadExistingProducts();
+                    this.loadExistingServices();
+                    this.updateContactPersons();
+                    console.log('Invoice edit manager initialized successfully');
+                },
+
+                setupCustomerData() {
+                    try {
+                        this.customersData = @json($customers->mapWithKeys(fn($customer) => [$customer->id => $customer->contactPersons]));
+                        console.log('Customer data loaded:', Object.keys(this.customersData).length, 'customers');
+                    } catch (error) {
+                        console.error('Error loading customer data:', error);
+                        this.customersData = {};
                     }
-                    
-                    existingProducts.forEach(item => {
-                        const product = {
-                            id: item.product_id,
-                            name: item.product ? item.product.name : 'N/A',
-                            quantity: parseFloat(item.quantity) || 0,
-                            unit_price: parseFloat(item.unit_price) || 0,
-                            gst_percentage: item.product ? parseFloat(item.product.gst_percentage) || 0 : 0,
-                            is_igst: item.product ? parseInt(item.product.is_igst) || 0 : 0,
-                            cgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product.gst_percentage) || 0) / 2) : 0,
-                            sgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product.gst_percentage) || 0) / 2) : 0,
-                            igst_rate: item.product ? (item.product.is_igst ? (parseFloat(item.product.gst_percentage) || 0) : 0) : 0,
-                            cgst_value: parseFloat(item.cgst) || 0,
-                            sgst_value: parseFloat(item.sgst) || 0,
-                            igst_value: parseFloat(item.igst) || 0,
-                            total: parseFloat(item.total) || 0
-                        };
+                },
+
+                loadExistingProducts() {
+                    try {
+                        const existingProducts = @json($invoice->items->where('type', 'product')->values());
                         
-                        this.products.push(product);
-                    });
-                    
-                    console.log('Loaded', this.products.length, 'existing products');
-                    // Calculate summary after loading
-                    setTimeout(() => {
-                        this.calculateSummary();
-                    }, 50);
-                } catch (error) {
-                    console.error('Error loading existing products:', error);
-                }
-            },
+                        console.log('Raw existing products data:', existingProducts);
 
-            loadExistingServices() {
-                try {
-                    const existingServices = @json($invoice->items->where('type', 'service')->values());
-                    
-                    // Check if services already loaded to prevent duplication
-                    if (this.services.length > 0) {
-                        console.log('Services already loaded, skipping...');
-                        return;
-                    }
-                    
-                    existingServices.forEach(item => {
-                        const service = {
-                            id: item.service_id,
-                            name: item.service ? item.service.name : 'N/A',
-                            quantity: parseFloat(item.quantity) || 0,
-                            unit_price: parseFloat(item.unit_price) || 0,
-                            gst_percentage: item.service ? parseFloat(item.service.gst_percentage) || 0 : 0,
-                            gst_total: (parseFloat(item.cgst) || 0) + (parseFloat(item.sgst) || 0),
-                            total: parseFloat(item.total) || 0
-                        };
-                        
-                        this.services.push(service);
-                    });
-                    
-                    console.log('Loaded', this.services.length, 'existing services');
-                    // Calculate summary after loading
-                    setTimeout(() => {
-                        this.calculateSummary();
-                    }, 50);
-                } catch (error) {
-                    console.error('Error loading existing services:', error);
-                }
-            },
-
-            updateContactPersons() {
-                try {
-                    const currentContactPerson = this.selectedContactPerson;
-                    this.contactPersons = this.customersData[this.selectedCustomer] || [];
-                    
-                    // Preserve selected contact person if it exists for the new customer
-                    if (currentContactPerson && this.contactPersons.find(cp => cp.id == currentContactPerson)) {
-                        this.selectedContactPerson = currentContactPerson;
-                    } else {
-                        // Reset contact person if not available for new customer
-                        this.selectedContactPerson = '';
-                    }
-                    
-                    console.log('Contact persons updated:', this.contactPersons.length, 'contacts available');
-                    console.log('Selected contact person:', this.selectedContactPerson);
-                } catch (error) {
-                    console.error('Error updating contact persons:', error);
-                    this.contactPersons = [];
-                    this.selectedContactPerson = '';
-                }
-            },
-
-            nextStep() {
-                if (this.activeTab === 'basic') {
-                    if (!this.validateBasicInfo()) {
-                        return;
-                    }
-                    this.activeTab = 'products';
-                } else if (this.activeTab === 'products') {
-                    if (this.products.length === 0) {
-                        if (!confirm('No products added. Continue to services?')) {
+                        // Check if products already loaded to prevent duplication
+                        if (this.products.length > 0) {
+                            console.log('Products already loaded, skipping...');
                             return;
                         }
+
+                        existingProducts.forEach((item, index) => {
+                            console.log(`Processing product item ${index}:`, item);
+                            
+                            const product = {
+                                id: item.product_id,
+                                name: item.product ? item.product.name : 'N/A',
+                                quantity: parseFloat(item.quantity) || 0,
+                                unit_price: parseFloat(item.unit_price) || 0,
+                                gst_percentage: item.product ? parseFloat(item.product.gst_percentage) || 0 : 0,
+                                is_igst: item.product ? parseInt(item.product.is_igst) || 0 : 0,
+                                cgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product
+                                    .gst_percentage) || 0) / 2) : 0,
+                                sgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product
+                                    .gst_percentage) || 0) / 2) : 0,
+                                igst_rate: item.product ? (item.product.is_igst ? (parseFloat(item.product
+                                    .gst_percentage) || 0) : 0) : 0,
+                                cgst_value: parseFloat(item.cgst) || 0,
+                                sgst_value: parseFloat(item.sgst) || 0,
+                                igst_value: parseFloat(item.igst) || 0,
+                                total: parseFloat(item.total) || 0
+                            };
+
+                            console.log('Created product object:', product);
+                            this.products.push(product);
+                        });
+
+                        console.log('Loaded', this.products.length, 'existing products');
+                        console.log('Final products array:', this.products);
+                        // Calculate summary after loading
+                        setTimeout(() => {
+                            this.calculateSummary();
+                        }, 50);
+                    } catch (error) {
+                        console.error('Error loading existing products:', error);
                     }
-                    this.activeTab = 'services';
-                } else if (this.activeTab === 'services') {
-                    this.calculateSummary();
-                    this.activeTab = 'summary';
-                }
-                console.log('Navigated to tab:', this.activeTab);
-            },
+                },
 
-            previousStep() {
-                if (this.activeTab === 'summary') {
-                    this.activeTab = 'services';
-                } else if (this.activeTab === 'services') {
-                    this.activeTab = 'products';
-                } else if (this.activeTab === 'products') {
-                    this.activeTab = 'basic';
-                }
-                console.log('Navigated back to tab:', this.activeTab);
-            },
-
-            validateBasicInfo() {
-                if (!this.selectedCustomer || !this.selectedContactPerson || !this.invoiceDate || !this.orderDate) {
-                    alert('Please fill in all required fields before proceeding.');
-                    return false;
-                }
-                if (!this.invoiceNo || !this.orderNo) {
-                    alert('Invoice number and order number are required.');
-                    return false;
-                }
-                return true;
-            },
-
-            changeProduct(index) {
-                this.currentProductIndex = index;
-                this.showProductModal = true;
-                console.log('Changing product at index:', index);
-            },
-
-            selectProduct(id, name, gstPercentage, isIgst) {
-                try {
-                    if (this.currentProductIndex !== null) {
-                        // Changing existing product
-                        const product = this.products[this.currentProductIndex];
-                        product.id = id;
-                        product.name = name;
-                        product.gst_percentage = parseFloat(gstPercentage) || 0;
-                        product.is_igst = parseInt(isIgst) || 0;
-                        product.cgst_rate = product.is_igst ? 0 : (product.gst_percentage / 2);
-                        product.sgst_rate = product.is_igst ? 0 : (product.gst_percentage / 2);
-                        product.igst_rate = product.is_igst ? product.gst_percentage : 0;
+                loadExistingServices() {
+                    try {
+                        const existingServices = @json($invoice->items->where('type', 'service')->values());
                         
-                        this.calculateProductTotal(this.currentProductIndex);
-                        console.log('Product changed:', name);
-                        this.currentProductIndex = null;
-                    } else {
-                        // Adding new product
-                        const gstPercent = parseFloat(gstPercentage) || 0;
-                        const isIgstProduct = parseInt(isIgst) || 0;
-                        
-                        const product = {
-                            id: id,
-                            name: name,
-                            quantity: 1,
-                            unit_price: 0,
-                            gst_percentage: gstPercent,
-                            is_igst: isIgstProduct,
-                            cgst_rate: isIgstProduct ? 0 : (gstPercent / 2),
-                            sgst_rate: isIgstProduct ? 0 : (gstPercent / 2),
-                            igst_rate: isIgstProduct ? gstPercent : 0,
-                            cgst_value: 0,
-                            sgst_value: 0,
-                            igst_value: 0,
-                            total: 0
-                        };
-                        
-                        this.products.push(product);
-                        this.calculateProductTotal(this.products.length - 1);
-                        console.log('Product added:', name);
+                        console.log('Raw existing services data:', existingServices);
+
+                        // Check if services already loaded to prevent duplication
+                        if (this.services.length > 0) {
+                            console.log('Services already loaded, skipping...');
+                            return;
+                        }
+
+                        existingServices.forEach((item, index) => {
+                            console.log(`Processing service item ${index}:`, item);
+                            
+                            const service = {
+                                id: item.service_id,
+                                name: item.service ? item.service.name : 'N/A',
+                                quantity: parseFloat(item.quantity) || 0,
+                                unit_price: parseFloat(item.unit_price) || 0,
+                                gst_percentage: item.service ? parseFloat(item.service.gst_percentage) || 0 : 0,
+                                gst_total: (parseFloat(item.cgst) || 0) + (parseFloat(item.sgst) || 0),
+                                total: parseFloat(item.total) || 0
+                            };
+
+                            console.log('Created service object:', service);
+                            this.services.push(service);
+                        });
+
+                        console.log('Loaded', this.services.length, 'existing services');
+                        console.log('Final services array:', this.services);
+                        // Calculate summary after loading
+                        setTimeout(() => {
+                            this.calculateSummary();
+                        }, 50);
+                    } catch (error) {
+                        console.error('Error loading existing services:', error);
                     }
-                    
-                    this.showProductModal = false;
-                    this.productSearch = '';
-                } catch (error) {
-                    console.error('Error selecting product:', error);
-                    alert('Error adding product. Please try again.');
-                }
-            },
+                },
 
-            changeService(index) {
-                this.currentServiceIndex = index;
-                this.showServiceModal = true;
-                console.log('Changing service at index:', index);
-            },
+                updateContactPersons() {
+                    try {
+                        const currentContactPerson = this.selectedContactPerson;
+                        this.contactPersons = this.customersData[this.selectedCustomer] || [];
 
-            selectService(id, name, gstPercentage) {
-                try {
-                    if (this.currentServiceIndex !== null) {
-                        // Changing existing service
-                        const service = this.services[this.currentServiceIndex];
-                        service.id = id;
-                        service.name = name;
-                        service.gst_percentage = parseFloat(gstPercentage) || 0;
-                        
-                        this.calculateServiceTotal(this.currentServiceIndex);
-                        console.log('Service changed:', name);
-                        this.currentServiceIndex = null;
-                    } else {
-                        // Adding new service
-                        const service = {
-                            id: id,
-                            name: name,
-                            quantity: 1,
-                            unit_price: 0,
-                            gst_percentage: parseFloat(gstPercentage) || 0,
-                            gst_total: 0,
-                            total: 0
-                        };
-                        
-                        this.services.push(service);
-                        this.calculateServiceTotal(this.services.length - 1);
-                        console.log('Service added:', name);
+                        // Preserve selected contact person if it exists for the new customer
+                        if (currentContactPerson && this.contactPersons.find(cp => cp.id == currentContactPerson)) {
+                            this.selectedContactPerson = currentContactPerson;
+                        } else {
+                            // Reset contact person if not available for new customer
+                            this.selectedContactPerson = '';
+                        }
+
+                        console.log('Contact persons updated:', this.contactPersons.length, 'contacts available');
+                        console.log('Selected contact person:', this.selectedContactPerson);
+                    } catch (error) {
+                        console.error('Error updating contact persons:', error);
+                        this.contactPersons = [];
+                        this.selectedContactPerson = '';
                     }
-                    
-                    this.showServiceModal = false;
-                    this.serviceSearch = '';
-                } catch (error) {
-                    console.error('Error selecting service:', error);
-                    alert('Error adding service. Please try again.');
-                }
-            },
+                },
 
-            removeProduct(index) {
-                if (confirm('Are you sure you want to remove this product?')) {
-                    const removedProduct = this.products[index];
-                    this.products.splice(index, 1);
-                    this.calculateSummary();
-                    console.log('Product removed:', removedProduct.name);
-                }
-            },
-
-            removeService(index) {
-                if (confirm('Are you sure you want to remove this service?')) {
-                    const removedService = this.services[index];
-                    this.services.splice(index, 1);
-                    this.calculateSummary();
-                    console.log('Service removed:', removedService.name);
-                }
-            },
-
-            calculateProductTotal(index) {
-                try {
-                    const product = this.products[index];
-                    if (!product) return;
-
-                    const quantity = parseFloat(product.quantity) || 0;
-                    const unitPrice = parseFloat(product.unit_price) || 0;
-                    const subtotal = quantity * unitPrice;
-
-                    if (product.is_igst) {
-                        // IGST product - only IGST applies
-                        product.cgst_value = 0;
-                        product.sgst_value = 0;
-                        product.igst_value = parseFloat(((subtotal * product.igst_rate) / 100).toFixed(2));
-                    } else {
-                        // CGST/SGST product - CGST and SGST apply, no IGST
-                        product.cgst_value = parseFloat(((subtotal * product.cgst_rate) / 100).toFixed(2));
-                        product.sgst_value = parseFloat(((subtotal * product.sgst_rate) / 100).toFixed(2));
-                        product.igst_value = 0;
+                nextStep() {
+                    if (this.activeTab === 'basic') {
+                        if (!this.validateBasicInfo()) {
+                            return;
+                        }
+                        this.activeTab = 'products';
+                    } else if (this.activeTab === 'products') {
+                        if (this.products.length === 0) {
+                            if (!confirm('No products added. Continue to services?')) {
+                                return;
+                            }
+                        }
+                        this.activeTab = 'services';
+                    } else if (this.activeTab === 'services') {
+                        this.calculateSummary();
+                        this.activeTab = 'summary';
                     }
+                    console.log('Navigated to tab:', this.activeTab);
+                },
 
-                    product.total = parseFloat((subtotal + product.cgst_value + product.sgst_value + product.igst_value).toFixed(2));
+                previousStep() {
+                    if (this.activeTab === 'summary') {
+                        this.activeTab = 'services';
+                    } else if (this.activeTab === 'services') {
+                        this.activeTab = 'products';
+                    } else if (this.activeTab === 'products') {
+                        this.activeTab = 'basic';
+                    }
+                    console.log('Navigated back to tab:', this.activeTab);
+                },
 
-                    // Immediate summary calculation for better responsiveness
-                    this.calculateSummary();
-                } catch (error) {
-                    console.error('Error calculating product total:', error);
-                }
-            },
+                validateBasicInfo() {
+                    if (!this.selectedCustomer || !this.selectedContactPerson || !this.invoiceDate || !this.orderDate) {
+                        alert('Please fill in all required fields before proceeding.');
+                        return false;
+                    }
+                    if (!this.invoiceNo || !this.orderNo) {
+                        alert('Invoice number and order number are required.');
+                        return false;
+                    }
+                    return true;
+                },
 
-            calculateServiceTotal(index) {
-                try {
-                    const service = this.services[index];
-                    if (!service) return;
+                changeProduct(index) {
+                    this.currentProductIndex = index;
+                    this.showProductModal = true;
+                    console.log('Changing product at index:', index);
+                },
 
-                    const quantity = parseFloat(service.quantity) || 0;
-                    const unitPrice = parseFloat(service.unit_price) || 0;
-                    const subtotal = quantity * unitPrice;
+                selectProduct(id, name, gstPercentage, isIgst) {
+                    try {
+                        if (this.currentProductIndex !== null) {
+                            // Changing existing product
+                            const product = this.products[this.currentProductIndex];
+                            product.id = id;
+                            product.name = name;
+                            product.gst_percentage = parseFloat(gstPercentage) || 0;
+                            product.is_igst = parseInt(isIgst) || 0;
+                            product.cgst_rate = product.is_igst ? 0 : (product.gst_percentage / 2);
+                            product.sgst_rate = product.is_igst ? 0 : (product.gst_percentage / 2);
+                            product.igst_rate = product.is_igst ? product.gst_percentage : 0;
 
-                    service.gst_total = parseFloat(((subtotal * service.gst_percentage) / 100).toFixed(2));
-                    service.total = parseFloat((subtotal + service.gst_total).toFixed(2));
+                            this.calculateProductTotal(this.currentProductIndex);
+                            console.log('Product changed:', name);
+                            this.currentProductIndex = null;
+                        } else {
+                            // Adding new product
+                            const gstPercent = parseFloat(gstPercentage) || 0;
+                            const isIgstProduct = parseInt(isIgst) || 0;
 
-                    // Immediate summary calculation for better responsiveness
-                    this.calculateSummary();
-                } catch (error) {
-                    console.error('Error calculating service total:', error);
-                }
-            },
+                            const product = {
+                                id: id,
+                                name: name,
+                                quantity: 1,
+                                unit_price: 0,
+                                gst_percentage: gstPercent,
+                                is_igst: isIgstProduct,
+                                cgst_rate: isIgstProduct ? 0 : (gstPercent / 2),
+                                sgst_rate: isIgstProduct ? 0 : (gstPercent / 2),
+                                igst_rate: isIgstProduct ? gstPercent : 0,
+                                cgst_value: 0,
+                                sgst_value: 0,
+                                igst_value: 0,
+                                total: 0
+                            };
 
-            calculateSummary() {
-                try {
-                    // Reset summary
-                    this.summary = {
-                        product_subtotal: 0,
-                        product_total_cgst: 0,
-                        product_total_sgst: 0,
-                        product_total_igst: 0,
-                        product_total: 0,
-                        service_subtotal: 0,
-                        service_total_cgst: 0,
-                        service_total_sgst: 0,
-                        service_total: 0,
-                        grand_sub_total: 0,
-                        grand_gst_total: 0,
-                        grand_total: 0
-                    };
+                            this.products.push(product);
+                            this.calculateProductTotal(this.products.length - 1);
+                            console.log('Product added:', name);
+                        }
 
-                    // Calculate product summary
-                    this.products.forEach(product => {
+                        this.showProductModal = false;
+                        this.productSearch = '';
+                    } catch (error) {
+                        console.error('Error selecting product:', error);
+                        alert('Error adding product. Please try again.');
+                    }
+                },
+
+                changeService(index) {
+                    this.currentServiceIndex = index;
+                    this.showServiceModal = true;
+                    console.log('Changing service at index:', index);
+                },
+
+                selectService(id, name, gstPercentage) {
+                    try {
+                        if (this.currentServiceIndex !== null) {
+                            // Changing existing service
+                            const service = this.services[this.currentServiceIndex];
+                            service.id = id;
+                            service.name = name;
+                            service.gst_percentage = parseFloat(gstPercentage) || 0;
+
+                            this.calculateServiceTotal(this.currentServiceIndex);
+                            console.log('Service changed:', name);
+                            this.currentServiceIndex = null;
+                        } else {
+                            // Adding new service
+                            const service = {
+                                id: id,
+                                name: name,
+                                quantity: 1,
+                                unit_price: 0,
+                                gst_percentage: parseFloat(gstPercentage) || 0,
+                                gst_total: 0,
+                                total: 0
+                            };
+
+                            this.services.push(service);
+                            this.calculateServiceTotal(this.services.length - 1);
+                            console.log('Service added:', name);
+                        }
+
+                        this.showServiceModal = false;
+                        this.serviceSearch = '';
+                    } catch (error) {
+                        console.error('Error selecting service:', error);
+                        alert('Error adding service. Please try again.');
+                    }
+                },
+
+                removeProduct(index) {
+                    if (confirm('Are you sure you want to remove this product?')) {
+                        const removedProduct = this.products[index];
+                        this.products.splice(index, 1);
+                        this.calculateSummary();
+                        console.log('Product removed:', removedProduct.name);
+                    }
+                },
+
+                removeService(index) {
+                    if (confirm('Are you sure you want to remove this service?')) {
+                        const removedService = this.services[index];
+                        this.services.splice(index, 1);
+                        this.calculateSummary();
+                        console.log('Service removed:', removedService.name);
+                    }
+                },
+
+                calculateProductTotal(index) {
+                    try {
+                        const product = this.products[index];
+                        if (!product) return;
+
                         const quantity = parseFloat(product.quantity) || 0;
                         const unitPrice = parseFloat(product.unit_price) || 0;
                         const subtotal = quantity * unitPrice;
 
-                        this.summary.product_subtotal += subtotal;
-                        this.summary.product_total_cgst += parseFloat(product.cgst_value) || 0;
-                        this.summary.product_total_sgst += parseFloat(product.sgst_value) || 0;
-                        this.summary.product_total_igst += parseFloat(product.igst_value) || 0;
-                        this.summary.product_total += parseFloat(product.total) || 0;
-                    });
+                        if (product.is_igst) {
+                            // IGST product - only IGST applies
+                            product.cgst_value = 0;
+                            product.sgst_value = 0;
+                            product.igst_value = parseFloat(((subtotal * product.igst_rate) / 100).toFixed(2));
+                        } else {
+                            // CGST/SGST product - CGST and SGST apply, no IGST
+                            product.cgst_value = parseFloat(((subtotal * product.cgst_rate) / 100).toFixed(2));
+                            product.sgst_value = parseFloat(((subtotal * product.sgst_rate) / 100).toFixed(2));
+                            product.igst_value = 0;
+                        }
 
-                    // Calculate service summary
-                    this.services.forEach(service => {
+                        product.total = parseFloat((subtotal + product.cgst_value + product.sgst_value + product.igst_value)
+                            .toFixed(2));
+
+                        // Immediate summary calculation for better responsiveness
+                        this.calculateSummary();
+                    } catch (error) {
+                        console.error('Error calculating product total:', error);
+                    }
+                },
+
+                calculateServiceTotal(index) {
+                    try {
+                        const service = this.services[index];
+                        if (!service) return;
+
                         const quantity = parseFloat(service.quantity) || 0;
                         const unitPrice = parseFloat(service.unit_price) || 0;
                         const subtotal = quantity * unitPrice;
 
-                        this.summary.service_subtotal += subtotal;
-                        // For services, split GST equally between CGST and SGST
-                        this.summary.service_total_cgst += (parseFloat(service.gst_total) || 0) / 2;
-                        this.summary.service_total_sgst += (parseFloat(service.gst_total) || 0) / 2;
-                        this.summary.service_total += parseFloat(service.total) || 0;
-                    });
+                        service.gst_total = parseFloat(((subtotal * service.gst_percentage) / 100).toFixed(2));
+                        service.total = parseFloat((subtotal + service.gst_total).toFixed(2));
 
-                    // Calculate grand totals
-                    this.summary.grand_sub_total = this.summary.product_subtotal + this.summary.service_subtotal;
-                    this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary.product_total_sgst + 
-                        this.summary.product_total_igst + this.summary.service_total_cgst + this.summary.service_total_sgst;
-                    this.summary.grand_total = this.summary.product_total + this.summary.service_total;
+                        // Immediate summary calculation for better responsiveness
+                        this.calculateSummary();
+                    } catch (error) {
+                        console.error('Error calculating service total:', error);
+                    }
+                },
 
-                    // Round all values to 2 decimal places
-                    Object.keys(this.summary).forEach(key => {
-                        this.summary[key] = parseFloat(this.summary[key].toFixed(2));
-                    });
+                calculateSummary() {
+                    try {
+                        // Reset summary
+                        this.summary = {
+                            product_subtotal: 0,
+                            product_total_cgst: 0,
+                            product_total_sgst: 0,
+                            product_total_igst: 0,
+                            product_total: 0,
+                            service_subtotal: 0,
+                            service_total_cgst: 0,
+                            service_total_sgst: 0,
+                            service_total: 0,
+                            grand_sub_total: 0,
+                            grand_gst_total: 0,
+                            grand_total: 0
+                        };
 
-                    console.log('Summary calculated - Grand Total:', this.summary.grand_total);
-                } catch (error) {
-                    console.error('Error calculating summary:', error);
-                }
-            },
+                        // Calculate product summary
+                        this.products.forEach(product => {
+                            const quantity = parseFloat(product.quantity) || 0;
+                            const unitPrice = parseFloat(product.unit_price) || 0;
+                            const subtotal = quantity * unitPrice;
 
-            filterProducts() {
-                try {
-                    const searchTerm = this.productSearch.toLowerCase();
-                    document.querySelectorAll('.product-row').forEach(row => {
-                        const productName = row.cells[0].textContent.toLowerCase();
-                        row.style.display = productName.includes(searchTerm) ? '' : 'none';
-                    });
-                } catch (error) {
-                    console.error('Error filtering products:', error);
-                }
-            },
+                            this.summary.product_subtotal += subtotal;
+                            this.summary.product_total_cgst += parseFloat(product.cgst_value) || 0;
+                            this.summary.product_total_sgst += parseFloat(product.sgst_value) || 0;
+                            this.summary.product_total_igst += parseFloat(product.igst_value) || 0;
+                            this.summary.product_total += parseFloat(product.total) || 0;
+                        });
 
-            filterServices() {
-                try {
-                    const searchTerm = this.serviceSearch.toLowerCase();
-                    document.querySelectorAll('.service-row').forEach(row => {
-                        const serviceName = row.cells[0].textContent.toLowerCase();
-                        row.style.display = serviceName.includes(searchTerm) ? '' : 'none';
-                    });
-                } catch (error) {
-                    console.error('Error filtering services:', error);
-                }
-            },
+                        // Calculate service summary
+                        this.services.forEach(service => {
+                            const quantity = parseFloat(service.quantity) || 0;
+                            const unitPrice = parseFloat(service.unit_price) || 0;
+                            const subtotal = quantity * unitPrice;
 
-            submitForm() {
-                if (this.isSubmitting) {
-                    console.log('Form submission already in progress...');
-                    return;
-                }
+                            this.summary.service_subtotal += subtotal;
+                            // For services, split GST equally between CGST and SGST
+                            this.summary.service_total_cgst += (parseFloat(service.gst_total) || 0) / 2;
+                            this.summary.service_total_sgst += (parseFloat(service.gst_total) || 0) / 2;
+                            this.summary.service_total += parseFloat(service.total) || 0;
+                        });
 
-                try {
-                    // Final validation
-                    if (!this.validateBasicInfo()) {
-                        this.activeTab = 'basic';
+                        // Calculate grand totals
+                        this.summary.grand_sub_total = this.summary.product_subtotal + this.summary.service_subtotal;
+                        this.summary.grand_gst_total = this.summary.product_total_cgst + this.summary.product_total_sgst +
+                            this.summary.product_total_igst + this.summary.service_total_cgst + this.summary
+                            .service_total_sgst;
+                        this.summary.grand_total = this.summary.product_total + this.summary.service_total;
+
+                        // Round all values to 2 decimal places
+                        Object.keys(this.summary).forEach(key => {
+                            this.summary[key] = parseFloat(this.summary[key].toFixed(2));
+                        });
+
+                        console.log('Summary calculated - Grand Total:', this.summary.grand_total);
+                    } catch (error) {
+                        console.error('Error calculating summary:', error);
+                    }
+                },
+
+                filterProducts() {
+                    try {
+                        const searchTerm = this.productSearch.toLowerCase();
+                        document.querySelectorAll('.product-row').forEach(row => {
+                            const productName = row.cells[0].textContent.toLowerCase();
+                            row.style.display = productName.includes(searchTerm) ? '' : 'none';
+                        });
+                    } catch (error) {
+                        console.error('Error filtering products:', error);
+                    }
+                },
+
+                filterServices() {
+                    try {
+                        const searchTerm = this.serviceSearch.toLowerCase();
+                        document.querySelectorAll('.service-row').forEach(row => {
+                            const serviceName = row.cells[0].textContent.toLowerCase();
+                            row.style.display = serviceName.includes(searchTerm) ? '' : 'none';
+                        });
+                    } catch (error) {
+                        console.error('Error filtering services:', error);
+                    }
+                },
+
+                submitForm() {
+                    if (this.isSubmitting) {
+                        console.log('Form submission already in progress...');
                         return;
                     }
 
-                    if (this.products.length === 0 && this.services.length === 0) {
-                        this.activeTab = 'products';
-                        alert('Please add at least one product or service.');
-                        return;
+                    try {
+                        // Final validation
+                        if (!this.validateBasicInfo()) {
+                            this.activeTab = 'basic';
+                            return;
+                        }
+
+                        if (this.products.length === 0 && this.services.length === 0) {
+                            this.activeTab = 'products';
+                            alert('Please add at least one product or service.');
+                            return;
+                        }
+
+                        // Set submitting state
+                        this.isSubmitting = true;
+
+                        // Final calculation
+                        this.calculateSummary();
+
+                        console.log('Submitting invoice update...');
+                        console.log('Products:', this.products.length);
+                        console.log('Services:', this.services.length);
+                        console.log('Grand Total:', this.summary.grand_total);
+                        console.log('Updated by:', 'Kannan-24');
+                        console.log('Updated at (UTC):', '2025-10-19 13:46:05');
+
+                        // Submit the form
+                        document.getElementById('invoiceForm').submit();
+                    } catch (error) {
+                        console.error('Error submitting form:', error);
+                        this.isSubmitting = false;
+                        alert('An error occurred while submitting the form. Please try again.');
                     }
-
-                    // Set submitting state
-                    this.isSubmitting = true;
-
-                    // Final calculation
-                    this.calculateSummary();
-
-                    console.log('Submitting invoice update...');
-                    console.log('Products:', this.products.length);
-                    console.log('Services:', this.services.length);
-                    console.log('Grand Total:', this.summary.grand_total);
-                    console.log('Updated by:', 'Kannan-24');
-                    console.log('Updated at (UTC):', '2025-10-19 13:46:05');
-
-                    // Submit the form
-                    document.getElementById('invoiceForm').submit();
-                } catch (error) {
-                    console.error('Error submitting form:', error);
-                    this.isSubmitting = false;
-                    alert('An error occurred while submitting the form. Please try again.');
                 }
             }
         }
-    }
 
-    // Initialize Alpine.js
-    document.addEventListener('alpine:init', () => {
-        console.log('Alpine.js initialized for invoice edit page');
-        console.log('System ready - User: Kannan-24');
-    });
+        // Initialize Alpine.js
+        document.addEventListener('alpine:init', () => {
+            console.log('Alpine.js initialized for invoice edit page');
+            console.log('System ready - User: Kannan-24');
+        });
 
-    // Page load event
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Invoice edit page loaded successfully');
-        console.log('Timestamp (UTC): 2025-10-19 13:46:05');
-    });
-</script>
+        // Page load event
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Invoice edit page loaded successfully');
+            console.log('Timestamp (UTC): 2025-10-19 13:46:05');
+        });
+    </script>
 
 </x-app-layout>

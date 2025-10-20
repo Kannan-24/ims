@@ -232,8 +232,8 @@ class QuotationController extends Controller
      */
     public function edit($id)
     {
-        $quotation = Quotation::with('items')->findOrFail($id);
-        $customers = Customer::all();
+        $quotation = Quotation::with(['items.product', 'items.service'])->findOrFail($id);
+        $customers = Customer::with('contactPersons')->get();
         $products = Product::all();
         $services = Service::all();
         return view('ims.quotations.edit', compact('quotation', 'customers', 'products', 'services'));

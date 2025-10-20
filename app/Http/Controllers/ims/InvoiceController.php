@@ -333,8 +333,8 @@ class InvoiceController extends Controller
      */
     public function edit($id)
     {
-        $invoice = Invoice::with('items')->findOrFail($id);
-        $customers = Customer::all();
+        $invoice = Invoice::with(['items.product', 'items.service'])->findOrFail($id);
+        $customers = Customer::with('contactPersons')->get();
         $products = Product::all();
         $services = Service::all();
         return view('ims.invoices.edit', compact('invoice', 'customers', 'products', 'services'));

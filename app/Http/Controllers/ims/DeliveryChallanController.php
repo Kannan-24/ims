@@ -21,11 +21,11 @@ class DeliveryChallanController extends Controller
     public function show($id)
     {
         $deliveryChallan = DeliveryChallan::with([
-            'invoice.customer', 
-            'invoice.items' => function($query) {
+            'invoice.customer',
+            'invoice.items' => function ($query) {
                 $query->where('type', 'product')
-                      ->whereNotNull('product_id')
-                      ->with('product');
+                    ->whereNotNull('product_id')
+                    ->with('product');
             }
         ])->findOrFail($id);
         return view('ims.delivery-challans.show', compact('deliveryChallan'));
@@ -38,10 +38,10 @@ class DeliveryChallanController extends Controller
         ]);
 
         $invoice = Invoice::with(['customer', 'items.product'])->findOrFail($request->invoice_id);
-        
+
         // Check if invoice has any products (physical goods) for delivery
         $hasProducts = $invoice->items()->where('type', 'product')->whereNotNull('product_id')->exists();
-        
+
         if (!$hasProducts) {
             return response()->json([
                 'success' => false,
@@ -81,11 +81,11 @@ class DeliveryChallanController extends Controller
     public function pdf($id)
     {
         $deliveryChallan = DeliveryChallan::with([
-            'invoice.customer', 
-            'invoice.items' => function($query) {
+            'invoice.customer',
+            'invoice.items' => function ($query) {
                 $query->where('type', 'product')
-                      ->whereNotNull('product_id')
-                      ->with('product');
+                    ->whereNotNull('product_id')
+                    ->with('product');
             }
         ])->findOrFail($id);
         $invoice = $deliveryChallan->invoice;
@@ -109,11 +109,11 @@ class DeliveryChallanController extends Controller
     public function download($id)
     {
         $deliveryChallan = DeliveryChallan::with([
-            'invoice.customer', 
-            'invoice.items' => function($query) {
+            'invoice.customer',
+            'invoice.items' => function ($query) {
                 $query->where('type', 'product')
-                      ->whereNotNull('product_id')
-                      ->with('product');
+                    ->whereNotNull('product_id')
+                    ->with('product');
             }
         ])->findOrFail($id);
         $invoice = $deliveryChallan->invoice;

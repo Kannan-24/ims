@@ -39,20 +39,22 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">📦 Delivery Challan Details</h1>
-                    <p class="text-sm text-gray-600 mt-1">{{ $deliveryChallan->dc_no }} - {{ $deliveryChallan->invoice->customer->company_name ?? $deliveryChallan->invoice->customer->name }}</p>
+                    <p class="text-sm text-gray-600 mt-1">{{ $deliveryChallan->dc_no }} -
+                        {{ $deliveryChallan->invoice->customer->company_name ?? $deliveryChallan->invoice->customer->name }}
+                    </p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <a href="{{ route('delivery-challans.index') }}" 
+                    <a href="{{ route('delivery-challans.index') }}"
                         class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
                         <i class="fas fa-arrow-left w-4 h-4 mr-2"></i>
                         Back to List
                     </a>
-                    <a href="{{ route('delivery-challans.pdf', $deliveryChallan->id) }}" target="_blank" 
+                    <a href="{{ route('delivery-challans.pdf', $deliveryChallan->id) }}" target="_blank"
                         class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors">
                         <i class="fas fa-file-pdf w-4 h-4 mr-2"></i>
                         View PDF
                     </a>
-                    <a href="{{ route('delivery-challans.download', $deliveryChallan->id) }}" 
+                    <a href="{{ route('delivery-challans.download', $deliveryChallan->id) }}"
                         class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
                         <i class="fas fa-download w-4 h-4 mr-2"></i>
                         Download PDF
@@ -83,7 +85,8 @@
                         </div>
                         <div>
                             <p class="text-sm text-green-600 font-medium">Delivery Date</p>
-                            <p class="text-lg font-bold text-green-900">{{ \Carbon\Carbon::parse($deliveryChallan->delivery_date)->format('d M Y') }}</p>
+                            <p class="text-lg font-bold text-green-900">
+                                {{ \Carbon\Carbon::parse($deliveryChallan->delivery_date)->format('d M Y') }}</p>
                         </div>
                     </div>
                 </div>
@@ -95,7 +98,8 @@
                         </div>
                         <div>
                             <p class="text-sm text-purple-600 font-medium">Invoice</p>
-                            <p class="text-lg font-bold text-purple-900">{{ $deliveryChallan->invoice->invoice_no }}</p>
+                            <p class="text-lg font-bold text-purple-900">{{ $deliveryChallan->invoice->invoice_no }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -116,16 +120,19 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray-500">Delivery Date:</span>
-                                <span class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->delivery_date)->format('d M Y') }}</span>
+                                <span
+                                    class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->delivery_date)->format('d M Y') }}</span>
                             </div>
 
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray-500">Generated At:</span>
-                                <span class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->generated_at)->format('d M Y H:i A') }}</span>
+                                <span
+                                    class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->generated_at)->format('d M Y H:i A') }}</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray-500">Last Updated:</span>
-                                <span class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->updated_at)->format('d M Y H:i A') }}</span>
+                                <span
+                                    class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->updated_at)->format('d M Y H:i A') }}</span>
                             </div>
                         </div>
                     </div>
@@ -140,18 +147,21 @@
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray-500">Invoice Number:</span>
-                                <span class="text-sm font-medium text-gray-900">{{ $deliveryChallan->invoice->invoice_no }}</span>
+                                <span
+                                    class="text-sm font-medium text-gray-900">{{ $deliveryChallan->invoice->invoice_no }}</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray-500">Invoice Date:</span>
-                                <span class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->invoice->created_at)->format('d M Y') }}</span>
+                                <span
+                                    class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($deliveryChallan->invoice->created_at)->format('d M Y') }}</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm font-medium text-gray-500">Total Amount:</span>
-                                <span class="text-sm font-medium text-gray-900">₹{{ number_format($deliveryChallan->invoice->total_amount, 2) }}</span>
+                                <span
+                                    class="text-sm font-medium text-gray-900">₹{{ number_format($deliveryChallan->invoice->total_amount, 2) }}</span>
                             </div>
                             <div class="pt-4">
-                                <a href="{{ route('invoices.show', $deliveryChallan->invoice->id) }}" 
+                                <a href="{{ route('invoices.show', $deliveryChallan->invoice->id) }}"
                                     class="inline-flex items-center text-blue-600 hover:text-blue-900 text-sm font-medium">
                                     <i class="fas fa-external-link-alt mr-2"></i>View Full Invoice
                                 </a>
@@ -173,24 +183,28 @@
                             <div class="space-y-3">
                                 <div class="flex items-center">
                                     <i class="fas fa-building w-4 h-4 mr-3 text-gray-400"></i>
-                                    <span class="text-sm text-gray-900">{{ $deliveryChallan->invoice->customer->company_name ?? $deliveryChallan->invoice->customer->name }}</span>
+                                    <span
+                                        class="text-sm text-gray-900">{{ $deliveryChallan->invoice->customer->company_name ?? $deliveryChallan->invoice->customer->name }}</span>
                                 </div>
-                                @if($deliveryChallan->invoice->customer->phone)
+                                @if ($deliveryChallan->invoice->customer->phone)
                                     <div class="flex items-center">
                                         <i class="fas fa-phone w-4 h-4 mr-3 text-gray-400"></i>
-                                        <span class="text-sm text-gray-900">{{ $deliveryChallan->invoice->customer->phone }}</span>
+                                        <span
+                                            class="text-sm text-gray-900">{{ $deliveryChallan->invoice->customer->phone }}</span>
                                     </div>
                                 @endif
-                                @if($deliveryChallan->invoice->customer->email)
+                                @if ($deliveryChallan->invoice->customer->email)
                                     <div class="flex items-center">
                                         <i class="fas fa-envelope w-4 h-4 mr-3 text-gray-400"></i>
-                                        <span class="text-sm text-gray-900">{{ $deliveryChallan->invoice->customer->email }}</span>
+                                        <span
+                                            class="text-sm text-gray-900">{{ $deliveryChallan->invoice->customer->email }}</span>
                                     </div>
                                 @endif
-                                @if($deliveryChallan->invoice->customer->gst)
+                                @if ($deliveryChallan->invoice->customer->gst)
                                     <div class="flex items-center">
                                         <i class="fas fa-file-contract w-4 h-4 mr-3 text-gray-400"></i>
-                                        <span class="text-sm text-gray-900">GST: {{ $deliveryChallan->invoice->customer->gst }}</span>
+                                        <span class="text-sm text-gray-900">GST:
+                                            {{ $deliveryChallan->invoice->customer->gst }}</span>
                                     </div>
                                 @endif
                             </div>
@@ -201,9 +215,9 @@
                                 <i class="fas fa-map-marker-alt w-4 h-4 mr-3 mt-1 text-gray-400"></i>
                                 <div class="text-sm text-gray-900">
                                     {{ $deliveryChallan->invoice->customer->address }}<br>
-                                    @if($deliveryChallan->invoice->customer->city)
+                                    @if ($deliveryChallan->invoice->customer->city)
                                         {{ $deliveryChallan->invoice->customer->city }}
-                                        @if($deliveryChallan->invoice->customer->postal_code)
+                                        @if ($deliveryChallan->invoice->customer->postal_code)
                                             - {{ $deliveryChallan->invoice->customer->postal_code }}
                                         @endif
                                     @endif
@@ -223,40 +237,65 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">S.No</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HSN Code</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rate</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    S.No</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Product</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Description</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    HSN Code</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Quantity</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Unit</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Rate</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Amount</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @php
                                 // Only show product items for delivery challan
-                                $productItems = $deliveryChallan->invoice->items->filter(function($item) {
-                                    return $item->type === 'product' && 
-                                           !is_null($item->product_id) && 
-                                           !is_null($item->product);
+                                $productItems = $deliveryChallan->invoice->items->filter(function ($item) {
+                                    return $item->type === 'product' &&
+                                        !is_null($item->product_id) &&
+                                        !is_null($item->product);
                                 });
                             @endphp
-                            
-                            @if($productItems->count() > 0)
-                                @foreach($productItems as $item)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $loop->iteration }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ $item->product->name ?? 'N/A' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->product->description ?? '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $item->product->hsn_code ?? '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item->quantity ?? 0 }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->unit_type ?? $item->product->unit ?? 'Nos' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{{ number_format($item->unit_price ?? 0, 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{{ number_format($item->total ?? ($item->quantity * $item->unit_price), 2) }}</td>
-                                </tr>
+
+                            @if ($productItems->count() > 0)
+                                @foreach ($productItems as $item)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $loop->iteration }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ $item->product->name ?? 'N/A' }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $item->product->description ?? '-' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                            {{ $item->product->hsn_code ?? '-' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {{ $item->quantity ?? 0 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $item->unit_type ?? ($item->product->unit ?? 'Nos') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            ₹{{ number_format($item->unit_price ?? 0, 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            ₹{{ number_format($item->total ?? $item->quantity * $item->unit_price, 2) }}
+                                        </td>
+                                    </tr>
                                 @endforeach
                             @else
                                 <tr>
@@ -278,33 +317,33 @@
     </div>
 
     <script>
-    function deliveryChallanDetails() {
-        return {
-            init() {
-                // Initialize component
-            },
+        function deliveryChallanDetails() {
+            return {
+                init() {
+                    // Initialize component
+                },
 
 
 
-            showAlert(type, message) {
-                const alertDiv = document.createElement('div');
-                alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                showAlert(type, message) {
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
                     type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
                 }`;
-                alertDiv.innerHTML = `
+                    alertDiv.innerHTML = `
                     <div class="flex items-center">
                         <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
                         ${message}
                     </div>
                 `;
-                
-                document.body.appendChild(alertDiv);
-                
-                setTimeout(() => {
-                    alertDiv.remove();
-                }, 5000);
+
+                    document.body.appendChild(alertDiv);
+
+                    setTimeout(() => {
+                        alertDiv.remove();
+                    }, 5000);
+                }
             }
         }
-    }
     </script>
 </x-app-layout>

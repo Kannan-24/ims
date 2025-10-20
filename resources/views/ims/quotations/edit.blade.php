@@ -43,17 +43,6 @@
                     <p class="text-sm text-gray-600 mt-1">Update quotation details, products and services</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <!-- Convert to Invoice Button -->
-                    <form action="{{ route('quotations.convert-to-invoice', $quotation->id) }}" method="POST"
-                        class="inline">
-                        @csrf
-                        <button type="submit"
-                            onclick="return confirm('Are you sure you want to convert this quotation to an invoice? This action cannot be undone.')"
-                            class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors">
-                            <i class="fas fa-file-invoice mr-2"></i>
-                            Convert to Invoice
-                        </button>
-                    </form>
                     <a href="{{ route('quotations.index') }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors">
                         <i class="fas fa-arrow-left w-4 h-4 mr-2"></i>
@@ -163,9 +152,9 @@
                                         x-model="selectedContactPerson" :disabled="!selectedCustomer">
                                         <option value="">Select Contact Person</option>
                                         <template x-for="contact in contactPersons" :key="contact.id">
-                                            <option :value="contact.id" 
-                                                    :selected="contact.id == selectedContactPerson"
-                                                    x-text="contact.name"></option>
+                                            <option :value="contact.id"
+                                                :selected="contact.id == selectedContactPerson" x-text="contact.name">
+                                            </option>
                                         </template>
                                     </select>
                                 </div>
@@ -766,16 +755,15 @@
                 },
 
                 init() {
-                    
+
                     // Clear arrays to prevent duplication
                     this.products = [];
                     this.services = [];
-                    
+
                     this.setupCustomerData();
                     this.loadExistingProducts();
                     this.loadExistingServices();
                     this.updateContactPersons();
-                    console.log('Quotation edit manager initialized successfully');
                 },
 
                 setupCustomerData() {
@@ -791,14 +779,17 @@
                 loadExistingProducts() {
                     try {
                         const existingProducts = @json($quotation->items->where('type', 'product')->values());
+                        
+                        console.log('Raw existing products data:', existingProducts);
 
                         // Check if products already loaded to prevent duplication
                         if (this.products.length > 0) {
-                            console.log('Products already loaded, skipping...');
                             return;
                         }
 
-                        existingProducts.forEach(item => {
+                        existingProducts.forEach((item, index) => {
+                            console.log(`Processing product item ${index}:`, item);
+                            
                             const product = {
                                 id: item.product_id,
                                 name: item.product ? item.product.name : 'N/A',
@@ -806,19 +797,24 @@
                                 unit_price: parseFloat(item.unit_price) || 0,
                                 gst_percentage: item.product ? parseFloat(item.product.gst_percentage) || 0 : 0,
                                 is_igst: item.product ? parseInt(item.product.is_igst) || 0 : 0,
-                                cgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product.gst_percentage) || 0) / 2) : 0,
-                                sgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product.gst_percentage) || 0) / 2) : 0,
-                                igst_rate: item.product ? (item.product.is_igst ? (parseFloat(item.product.gst_percentage) || 0) : 0) : 0,
+                                cgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product
+                                    .gst_percentage) || 0) / 2) : 0,
+                                sgst_rate: item.product ? (item.product.is_igst ? 0 : (parseFloat(item.product
+                                    .gst_percentage) || 0) / 2) : 0,
+                                igst_rate: item.product ? (item.product.is_igst ? (parseFloat(item.product
+                                    .gst_percentage) || 0) : 0) : 0,
                                 cgst_value: parseFloat(item.cgst) || 0,
                                 sgst_value: parseFloat(item.sgst) || 0,
                                 igst_value: parseFloat(item.igst) || 0,
                                 total: parseFloat(item.total) || 0
                             };
 
+                            console.log('Created product object:', product);
                             this.products.push(product);
                         });
 
                         console.log('Loaded', this.products.length, 'existing products');
+                        console.log('Final products array:', this.products);
                         // Calculate summary after loading
                         setTimeout(() => {
                             this.calculateSummary();
@@ -831,14 +827,17 @@
                 loadExistingServices() {
                     try {
                         const existingServices = @json($quotation->items->where('type', 'service')->values());
+                        
+                        console.log('Raw existing services data:', existingServices);
 
                         // Check if services already loaded to prevent duplication
                         if (this.services.length > 0) {
-                            console.log('Services already loaded, skipping...');
                             return;
                         }
 
-                        existingServices.forEach(item => {
+                        existingServices.forEach((item, index) => {
+                            console.log(`Processing service item ${index}:`, item);
+                            
                             const service = {
                                 id: item.service_id,
                                 name: item.service ? item.service.name : 'N/A',
@@ -849,10 +848,12 @@
                                 total: parseFloat(item.total) || 0
                             };
 
+                            console.log('Created service object:', service);
                             this.services.push(service);
                         });
 
                         console.log('Loaded', this.services.length, 'existing services');
+                        console.log('Final services array:', this.services);
                         // Calculate summary after loading
                         setTimeout(() => {
                             this.calculateSummary();
@@ -866,7 +867,7 @@
                     try {
                         const currentContactPerson = this.selectedContactPerson;
                         this.contactPersons = this.customersData[this.selectedCustomer] || [];
-                        
+
                         // Preserve selected contact person if it exists for the new customer
                         if (currentContactPerson && this.contactPersons.find(cp => cp.id == currentContactPerson)) {
                             this.selectedContactPerson = currentContactPerson;
@@ -874,9 +875,7 @@
                             // Reset contact person if not available for new customer
                             this.selectedContactPerson = '';
                         }
-                        
-                        console.log('Contact persons updated:', this.contactPersons.length, 'contacts available');
-                        console.log('Selected contact person:', this.selectedContactPerson);
+
                     } catch (error) {
                         console.error('Error updating contact persons:', error);
                         this.contactPersons = [];
@@ -901,7 +900,6 @@
                         this.calculateSummary();
                         this.activeTab = 'summary';
                     }
-                    console.log('Navigated to tab:', this.activeTab);
                 },
 
                 previousStep() {
@@ -912,7 +910,6 @@
                     } else if (this.activeTab === 'products') {
                         this.activeTab = 'basic';
                     }
-                    console.log('Navigated back to tab:', this.activeTab);
                 },
 
                 validateBasicInfo() {
@@ -926,7 +923,6 @@
                 changeProduct(index) {
                     this.currentProductIndex = index;
                     this.showProductModal = true;
-                    console.log('Changing product at index:', index);
                 },
 
                 selectProduct(id, name, gstPercentage, isIgst) {
@@ -942,7 +938,6 @@
                             this.products[this.currentProductIndex].igst_rate = isIgst ? gstPercentage : 0;
 
                             this.calculateProductTotal(this.currentProductIndex);
-                            console.log('Product changed:', name);
                             this.currentProductIndex = null;
                         } else {
                             // Adding new product
@@ -964,7 +959,6 @@
 
                             this.products.push(product);
                             this.calculateProductTotal(this.products.length - 1);
-                            console.log('Product added:', name);
                         }
 
                         this.showProductModal = false;
@@ -978,7 +972,6 @@
                 changeService(index) {
                     this.currentServiceIndex = index;
                     this.showServiceModal = true;
-                    console.log('Changing service at index:', index);
                 },
 
                 selectService(id, name, gstPercentage) {
@@ -1006,7 +999,6 @@
 
                             this.services.push(service);
                             this.calculateServiceTotal(this.services.length - 1);
-                            console.log('Service added:', name);
                         }
 
                         this.showServiceModal = false;
@@ -1022,7 +1014,6 @@
                         const removedProduct = this.products[index];
                         this.products.splice(index, 1);
                         this.calculateSummary();
-                        console.log('Product removed:', removedProduct.name);
                     }
                 },
 
@@ -1031,7 +1022,6 @@
                         const removedService = this.services[index];
                         this.services.splice(index, 1);
                         this.calculateSummary();
-                        console.log('Service removed:', removedService.name);
                     }
                 },
 
@@ -1142,8 +1132,6 @@
                         Object.keys(this.summary).forEach(key => {
                             this.summary[key] = parseFloat(this.summary[key].toFixed(2));
                         });
-
-                        console.log('Summary calculated - Grand Total:', this.summary.grand_total);
                     } catch (error) {
                         console.error('Error calculating summary:', error);
                     }
@@ -1175,7 +1163,6 @@
 
                 submitForm() {
                     if (this.isSubmitting) {
-                        console.log('Form submission already in progress...');
                         return;
                     }
 
@@ -1210,11 +1197,9 @@
         }
 
         // Initialize Alpine.js
-        document.addEventListener('alpine:init', () => {
-           });
+        document.addEventListener('alpine:init', () => {});
 
         // Page load event
-        document.addEventListener('DOMContentLoaded', function() {
-        });
+        document.addEventListener('DOMContentLoaded', function() {});
     </script>
 </x-app-layout>
